@@ -1,16 +1,52 @@
 // In your lib.rs or main.rs
 
-use std::fs;
-use walkdir::WalkDir;
-use std::path::Path;
-use tree_sitter::Parser;
-use crate::struct_extractor::extract_struct_info;
 use crate::function_extractor::extract_function_info;
+use crate::struct_extractor::extract_struct_info;
+use std::{any::Any, fs, path::Path};
+use tree_sitter::{Node, Parser};
+use walkdir::WalkDir;
+
+// Define a trait for extraction
+pub trait InfoExtractor {
+    fn extract(&self, node: Node, code: &str) -> Option<Box<dyn Any>>;
+    fn node_kind(&self) -> &'static str; // Add a method to identify the node kind
+}
+
+// Generic traversal function
+pub fn traverse_tree(
+    node: Node,
+    code: &str,
+    extractors: &[&dyn InfoExtractor], // Use a slice of trait objects
+    results: &mut Vec<Box<dyn Any>>, // Store the results
+) {
+    // Check if any extractor matches the current node
+    for extractor in extractors {
+        if node.kind() == extractor.node_kind() {
+            if let Some(info) = extractor.extract(node, code) {
+                // Store the extracted info
+                results.push(info);
+            }
+        }
+    }
+
+    // Recursively traverse children
+    let mut cursor = node.walk();
+    for i in 0..node.child_count() {
+        if cursor.goto_first_child() {
+            traverse_tree(cursor.node(), code, extractors, results);
+            cursor.goto_parent();
+        }
+        cursor.goto_next_sibling();
+    }
+}
 
 pub fn traverse_and_parse_directory(
     root_dir: &Path,
     ignored_directories: Option<Vec<String>>,
-) -> Result<(), Box<dyn std::error::Error>> {
+    extractors: Vec<&dyn InfoExtractor>, // Take a Vec of trait objects
+) -> Result<Vec<Box<dyn Any>>, Box<dyn std::error::Error>> {
+    let mut all_results: Vec<Box<dyn Any>> = Vec::new();
+
     for entry in WalkDir::new(root_dir).into_iter().filter_map(|e| e.ok()) {
         let path = entry.path();
         let entry_name = entry.file_name().to_string_lossy();
@@ -27,124 +63,70 @@ pub fn traverse_and_parse_directory(
 
         if path.is_file() {
             if path.extension().map_or(false, |ext| ext == "rs") {
-                println!("Attempting to parse file: {}", path.display()); // ADDED
                 println!("Parsing file: {}", path.display());
                 match fs::read_to_string(path) {
                     Ok(code) => {
-                        // Now using safe Rust API of tree-sitter for parsing
                         let mut parser = Parser::new();
                         if let Err(e) = parser.set_language(&tree_sitter_rust::LANGUAGE.into()) {
-                            println!("Error loading Rust grammar: {}", e); // CHANGED
+                            println!("Error loading Rust grammar: {}", e);
                             continue;
                         }
-                        let tree = parser.parse(&code, None); // Safe Rust API call
+                        let tree = parser.parse(&code, None);
 
                         match tree {
                             Some(syntax_tree) => {
-                                println!("Successfully parsed file content.");
-                                // --- Start of tree traversal and struct extraction ---
                                 let root_node = syntax_tree.root_node();
-                                let mut cursor = root_node.walk();
-
-                                loop {
-                                    let current_node = cursor.node();
-
-                                    if current_node.kind() == "struct_item" {
-                                        println!("    Found struct_item node!");
-                                        let struct_info = extract_struct_info(current_node, &code);
-                                        println!("    Extracted Struct: {:?}", struct_info);
-
-                                        // --- Print start and end positions ---
-                                        println!(
-                                            "    Start Position: {}, End Position: {}",
-                                            struct_info.start_position, struct_info.end_position
-                                        );
-
-                                        // --- NEW: Print the code snippet ---
-                                        let struct_definition_code = &code
-                                            [struct_info.start_position..struct_info.end_position];
-                                        println!("    Code Snippet:\n{}", struct_definition_code);
-                                        println!("    --- End Code Snippet ---");
-
-                                        // --- Print field information --- (unchanged)
-                                        if !struct_info.fields.is_empty() {
-                                            println!("    Fields:");
-                                            for field in &struct_info.fields {
-                                                println!(
-                                                    "      - Name: {}, Type: {}, Pub: {}",
-                                                    field.name, field.type_name, field.is_pub
-                                                );
-                                            }
-                                        }
-                                        // --- End print field information ---
-                                    }
-
-                                    if cursor.goto_first_child() {
-                                        continue;
-                                    }
-                                    while !cursor.goto_next_sibling() {
-                                        if !cursor.goto_parent() {
-                                            break;
-                                        }
-                                    }
-                                    if cursor.node().kind() == "source_file" {
-                                        break;
-        }
-
-        if current_node.kind() == "function_item" {
-        	println!("    Found function_item node!");
-        	let function_info = extract_function_info(current_node, &code);
-        	println!("    Extracted Function: {:?}", function_info);
-
-        	// --- Print start and end positions ---
-        	println!(
-        		"    Start Position: {}, End Position: {}",
-        		function_info.start_position, function_info.end_position
-        	);
-
-        	// --- NEW: Print the code snippet ---
-        	let function_definition_code = &code
-        		[function_info.start_position..function_info.end_position];
-        	println!("    Code Snippet:\n{}", function_definition_code);
-        	println!("    --- End Code Snippet ---");
-
-        	// --- Print function information ---
-        	println!("    Function Name: {}", function_info.name);
-        	println!("    Parameters:");
-        	for (name, type_name) in &function_info.parameters {
-        		println!("      - Name: {}, Type: {}", name, type_name);
-        	}
-        	println!("    Return Type: {:?}", function_info.return_type);
-        	println!("    Is Public: {}", function_info.is_pub);
-        	// --- End print function information ---
-        }
-                                }
-                                // --- End of tree traversal and struct extraction ---
+                                let mut results: Vec<Box<dyn Any>> = Vec::new(); // Results for this file
+                                traverse_tree(root_node, &code, &extractors, &mut results);
+                                all_results.extend(results); // Accumulate results from all files
                             }
                             None => {
-                                println!("Parsing failed for file: {}", path.display()); //CHANGED
+                                println!("Parsing failed for file: {}", path.display());
                             }
                         }
                     }
                     Err(e) => {
-                        println!("Error reading file '{}': {}", path.display(), e); //CHANGED
+                        println!("Error reading file '{}': {}", path.display(), e);
                     }
                 }
             }
         }
     }
-    Ok(())
+    Ok(all_results) // Return the accumulated results
 }
 
-// fn main() -> Result<(), Box<dyn std::error::Error>> {
-//     // --- Corrected root_directory path ---
-//     let root_directory = Path::new("./example_traverse_target/src"); // Corrected path
+// Example implementations for StructInfo and FunctionInfo extractors
+use crate::struct_extractor::StructInfo;
+use crate::function_extractor::FunctionInfo;
 
-//     let directories_to_ignore = Some(vec!["examples".to_string(), "assets".to_string()]);
-//     traverse_and_parse_directory(root_directory, directories_to_ignore)?;
+pub struct StructInfoExtractor {}
 
-//     // --- Removed code snippet parsing ---
+impl InfoExtractor for StructInfoExtractor {
+    fn extract(&self, node: Node, code: &str) -> Option<Box<dyn Any>> {
+        if node.kind() == "struct_item" {
+            Some(Box::new(extract_struct_info(node, code)))
+        } else {
+            None
+        }
+    }
 
-//     println!("Directory traversal and parsing complete."); // Updated message
-//     Ok(())
-// }
+    fn node_kind(&self) -> &'static str {
+        "struct_item"
+    }
+}
+
+pub struct FunctionInfoExtractor {}
+
+impl InfoExtractor for FunctionInfoExtractor {
+    fn extract(&self, node: Node, code: &str) -> Option<Box<dyn Any>> {
+        if node.kind() == "function_item" {
+            Some(Box::new(extract_function_info(node, code)))
+        } else {
+            None
+        }
+    }
+
+    fn node_kind(&self) -> &'static str {
+        "function_item"
+    }
+}

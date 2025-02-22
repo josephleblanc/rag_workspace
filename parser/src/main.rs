@@ -3,21 +3,46 @@ use std::path::Path;
 use tree_sitter::Parser;
 
 mod extract;
-// Use the new modules
-mod struct_extractor;
 mod function_extractor;
-use struct_extractor::extract_struct_info;
+mod struct_extractor;
 mod traverse;
-use traverse::traverse_and_parse_directory;
-use function_extractor::extract_function_info;
+
+use struct_extractor::StructInfo;
+use traverse::{traverse_and_parse_directory, FunctionInfoExtractor, StructInfoExtractor, InfoExtractor};
+use function_extractor::FunctionInfo;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let root_directory = Path::new("../example_traverse_target/src");
 
     let directories_to_ignore = Some(vec!["examples".to_string(), "assets".to_string()]);
-    traverse_and_parse_directory(root_directory, directories_to_ignore)?; // Removed call to directory traversal
 
-    // --- Start of new code for single file parsing ---
+    // Create extractors
+    let struct_extractor = StructInfoExtractor {};
+    let function_extractor = FunctionInfoExtractor {};
+
+    // Collect extractors into a Vec<&dyn InfoExtractor>
+    let extractors: Vec<&dyn InfoExtractor> = vec![&struct_extractor, &function_extractor];
+
+    // Traverse the directory and extract information
+    let results = traverse_and_parse_directory(root_directory, directories_to_ignore, extractors)?;
+
+    // Process the results
+    println!("\n--- Extracted Information ---");
+    for result in results {
+        if let Some(struct_info) = result.downcast_ref::<StructInfo>() {
+            println!("  Found struct: {:?}", struct_info);
+        } else if let Some(function_info) = result.downcast_ref::<FunctionInfo>() {
+            println!("  Found function: {:?}", function_info);
+        } else {
+            println!("  Unknown type of info extracted");
+        }
+    }
+    println!("--- End Extracted Information ---");
+
+    println!("Directory parsing complete.");
+
+    // --- Single file parsing section ---
+    println!("\n--- Single File Parsing ---");
     let code_snippet = r#"
         /// A [`Handle`] to the [`AnimationGraph`] to be used by the [`AnimationPlayer`](crate::AnimationPlayer) on the same entity.
         #[derive(Component, Clone, Debug, Default, Deref, DerefMut, Reflect, PartialEq, Eq, From)]
@@ -26,6 +51,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         struct AnotherStruct {
             field1: i32,
+        }
+
+        fn hello_world() -> String {
+            return "Hello World".to_string();
         }
     "#;
 
@@ -37,43 +66,20 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let tree = parser.parse(code_snippet, None).unwrap();
     let root_node = tree.root_node();
 
-    // println!("\n--- Syntax Tree ---"); // Separator for clarity
-    // debug::print_syntax_tree(root_node, code_snippet, 0); // Call debug print function
-    // println!("\n--- End Syntax Tree ---"); // Separator for clarity
+    let mut results: Vec<Box<dyn std::any::Any>> = Vec::new();
+    let extractors: Vec<&dyn InfoExtractor> = vec![&struct_extractor, &function_extractor]; // Reuse extractors
 
-    let mut cursor = root_node.walk();
+    traverse::traverse_tree(root_node, code_snippet, &extractors, &mut results);
 
-    loop {
-        let current_node = cursor.node();
-
-        if current_node.kind() == "struct_item" {
-            println!("Found struct_item node!");
-            let struct_info = extract_struct_info(current_node, code_snippet);
-            println!("Extracted Struct: {:?}", struct_info);
-        } else if current_node.kind() == "function_item" {
-			println!("Found function_item node!");
-			let function_info = extract_function_info(current_node, code_snippet);
-			println!("Extracted Function: {:?}", function_info);
-		}
-
-        // Depth-first traversal: try to go to first child, if not, try next sibling, if not, go to parent's next sibling
-        if cursor.goto_first_child() {
-            continue; // Go deeper into the first child
-        }
-
-        // If no children, try to go to next sibling
-        while !cursor.goto_next_sibling() {
-            if !cursor.goto_parent() {
-                // If no next sibling, go up to parent
-                break; // If no parent (at root), traversal is complete
-            }
-        }
-        if cursor.node().kind() == "source_file" {
-            // Added check to break at source_file level
-            break; // Stop when we are back at the source_file level without siblings
+    for result in results {
+        if let Some(struct_info) = result.downcast_ref::<StructInfo>() {
+            println!("  Found struct: {:?}", struct_info);
+        } else if let Some(function_info) = result.downcast_ref::<FunctionInfo>() {
+            println!("  Found function: {:?}", function_info);
+        } else {
+            println!("  Unknown type of info extracted");
         }
     }
-    // --- End of original traversal loop ---
 
     println!("Single file parsing complete.");
     Ok(())
