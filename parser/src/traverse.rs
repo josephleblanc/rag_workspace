@@ -1,9 +1,9 @@
+use std::collections::HashSet;
 use crate::function_extractor::extract_function_info;
 use crate::struct_extractor::extract_struct_info;
 use std::{any::Any, fs, path::Path};
 use tree_sitter::{Node, Parser};
 use walkdir::WalkDir;
-use std::collections::HashSet;
 
 // Define a trait for extraction
 pub trait InfoExtractor {
