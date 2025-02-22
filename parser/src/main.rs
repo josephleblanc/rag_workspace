@@ -102,6 +102,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         code_snippet,
         &extractors,
         &mut results,
+        "code_snippet.rs".to_string(),
         &mut node_kinds,
     );
 

@@ -11,7 +11,7 @@ pub struct FunctionInfo {
     pub end_position: usize,
 }
 
-pub fn extract_function_info(node: tree_sitter::Node, code: &str) -> FunctionInfo {
+pub fn extract_function_info(node: tree_sitter::Node, code: &str, file_path: String) -> FunctionInfo {
     let mut function_info = FunctionInfo::default();
 
     function_info.start_position = node.start_byte();
@@ -88,6 +88,8 @@ pub fn extract_function_info(node: tree_sitter::Node, code: &str) -> FunctionInf
             }
         }
     }
+
+    function_info.file_path = file_path;
 
     function_info
 }

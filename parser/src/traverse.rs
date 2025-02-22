@@ -7,7 +7,7 @@ use walkdir::WalkDir;
 
 // Define a trait for extraction
 pub trait InfoExtractor {
-    fn extract(&self, node: Node, code: &str) -> Option<Box<dyn Any>>;
+    fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>>;
     fn node_kind(&self) -> &'static str; // Add a method to identify the node kind
 }
 
@@ -15,6 +15,7 @@ pub fn traverse_tree(
     node: Node,
     code: &str,
     extractors: &[&dyn InfoExtractor], // Use a slice of trait objects
+    file_path: String,
     results: &mut Vec<Box<dyn Any>>, // Store the results
     node_kinds: &mut HashSet<String>, // Collect node kinds
 ) {
@@ -24,7 +25,7 @@ pub fn traverse_tree(
     // Check if any extractor matches the current node
     for extractor in extractors {
         if node.kind() == extractor.node_kind() {
-            if let Some(info) = extractor.extract(node, code) {
+            if let Some(info) = extractor.extract(node, code, file_path.clone()) {
                 // Store the extracted info
                 results.push(info);
             }
@@ -35,7 +36,7 @@ pub fn traverse_tree(
     let mut cursor = node.walk();
     if cursor.goto_first_child() {
         loop {
-            traverse_tree(cursor.node(), code, extractors, results, node_kinds);
+            traverse_tree(cursor.node(), code, extractors, file_path.clone(), results, node_kinds);
             if !cursor.goto_next_sibling() {
                 break;
             }
@@ -81,7 +82,7 @@ pub fn traverse_and_parse_directory(
                                 let root_node = syntax_tree.root_node();
                                 let mut results: Vec<Box<dyn Any>> = Vec::new(); // Results for this file
                                 let mut node_kinds: HashSet<String> = HashSet::new(); // Collect node kinds
-                                traverse_tree(root_node, &code, &extractors, &mut results, &mut node_kinds);
+                                traverse_tree(root_node, &code, &extractors, path.display().to_string(), &mut results, &mut node_kinds);
                                 println!("Unique node kinds: {:?}", node_kinds); // Print node kinds
                                 all_results.extend(results); // Accumulate results from all files
                             }
@@ -105,9 +106,9 @@ pub fn traverse_and_parse_directory(
 pub struct StructInfoExtractor {}
 
 impl InfoExtractor for StructInfoExtractor {
-    fn extract(&self, node: Node, code: &str) -> Option<Box<dyn Any>> {
+    fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
         if node.kind() == "struct_item" {
-            Some(Box::new(extract_struct_info(node, code)))
+            Some(Box::new(extract_struct_info(node, code, file_path)))
         } else {
             None
         }
@@ -121,9 +122,9 @@ impl InfoExtractor for StructInfoExtractor {
 pub struct FunctionInfoExtractor {}
 
 impl InfoExtractor for FunctionInfoExtractor {
-    fn extract(&self, node: Node, code: &str) -> Option<Box<dyn Any>> {
+    fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
         if node.kind() == "function_item" {
-            Some(Box::new(extract_function_info(node, code)))
+            Some(Box::new(extract_function_info(node, code, file_path)))
         } else {
             None
         }

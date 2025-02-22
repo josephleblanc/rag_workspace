@@ -19,6 +19,7 @@ pub struct StructInfo {
     pub fields: Vec<FieldInfo>,
     pub start_position: usize,
     pub end_position: usize,
+    pub file_path: String,
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
@@ -30,4 +31,5 @@ pub struct FunctionInfo {
     pub is_pub: bool,
     pub start_position: usize,
     pub end_position: usize,
+    pub file_path: String,
 }

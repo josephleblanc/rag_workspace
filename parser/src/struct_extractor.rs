@@ -21,7 +21,7 @@ pub struct StructInfo {
     pub end_position: usize,
 }
 
-pub fn extract_struct_info(struct_node: Node<'_>, source_code: &str) -> StructInfo {
+pub fn extract_struct_info(struct_node: Node<'_>, source_code: &str, file_path: String) -> StructInfo {
     let mut struct_info = StructInfo::default();
 
     // Initialize end position (end position remains the same - end of struct definition)
@@ -99,6 +99,8 @@ pub fn extract_struct_info(struct_node: Node<'_>, source_code: &str) -> StructIn
             }
         }
     }
+
+    struct_info.file_path = file_path;
 
     struct_info
 }
