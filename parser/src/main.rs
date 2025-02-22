@@ -5,7 +5,7 @@ use tree_sitter::{Language, Parser, TreeCursor};
 use walkdir::WalkDir;
 
 mod extract;
-use extract::{extract_struct_info, extract_function_info, FunctionInfo, StructInfo};
+use extract::{extract_function_info, extract_struct_info, FunctionInfo, StructInfo};
 mod debug; // Import the debug module
 mod traverse;
 use traverse::traverse_and_parse_directory;
