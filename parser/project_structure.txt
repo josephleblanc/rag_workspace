@@ -1,0 +1,16 @@
+--- Project Structure (tree -L 2) ---
+.
+├── Cargo.toml
+├── dot_files
+│   ├── syntax_tree.dot
+│   └── syntax_tree.svg
+├── project_structure.txt
+└── src
+    ├── main.rs
+    └── traverse.rs
+
+3 directories, 6 files
+\n--- Sprites Directory Structure (tree assets/sprites) ---
+assets/sprites  [error opening dir]
+
+0 directories, 0 files

@@ -1,0 +1,12 @@
+[package]
+name = "parser"
+version = "0.1.0"
+edition = "2021"
+
+[build-dependencies]
+cc = "*"
+
+[dependencies]
+tree-sitter = { version = "0.24", features = ["std"] }
+tree-sitter-rust = "0.23"
+walkdir = "2"
