@@ -2,11 +2,8 @@
 
 use std::fs;
 use std::path::Path;
-use tree_sitter::{Parser, TreeCursor};
-use walkdir::WalkDir;
+use tree_sitter::Parser;
 use crate::struct_extractor::extract_struct_info;
-use crate::function_extractor::extract_function_info;
-use crate::extract::StructInfo;
 
 pub fn traverse_and_parse_directory(
     root_dir: &Path,

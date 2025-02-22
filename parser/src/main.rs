@@ -1,8 +1,6 @@
 // src/main.rs
-use std::fs;
 use std::path::Path;
-use tree_sitter::{Language, Parser, TreeCursor};
-use walkdir::WalkDir;
+use tree_sitter::Parser;
 
 mod extract;
 // Use the new modules
@@ -10,8 +8,6 @@ mod struct_extractor;
 mod function_extractor;
 use struct_extractor::extract_struct_info;
 use function_extractor::extract_function_info;
-use extract::{StructInfo, FunctionInfo};
-mod debug; // Import the debug module
 mod traverse;
 use traverse::traverse_and_parse_directory;
 

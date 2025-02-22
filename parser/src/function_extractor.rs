@@ -1,5 +1,3 @@
-use tree_sitter::Node;
-
 #[derive(Debug, Default)]
 #[allow(dead_code)]
 pub struct FunctionInfo {
@@ -70,7 +68,7 @@ pub fn extract_function_info(node: tree_sitter::Node, code: &str) -> FunctionInf
     }
 
     // Check for visibility (pub)
-    let mut cursor = node.walk();
+    let cursor = node.walk();
     if cursor.goto_first_child() {
         loop {
             let child_node = cursor.node();
