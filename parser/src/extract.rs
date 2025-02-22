@@ -1,5 +1,7 @@
 // src/extract.rs
-#[derive(Debug)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[allow(dead_code)]
 pub struct FieldInfo {
     pub name: String,
