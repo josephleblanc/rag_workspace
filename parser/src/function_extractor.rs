@@ -68,7 +68,7 @@ pub fn extract_function_info(node: tree_sitter::Node, code: &str) -> FunctionInf
     }
 
     // Check for visibility (pub)
-    let cursor = node.walk();
+    let mut cursor = node.walk();
     if cursor.goto_first_child() {
         loop {
             let child_node = cursor.node();

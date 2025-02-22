@@ -1,6 +1,7 @@
 // In your lib.rs or main.rs
 
 use std::fs;
+use walkdir::WalkDir;
 use std::path::Path;
 use tree_sitter::Parser;
 use crate::struct_extractor::extract_struct_info;
