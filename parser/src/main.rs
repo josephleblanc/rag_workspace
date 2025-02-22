@@ -14,6 +14,17 @@ use traverse::{
     traverse_and_parse_directory, FunctionInfoExtractor, InfoExtractor, StructInfoExtractor,
 };
 
+use serde::{Deserialize, Serialize};
+use std::fs::File;
+use std::io::Write;
+
+// Define a struct to hold all extracted information
+#[derive(Serialize, Deserialize, Debug)]
+struct ExtractedData {
+    structs: Vec<StructInfo>,
+    functions: Vec<FunctionInfo>,
+}
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let root_directory = Path::new("../example_traverse_target/src");
 
@@ -31,16 +42,30 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Process the results
     println!("\n--- Extracted Information ---");
+    let mut extracted_data = ExtractedData {
+        structs: Vec::new(),
+        functions: Vec::new(),
+    };
+
     for result in results {
         if let Some(struct_info) = result.downcast_ref::<StructInfo>() {
             println!("  Found struct: {:?}", struct_info);
+            extracted_data.structs.push(struct_info.clone());
         } else if let Some(function_info) = result.downcast_ref::<FunctionInfo>() {
             println!("  Found function: {:?}", function_info);
+            extracted_data.functions.push(function_info.clone());
         } else {
             println!("  Unknown type of info extracted");
         }
     }
     println!("--- End Extracted Information ---");
+
+    // Serialize to RON and save to file
+    let ron_string = ron::ser::to_string_pretty(&extracted_data, ron::ser::PrettyConfig::default())?;
+    let mut file = File::create("extracted_data.ron")?;
+    file.write_all(ron_string.as_bytes())?;
+
+    println!("Extracted data saved to extracted_data.ron");
 
     println!("Directory parsing complete.");
 

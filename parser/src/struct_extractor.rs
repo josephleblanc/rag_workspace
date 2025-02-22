@@ -1,6 +1,7 @@
 use tree_sitter::Node;
+use serde::{Deserialize, Serialize};
 
-#[derive(Debug)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[allow(dead_code)]
 pub struct FieldInfo {
     pub name: String,

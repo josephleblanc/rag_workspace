@@ -19,7 +19,7 @@ pub struct StructInfo {
     pub end_position: usize,
 }
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[allow(dead_code)]
 pub struct FunctionInfo {
     pub name: String,

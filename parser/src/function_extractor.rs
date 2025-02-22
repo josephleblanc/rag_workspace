@@ -1,4 +1,6 @@
-#[derive(Debug, Default)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[allow(dead_code)]
 pub struct FunctionInfo {
     pub name: String,
