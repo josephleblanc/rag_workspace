@@ -7,9 +7,12 @@ mod function_extractor;
 mod struct_extractor;
 mod traverse;
 
-use struct_extractor::StructInfo;
-use traverse::{traverse_and_parse_directory, FunctionInfoExtractor, StructInfoExtractor, InfoExtractor};
 use function_extractor::FunctionInfo;
+use std::collections::HashSet;
+use struct_extractor::StructInfo;
+use traverse::{
+    traverse_and_parse_directory, FunctionInfoExtractor, InfoExtractor, StructInfoExtractor,
+};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let root_directory = Path::new("../example_traverse_target/src");
@@ -69,7 +72,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut results: Vec<Box<dyn std::any::Any>> = Vec::new();
     let extractors: Vec<&dyn InfoExtractor> = vec![&struct_extractor, &function_extractor]; // Reuse extractors
     let mut node_kinds: HashSet<String> = HashSet::new();
-    traverse::traverse_tree(root_node, code_snippet, &extractors, &mut results, &mut node_kinds);
+    traverse::traverse_tree(
+        root_node,
+        code_snippet,
+        &extractors,
+        &mut results,
+        &mut node_kinds,
+    );
 
     println!("Unique node kinds (single file): {:?}", node_kinds);
 
