@@ -79,10 +79,14 @@ pub fn traverse_and_parse_directory(
 
                         match tree {
                             Some(syntax_tree) => {
+                                // Convert the relative path to an absolute path
+                                let absolute_path = path.canonicalize().map_err(|e| {
+                                    format!("Failed to canonicalize path: {} - {}", path.display(), e)
+                                })?;
                                 let root_node = syntax_tree.root_node();
                                 let mut results: Vec<Box<dyn Any>> = Vec::new(); // Results for this file
                                 let mut node_kinds: HashSet<String> = HashSet::new(); // Collect node kinds
-                                traverse_tree(root_node, &code, &extractors, path.display().to_string(), &mut results, &mut node_kinds);
+                                traverse_tree(root_node, &code, &extractors, absolute_path.display().to_string(), &mut results, &mut node_kinds);
                                 println!("Unique node kinds: {:?}", node_kinds); // Print node kinds
                                 all_results.extend(results); // Accumulate results from all files
                             }
