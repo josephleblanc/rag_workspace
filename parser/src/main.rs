@@ -7,9 +7,9 @@ mod extract;
 mod struct_extractor;
 mod function_extractor;
 use struct_extractor::extract_struct_info;
-use function_extractor::extract_function_info;
 mod traverse;
 use traverse::traverse_and_parse_directory;
+use function_extractor::extract_function_info;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let root_directory = Path::new("../example_traverse_target/src");
@@ -51,10 +51,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let struct_info = extract_struct_info(current_node, code_snippet);
             println!("Extracted Struct: {:?}", struct_info);
         } else if current_node.kind() == "function_item" {
-            println!("Found function_item node!");
-            let function_info = extract_function_info(current_node, code_snippet);
-            println!("Extracted Function: {:?}", function_info);
-        }
+			println!("Found function_item node!");
+			let function_info = extract_function_info(current_node, code_snippet);
+			println!("Extracted Function: {:?}", function_info);
+		}
 
         // Depth-first traversal: try to go to first child, if not, try next sibling, if not, go to parent's next sibling
         if cursor.goto_first_child() {

@@ -89,7 +89,35 @@ pub fn traverse_and_parse_directory(
                                     }
                                     if cursor.node().kind() == "source_file" {
                                         break;
-                                    }
+        }
+
+        if current_node.kind() == "function_item" {
+        	println!("    Found function_item node!");
+        	let function_info = extract_function_info(current_node, &code);
+        	println!("    Extracted Function: {:?}", function_info);
+
+        	// --- Print start and end positions ---
+        	println!(
+        		"    Start Position: {}, End Position: {}",
+        		function_info.start_position, function_info.end_position
+        	);
+
+        	// --- NEW: Print the code snippet ---
+        	let function_definition_code = &code
+        		[function_info.start_position..function_info.end_position];
+        	println!("    Code Snippet:\n{}", function_definition_code);
+        	println!("    --- End Code Snippet ---");
+
+        	// --- Print function information ---
+        	println!("    Function Name: {}", function_info.name);
+        	println!("    Parameters:");
+        	for (name, type_name) in &function_info.parameters {
+        		println!("      - Name: {}, Type: {}", name, type_name);
+        	}
+        	println!("    Return Type: {:?}", function_info.return_type);
+        	println!("    Is Public: {}", function_info.is_pub);
+        	// --- End print function information ---
+        }
                                 }
                                 // --- End of tree traversal and struct extraction ---
                             }
