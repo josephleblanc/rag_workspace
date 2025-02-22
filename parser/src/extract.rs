@@ -1,5 +1,6 @@
 // src/extract.rs
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct FieldInfo {
     pub name: String,
     pub type_name: String,
@@ -7,6 +8,7 @@ pub struct FieldInfo {
 }
 
 #[derive(Debug, Default)]
+#[allow(dead_code)]
 pub struct StructInfo {
     pub name: String,
     pub is_pub: bool,
@@ -18,6 +20,7 @@ pub struct StructInfo {
 }
 
 #[derive(Debug, Default)]
+#[allow(dead_code)]
 pub struct FunctionInfo {
     pub name: String,
     pub parameters: Vec<(String, String)>,

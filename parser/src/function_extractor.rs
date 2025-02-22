@@ -1,6 +1,7 @@
 use tree_sitter::Node;
 
 #[derive(Debug, Default)]
+#[allow(dead_code)]
 pub struct FunctionInfo {
     pub name: String,
     pub parameters: Vec<(String, String)>,

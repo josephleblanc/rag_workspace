@@ -1,6 +1,7 @@
 use tree_sitter::Node;
 
 #[derive(Debug)]
+#[allow(dead_code)]
 pub struct FieldInfo {
     pub name: String,
     pub type_name: String,
@@ -8,6 +9,7 @@ pub struct FieldInfo {
 }
 
 #[derive(Debug, Default)]
+#[allow(dead_code)]
 pub struct StructInfo {
     pub name: String,
     pub is_pub: bool,
