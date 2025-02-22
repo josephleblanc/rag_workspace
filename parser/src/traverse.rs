@@ -5,7 +5,7 @@ use std::path::Path;
 use tree_sitter::{Parser, TreeCursor};
 use walkdir::WalkDir;
 
-use crate::extract::{extract_struct_info, StructInfo};
+use crate::extract::StructInfo;
 
 pub fn traverse_and_parse_directory(
     root_dir: &Path,
