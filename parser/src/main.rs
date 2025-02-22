@@ -5,7 +5,7 @@ use tree_sitter::{Language, Parser, TreeCursor};
 use walkdir::WalkDir;
 
 mod extract;
-use extract::{extract_struct_info, StructInfo};
+use extract::{extract_struct_info, extract_function_info, FunctionInfo, StructInfo};
 mod debug; // Import the debug module
 mod traverse;
 use traverse::traverse_and_parse_directory;
@@ -49,6 +49,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("Found struct_item node!");
             let struct_info = extract_struct_info(current_node, code_snippet);
             println!("Extracted Struct: {:?}", struct_info);
+        } else if current_node.kind() == "function_item" {
+            println!("Found function_item node!");
+            let function_info = extract_function_info(current_node, code_snippet);
+            println!("Extracted Function: {:?}", function_info);
         }
 
         // Depth-first traversal: try to go to first child, if not, try next sibling, if not, go to parent's next sibling
