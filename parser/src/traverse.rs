@@ -101,8 +101,6 @@ pub fn traverse_and_parse_directory(
 }
 
 // Example implementations for StructInfo and FunctionInfo extractors
-use crate::struct_extractor::StructInfo;
-use crate::function_extractor::FunctionInfo;
 
 pub struct StructInfoExtractor {}
 
