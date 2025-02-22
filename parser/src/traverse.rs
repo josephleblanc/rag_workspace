@@ -39,6 +39,37 @@ pub fn traverse_tree(
             traverse_tree(cursor.node(), code, extractors, results);
             if !cursor.goto_next_sibling() { break; }
         }
+use std::collections::HashSet;
+
+pub fn traverse_tree(
+    node: Node,
+    code: &str,
+    extractors: &[&dyn InfoExtractor], // Use a slice of trait objects
+    results: &mut Vec<Box<dyn Any>>, // Store the results
+    node_kinds: &mut HashSet<String>, // Collect node kinds
+) {
+    // Collect node kinds
+    node_kinds.insert(node.kind().to_string());
+
+    // Check if any extractor matches the current node
+    for extractor in extractors {
+        if node.kind() == extractor.node_kind() {
+            if let Some(info) = extractor.extract(node, code) {
+                // Store the extracted info
+                results.push(info);
+            }
+        }
+    }
+
+    // Recursively traverse children
+    let mut cursor = node.walk();
+    if cursor.goto_first_child() {
+        loop {
+            traverse_tree(cursor.node(), code, extractors, results, node_kinds);
+            if !cursor.goto_next_sibling() {
+                break;
+            }
+        }
     }
 }
 
@@ -79,7 +110,9 @@ pub fn traverse_and_parse_directory(
                             Some(syntax_tree) => {
                                 let root_node = syntax_tree.root_node();
                                 let mut results: Vec<Box<dyn Any>> = Vec::new(); // Results for this file
-                                traverse_tree(root_node, &code, &extractors, &mut results);
+                                let mut node_kinds: HashSet<String> = HashSet::new(); // Collect node kinds
+                                traverse_tree(root_node, &code, &extractors, &mut results, &mut node_kinds);
+                                println!("Unique node kinds: {:?}", node_kinds); // Print node kinds
                                 all_results.extend(results); // Accumulate results from all files
                             }
                             None => {

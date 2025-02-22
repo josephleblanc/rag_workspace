@@ -68,8 +68,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut results: Vec<Box<dyn std::any::Any>> = Vec::new();
     let extractors: Vec<&dyn InfoExtractor> = vec![&struct_extractor, &function_extractor]; // Reuse extractors
+    let mut node_kinds: HashSet<String> = HashSet::new();
+    traverse::traverse_tree(root_node, code_snippet, &extractors, &mut results, &mut node_kinds);
 
-    traverse::traverse_tree(root_node, code_snippet, &extractors, &mut results);
+    println!("Unique node kinds (single file): {:?}", node_kinds);
 
     for result in results {
         if let Some(struct_info) = result.downcast_ref::<StructInfo>() {
