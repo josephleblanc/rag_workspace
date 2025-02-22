@@ -26,13 +26,14 @@ pub fn traverse_and_parse_directory(
 
         if path.is_file() {
             if path.extension().map_or(false, |ext| ext == "rs") {
+                println!("Attempting to parse file: {}", path.display()); // ADDED
                 println!("Parsing file: {}", path.display());
                 match fs::read_to_string(path) {
                     Ok(code) => {
                         // Now using safe Rust API of tree-sitter for parsing
                         let mut parser = Parser::new();
                         if let Err(e) = parser.set_language(&tree_sitter_rust::LANGUAGE.into()) {
-                            eprintln!("Error loading Rust grammar: {}", e);
+                            println!("Error loading Rust grammar: {}", e); // CHANGED
                             continue;
                         }
                         let tree = parser.parse(&code, None); // Safe Rust API call
@@ -92,12 +93,12 @@ pub fn traverse_and_parse_directory(
                                 // --- End of tree traversal and struct extraction ---
                             }
                             None => {
-                                eprintln!("Parsing failed for file: {}", path.display());
+                                println!("Parsing failed for file: {}", path.display()); //CHANGED
                             }
                         }
                     }
                     Err(e) => {
-                        eprintln!("Error reading file '{}': {}", path.display(), e);
+                        println!("Error reading file '{}': {}", path.display(), e); //CHANGED
                     }
                 }
             }
