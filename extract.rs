@@ -82,5 +82,31 @@ traverse.rs
                                         println!("    Found struct_item node!");
                                         let struct_info = extract_struct_info(current_node, &code);
                                         println!("    Extracted Struct: {:?}", struct_info);
+                                    } else if current_node.kind() == "function_item" {
+                                        println!("    Found function_item node!");
+                                        let function_info = extract_function_info(current_node, &code);
+                                        println!("    Extracted Function: {:?}", function_info);
+
+                                        // --- Print function info ---
+                                        println!(
+                                            "    Start Position: {}, End Position: {}",
+                                            function_info.start_position, function_info.end_position
+                                        );
+
+                                        let function_definition_code = &code
+                                            [function_info.start_position..function_info.end_position];
+                                        println!("    Code Snippet:\n{}", function_definition_code);
+                                        println!("    --- End Code Snippet ---");
+
+                                        println!("    Parameters:");
+                                        for param in &function_info.parameters {
+                                            println!("      - Name: {}, Type: {}", param.0, param.1);
+                                        }
+
+                                        if let Some(return_type) = &function_info.return_type {
+                                            println!("    Return Type: {}", return_type);
+                                        }
+
+                                        println!("    Public: {}", function_info.is_pub);
                                     }
 ```
