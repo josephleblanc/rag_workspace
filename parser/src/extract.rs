@@ -9,7 +9,7 @@ pub struct FieldInfo {
     pub is_pub: bool,
 }
 
-#[derive(Debug, Default)]
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[allow(dead_code)]
 pub struct StructInfo {
     pub name: String,
