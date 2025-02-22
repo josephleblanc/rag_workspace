@@ -30,13 +30,12 @@ pub fn traverse_tree(
     }
 
     // Recursively traverse children
-    let mut cursor = node.walk();
-    for i in 0..node.child_count() {
-        if cursor.goto_first_child() {
+    let mut cursor = node.walk();    
+    if cursor.goto_first_child() {
+        loop {
             traverse_tree(cursor.node(), code, extractors, results);
-            cursor.goto_parent();
+            if !cursor.goto_next_sibling() { break; }
         }
-        cursor.goto_next_sibling();
     }
 }
 
