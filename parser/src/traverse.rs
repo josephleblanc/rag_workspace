@@ -4,7 +4,8 @@ use std::fs;
 use std::path::Path;
 use tree_sitter::{Parser, TreeCursor};
 use walkdir::WalkDir;
-
+use crate::struct_extractor::extract_struct_info;
+use crate::function_extractor::extract_function_info;
 use crate::extract::StructInfo;
 
 pub fn traverse_and_parse_directory(
@@ -107,15 +108,15 @@ pub fn traverse_and_parse_directory(
     Ok(())
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // --- Corrected root_directory path ---
-    let root_directory = Path::new("./example_traverse_target/src"); // Corrected path
+// fn main() -> Result<(), Box<dyn std::error::Error>> {
+//     // --- Corrected root_directory path ---
+//     let root_directory = Path::new("./example_traverse_target/src"); // Corrected path
 
-    let directories_to_ignore = Some(vec!["examples".to_string(), "assets".to_string()]);
-    traverse_and_parse_directory(root_directory, directories_to_ignore)?;
+//     let directories_to_ignore = Some(vec!["examples".to_string(), "assets".to_string()]);
+//     traverse_and_parse_directory(root_directory, directories_to_ignore)?;
 
-    // --- Removed code snippet parsing ---
+//     // --- Removed code snippet parsing ---
 
-    println!("Directory traversal and parsing complete."); // Updated message
-    Ok(())
-}
+//     println!("Directory traversal and parsing complete."); // Updated message
+//     Ok(())
+// }
