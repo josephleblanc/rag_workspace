@@ -19,8 +19,8 @@ pub fn traverse_tree(
     extractors: &[&dyn InfoExtractor], // Use a slice of trait objects
     results: &mut Vec<Box<dyn Any>>, // Store the results
 ) {
-    // Print the node kind for debugging
-    println!("Node Kind: {}", node.kind());
+    // Print the node kind and text for debugging
+    println!("Node Kind: {}, Text: {:?}", node.kind(), node.utf8_text(code.as_bytes()).unwrap());
 
     // Check if any extractor matches the current node
     for extractor in extractors {
