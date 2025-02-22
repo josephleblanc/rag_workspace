@@ -1,45 +1,15 @@
-// In your lib.rs or main.rs
-
 use crate::function_extractor::extract_function_info;
 use crate::struct_extractor::extract_struct_info;
 use std::{any::Any, fs, path::Path};
 use tree_sitter::{Node, Parser};
 use walkdir::WalkDir;
+use std::collections::HashSet;
 
 // Define a trait for extraction
 pub trait InfoExtractor {
     fn extract(&self, node: Node, code: &str) -> Option<Box<dyn Any>>;
     fn node_kind(&self) -> &'static str; // Add a method to identify the node kind
 }
-
-// Generic traversal function
-pub fn traverse_tree(
-    node: Node,
-    code: &str,
-    extractors: &[&dyn InfoExtractor], // Use a slice of trait objects
-    results: &mut Vec<Box<dyn Any>>, // Store the results
-) {
-    // Print the node kind and text for debugging
-    println!("Node Kind: {}, Text: {:?}", node.kind(), node.utf8_text(code.as_bytes()).unwrap());
-
-    // Check if any extractor matches the current node
-    for extractor in extractors {
-        if node.kind() == extractor.node_kind() {
-            if let Some(info) = extractor.extract(node, code) {
-                // Store the extracted info
-                results.push(info);
-            }
-        }
-    }
-
-    // Recursively traverse children
-    let mut cursor = node.walk();    
-    if cursor.goto_first_child() {
-        loop {
-            traverse_tree(cursor.node(), code, extractors, results);
-            if !cursor.goto_next_sibling() { break; }
-        }
-use std::collections::HashSet;
 
 pub fn traverse_tree(
     node: Node,
