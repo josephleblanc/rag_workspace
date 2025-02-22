@@ -32,9 +32,10 @@ pub fn traverse_and_parse_directory(
                     Ok(code) => {
                         // Now using safe Rust API of tree-sitter for parsing
                         let mut parser = Parser::new();
-                        parser
-                            .set_language(&tree_sitter_rust::LANGUAGE.into())
-                            .expect("Error loading Rust grammar");
+                        if let Err(e) = parser.set_language(&tree_sitter_rust::LANGUAGE.into()) {
+                            eprintln!("Error loading Rust grammar: {}", e);
+                            continue;
+                        }
                         let tree = parser.parse(&code, None); // Safe Rust API call
 
                         match tree {
