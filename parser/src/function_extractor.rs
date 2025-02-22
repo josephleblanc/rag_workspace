@@ -9,6 +9,7 @@ pub struct FunctionInfo {
     pub is_pub: bool,
     pub start_position: usize,
     pub end_position: usize,
+    pub file_path: String,
 }
 
 pub fn extract_function_info(node: tree_sitter::Node, code: &str, file_path: String) -> FunctionInfo {

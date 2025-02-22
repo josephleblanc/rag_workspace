@@ -19,6 +19,7 @@ pub struct StructInfo {
     pub fields: Vec<FieldInfo>,
     pub start_position: usize,
     pub end_position: usize,
+    pub file_path: String,
 }
 
 pub fn extract_struct_info(struct_node: Node<'_>, source_code: &str, file_path: String) -> StructInfo {
