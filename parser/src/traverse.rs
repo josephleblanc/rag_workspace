@@ -20,6 +20,7 @@ pub fn traverse_tree(
     results: &mut Vec<Box<dyn Any>>, // Store the results
     node_kinds: &mut HashSet<String>, // Collect node kinds
 ) {
+    println!("Node kind: {}", node.kind());
     // Collect node kinds
     node_kinds.insert(node.kind().to_string());
 

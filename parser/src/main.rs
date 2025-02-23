@@ -28,7 +28,10 @@ struct ExtractedData {
     type_aliases: Vec<TypeAliasInfo>, // Add this line
 }
 
+use std::env;
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    println!("Current directory: {:?}", env::current_dir()?);
     let root_directory = Path::new("../example_traverse_target/src");
 
     let directories_to_ignore = Some(vec!["examples".to_string(), "assets".to_string()]);
