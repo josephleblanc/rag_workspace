@@ -409,4 +409,5 @@
             file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
         ),
     ],
+    impls: [],
 )
