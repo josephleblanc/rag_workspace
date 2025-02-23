@@ -75,7 +75,13 @@ fn main() -> Result<()> {
     let mut file = File::create(output_file_path)?;
     file.write_all(ron_string.as_bytes())?;
 
-    println!("Extracted data saved to extracted_data.ron");
+    println!(
+        "Extracted data saved to extracted_data.ron with {} structs, {} functions, {} type aliases, and {} impls",
+        extracted_data.structs.len(),
+        extracted_data.functions.len(),
+        extracted_data.type_aliases.len(),
+        extracted_data.impls.len()
+    );
 
     println!("Directory parsing complete.");
 
