@@ -69,7 +69,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         } else if let Some(type_alias_info) = result.downcast_ref::<TypeAliasInfo>() {
             println!("  Found type alias: {:?}", type_alias_info);
             extracted_data.type_aliases.push(type_alias_info.clone());
-        } else {
+        }
+         else {
             println!("  Unknown type of info extracted");
         }
     }

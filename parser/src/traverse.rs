@@ -46,7 +46,7 @@ pub fn traverse_tree(
     } // Closing brace for if cursor.goto_first_child()
 }
 
-fn extract_type_alias_info(node: Node<'_>, source_code: &str, file_path: String) -> TypeAliasInfo {
+fn extract_type_alias_info(node: Node<'_>, source_code: &str, file_path: String) -> Box<dyn Any> {
     let mut type_alias_info = TypeAliasInfo {
         name: String::new(),
         aliased_type: String::new(),
@@ -84,7 +84,7 @@ fn extract_type_alias_info(node: Node<'_>, source_code: &str, file_path: String)
         }
     }
 
-    type_alias_info
+    Box::new(type_alias_info)
 }
 
 pub fn traverse_and_parse_directory(
@@ -154,7 +154,7 @@ pub struct TypeAliasInfoExtractor {}
 impl InfoExtractor for TypeAliasInfoExtractor {
     fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
         if node.kind() == "type_item" {
-            Some(Box::new(extract_type_alias_info(node, code, file_path)))
+            Some(extract_type_alias_info(node, code, file_path))
         } else {
             None
         }
