@@ -12,4 +12,5 @@ tree-sitter-rust = "0.23"
 walkdir = "2"
 ron = "0.8"
 serde = { version = "1", features = ["derive"] }
+ron = "0.8"
 anyhow = "1.0.96"

@@ -11,27 +11,21 @@ mod impl_extractor;
 mod struct_extractor;
 mod traverse;
 
-use extract::{ImplInfo, TypeAliasInfo};
+use std::{env, fs::File, io::Write, path::Path};
+
+use anyhow::Result;
+use ron::ser::PrettyConfig;
+use serde::{Deserialize, Serialize};
+use tree_sitter::Parser;
+
+use extract::{ImplInfo, StructInfo, TypeAliasInfo, ExtractedData};
 use function_extractor::FunctionInfo;
-use std::collections::HashSet;
-use struct_extractor::StructInfo;
 use traverse::{
     traverse_and_parse_directory, FunctionInfoExtractor, ImplInfoExtractor, InfoExtractor,
     StructInfoExtractor, TypeAliasInfoExtractor,
 };
 
-// Define a struct to hold all extracted information
-#[derive(Serialize, Deserialize, Debug)]
-struct ExtractedData {
-    structs: Vec<StructInfo>,
-    functions: Vec<FunctionInfo>,
-    type_aliases: Vec<TypeAliasInfo>,
-    impls: Vec<ImplInfo>,
-}
-
-use std::env;
-
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<()> {
     println!("Current directory: {:?}", env::current_dir()?);
     let root_directory = Path::new("../example_traverse_target/src");
 
@@ -55,12 +49,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     // Process the results
     println!("\n--- Extracted Information ---");
-    let mut extracted_data = ExtractedData {
-        structs: Vec::new(),
-        functions: Vec::new(),
-        type_aliases: Vec::new(),
-        impls: Vec::new(),
-    };
+    let mut extracted_data = ExtractedData::default();
 
     for result in results {
         if let Some(struct_info) = result.downcast_ref::<StructInfo>() {
@@ -82,8 +71,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("--- End Extracted Information ---");
 
     // Serialize to RON and save to file
-    let ron_string =
-        ron::ser::to_string_pretty(&extracted_data, ron::ser::PrettyConfig::default())?;
+    let ron_string = ron::ser::to_string_pretty(
+        &extracted_data,
+        ron::ser::PrettyConfig::default(),
+    )?;
     let mut file = File::create("./data/extracted_data.ron")?;
     file.write_all(ron_string.as_bytes())?;
 
@@ -125,17 +116,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         &type_alias_extractor,
         &impl_extractor,
     ];
-    let mut node_kinds: HashSet<String> = HashSet::new();
+    // let mut node_kinds: HashSet<String> = HashSet::new();
     traverse::traverse_tree(
         root_node,
         code_snippet,
         &extractors,
         "code_snippet.rs".to_string(),
         &mut results,
-        &mut node_kinds,
+        // &mut node_kinds,
+        &mut std::collections::HashSet::new(),
     );
 
-    println!("Unique node kinds (single file): {:?}", node_kinds);
+    // println!("Unique node kinds (single file): {:?}", node_kinds);
 
     for result in results {
         if let Some(struct_info) = result.downcast_ref::<StructInfo>() {
