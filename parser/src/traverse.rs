@@ -115,24 +115,6 @@ impl InfoExtractor for ImplInfoExtractor {
 
     fn node_kind(&self) -> &'static str {
         "impl_item"
-    }
-}
-
-pub struct ImplInfoExtractor {}
-
-impl InfoExtractor for ImplInfoExtractor {
-    fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
-        if node.kind() == "impl_item" {
-            Some(Box::new(extract_impl_info(node, code, file_path)))
-        } else {
-            None
-        }
-    }
-
-    fn node_kind(&self) -> &'static str {
-        "impl_item"
-    }
-}
 
 pub fn traverse_and_parse_directory(
     root_dir: &Path,
