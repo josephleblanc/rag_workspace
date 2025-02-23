@@ -71,7 +71,7 @@ fn main() -> Result<()> {
     // Serialize to RON and save to file
     let ron_string =
         ron::ser::to_string_pretty(&extracted_data, ron::ser::PrettyConfig::default())?;
-    let output_file_path = env::current_dir()?.join("data/extracted_data.ron");
+    let output_file_path = env::current_dir()?.join("data").join("extracted_data.ron");
     let mut file = File::create(output_file_path)?;
     file.write_all(ron_string.as_bytes())?;
 
