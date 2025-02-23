@@ -15,7 +15,7 @@ mod traverse;
 use anyhow::Result;
 // use serde::{Deserialize, Serialize}; // Removed as they are not directly used here
 // use tree_sitter::Parser; // Removed as it is not directly used here
-+use std::collections::HashMap;
+use std::collections::HashMap;
 
 use extract::{ExtractedData, FunctionInfo, ImplInfo, StructInfo, TypeAliasInfo}; // Import FunctionInfo from extract
 use traverse::{
