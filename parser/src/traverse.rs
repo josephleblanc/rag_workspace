@@ -4,8 +4,11 @@ use crate::struct_extractor::extract_struct_info;
 use crate::impl_extractor::extract_impl_info;
 use std::collections::HashSet;
 use std::{any::Any, fs, path::Path};
+
 use tree_sitter::{Node, Parser};
 use walkdir::WalkDir;
+
+use anyhow::{Context, Result};
 
 // Define a trait for extraction
 pub trait InfoExtractor {
@@ -122,7 +125,7 @@ pub fn traverse_and_parse_directory(
     root_dir: &Path,
     ignored_directories: Option<Vec<String>>,
     extractors: Vec<&dyn InfoExtractor>, // Take a Vec of trait objects
-) -> Result<Vec<Box<dyn Any>>, Box<dyn std::error::Error>> {
+) -> Result<Vec<Box<dyn Any>>> {
     let mut all_results: Vec<Box<dyn Any>> = Vec::new();
 
     for entry in WalkDir::new(root_dir).into_iter().filter_map(|e| e.ok()) {
@@ -142,46 +145,37 @@ pub fn traverse_and_parse_directory(
         if path.is_file() {
             if path.extension().map_or(false, |ext| ext == "rs") {
                 println!("Parsing file: {}", path.display());
-                match fs::read_to_string(path) {
-                    Ok(code) => {
-                        let mut parser = Parser::new();
-                        if let Err(e) = parser.set_language(&tree_sitter_rust::LANGUAGE.into()) {
-                            println!("Error loading Rust grammar: {}", e);
-                            continue;
-                        }
-                        let tree = parser.parse(&code, None);
+                let code = fs::read_to_string(path)
+                    .with_context(|| format!("Failed to read file '{}'", path.display()))?;
 
-                        match tree {
-                            Some(syntax_tree) => {
-                                // Convert the relative path to an absolute path
-                                let absolute_path = path.canonicalize().map_err(|e| {
-                                    format!(
-                                        "Failed to canonicalize path: {} - {}",
-                                        path.display(),
-                                        e
-                                    )
-                                })?;
-                                let root_node = syntax_tree.root_node();
-                                let mut results: Vec<Box<dyn Any>> = Vec::new(); // Results for this file
-                                let mut node_kinds: HashSet<String> = HashSet::new(); // Collect node kinds
-                                traverse_tree(
-                                    root_node,
-                                    &code,
-                                    &extractors,
-                                    absolute_path.display().to_string(),
-                                    &mut results,
-                                    &mut node_kinds,
-                                );
-                                println!("Unique node kinds: {:?}", node_kinds); // Print node kinds
-                                all_results.extend(results); // Accumulate results from all files
-                            }
-                            None => {
-                                println!("Parsing failed for file: {}", path.display());
-                            }
-                        }
+                let mut parser = Parser::new();
+                parser
+                    .set_language(&tree_sitter_rust::LANGUAGE.into())
+                    .context("Error loading Rust grammar")?;
+                let tree = parser.parse(&code, None);
+
+                match tree {
+                    Some(syntax_tree) => {
+                        // Convert the relative path to an absolute path
+                        let absolute_path = path
+                            .canonicalize()
+                            .with_context(|| format!("Failed to canonicalize path: {}", path.display()))?;
+                        let root_node = syntax_tree.root_node();
+                        let mut results: Vec<Box<dyn Any>> = Vec::new(); // Results for this file
+                        let mut node_kinds: HashSet<String> = HashSet::new(); // Collect node kinds
+                        traverse_tree(
+                            root_node,
+                            &code,
+                            &extractors,
+                            absolute_path.display().to_string(),
+                            &mut results,
+                            &mut node_kinds,
+                        );
+                        println!("Unique node kinds: {:?}", node_kinds); // Print node kinds
+                        all_results.extend(results); // Accumulate results from all files
                     }
-                    Err(e) => {
-                        println!("Error reading file '{}': {}", path.display(), e);
+                    None => {
+                        println!("Parsing failed for file: {}", path.display());
                     }
                 }
             }
