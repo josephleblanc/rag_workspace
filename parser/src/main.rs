@@ -1,5 +1,6 @@
 // src/main.rs
 use serde::{Deserialize, Serialize};
+use std::env;
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
@@ -11,14 +12,12 @@ mod impl_extractor;
 mod struct_extractor;
 mod traverse;
 
-use std::{env, fs::File, io::Write, path::Path};
-
 use anyhow::Result;
 use ron::ser::PrettyConfig;
 // use serde::{Deserialize, Serialize}; // Removed as they are not directly used here
 // use tree_sitter::Parser; // Removed as it is not directly used here
 
-use extract::{ImplInfo, StructInfo, TypeAliasInfo, ExtractedData, FunctionInfo}; // Import FunctionInfo from extract
+use extract::{ExtractedData, FunctionInfo, ImplInfo, StructInfo, TypeAliasInfo}; // Import FunctionInfo from extract
 use traverse::{
     traverse_and_parse_directory, FunctionInfoExtractor, ImplInfoExtractor, InfoExtractor,
     StructInfoExtractor, TypeAliasInfoExtractor,
@@ -70,10 +69,8 @@ fn main() -> Result<()> {
     println!("--- End Extracted Information ---");
 
     // Serialize to RON and save to file
-    let ron_string = ron::ser::to_string_pretty(
-        &extracted_data,
-        ron::ser::PrettyConfig::default(),
-    )?;
+    let ron_string =
+        ron::ser::to_string_pretty(&extracted_data, ron::ser::PrettyConfig::default())?;
     let mut file = File::create("./data/extracted_data.ron")?;
     file.write_all(ron_string.as_bytes())?;
 
