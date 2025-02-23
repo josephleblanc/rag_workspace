@@ -15,11 +15,10 @@ use std::{env, fs::File, io::Write, path::Path};
 
 use anyhow::Result;
 use ron::ser::PrettyConfig;
-use serde::{Deserialize, Serialize};
-use tree_sitter::Parser;
+// use serde::{Deserialize, Serialize}; // Removed as they are not directly used here
+// use tree_sitter::Parser; // Removed as it is not directly used here
 
-use extract::{ImplInfo, StructInfo, TypeAliasInfo, ExtractedData};
-use function_extractor::FunctionInfo;
+use extract::{ImplInfo, StructInfo, TypeAliasInfo, ExtractedData, FunctionInfo}; // Import FunctionInfo from extract
 use traverse::{
     traverse_and_parse_directory, FunctionInfoExtractor, ImplInfoExtractor, InfoExtractor,
     StructInfoExtractor, TypeAliasInfoExtractor,

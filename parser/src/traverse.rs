@@ -130,7 +130,7 @@ impl InfoExtractor for ImplInfoExtractor {
 pub fn traverse_and_parse_directory(
     root_dir: &Path,
     ignored_directories: Option<Vec<String>>,
-    extractors: Vec<&dyn InfoExtractor>, // Take a Vec of trait objects
+    _extractors: Vec<&dyn InfoExtractor>, // Take a Vec of trait objects
 ) -> Result<Vec<Box<dyn Any>>> {
     let mut all_results: Vec<Box<dyn Any>> = Vec::new();
     let impl_extractor = ImplInfoExtractor {}; // Create an instance of ImplInfoExtractor
