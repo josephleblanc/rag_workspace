@@ -74,6 +74,7 @@ fn main() -> Result<()> {
     }
 
     let output_file_path = env::current_dir()?.join("data").join("extracted_data.ron");
+    println!("Output file path: {}", output_file_path.display());
     let mut file = File::create(&output_file_path)?;
     file.write_all(ron_string.as_bytes())?;
 
