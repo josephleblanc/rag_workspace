@@ -32,8 +32,9 @@ pub fn extract_impl_info(
     }
 
     // Check for visibility (pub keyword)
-    if let Some(visibility_node) = impl_node.child_by_field_name("visibility") {
-        if visibility_node.kind() == "pub" {
+   if let Some(visibility_node) = impl_node.child_by_field_name("visibility_modifier") {
+        if visibility_node.utf8_text(source_code.as_bytes()).unwrap_or("").trim() == "pub"
+        {
             impl_info.is_pub = true;
         }
     }

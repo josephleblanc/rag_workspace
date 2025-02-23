@@ -53,18 +53,9 @@ pub fn extract_struct_info(
     struct_info.start_position = start_position;
 
     // 2. Check for visibility (pub) - Revised method: Iterate children and check kind (same as before)
-    let mut cursor = struct_node.walk();
-    if cursor.goto_first_child() {
-        loop {
-            let child_node = cursor.node();
-            if child_node.kind() == "visibility_modifier" {
-                struct_info.is_pub = true;
-                break;
-            }
-            if !cursor.goto_next_sibling() {
-                break;
-            }
-        }
+    if let Some(visibility_node) = struct_node.child_by_field_name("visibility_modifier") {
+        struct_info.is_pub =
+            visibility_node.utf8_text(source_code.as_bytes()).unwrap_or("").trim() == "pub";
     }
 
     // 3. Extract struct name (should still work - same as before)
