@@ -12,7 +12,11 @@ pub struct FunctionInfo {
     pub file_path: String,
 }
 
-pub fn extract_function_info(node: tree_sitter::Node, code: &str, file_path: String) -> FunctionInfo {
+pub fn extract_function_info(
+    node: tree_sitter::Node,
+    code: &str,
+    file_path: String,
+) -> FunctionInfo {
     let mut function_info = FunctionInfo::default();
 
     function_info.start_position = node.start_byte();
@@ -41,10 +45,14 @@ pub fn extract_function_info(node: tree_sitter::Node, code: &str, file_path: Str
                             let child_node = param_child_cursor.node();
                             match child_node.kind() {
                                 "identifier" => {
-                                    name = String::from(child_node.utf8_text(code.as_bytes()).unwrap());
+                                    name = String::from(
+                                        child_node.utf8_text(code.as_bytes()).unwrap(),
+                                    );
                                 }
                                 "type_identifier" => {
-                                    type_name = String::from(child_node.utf8_text(code.as_bytes()).unwrap());
+                                    type_name = String::from(
+                                        child_node.utf8_text(code.as_bytes()).unwrap(),
+                                    );
                                 }
                                 _ => {}
                             }
@@ -66,8 +74,9 @@ pub fn extract_function_info(node: tree_sitter::Node, code: &str, file_path: Str
 
     // Extract return type
     if let Some(return_type_node) = node.child_by_field_name("return_type") {
-        function_info.return_type =
-            Some(String::from(return_type_node.utf8_text(code.as_bytes()).unwrap()));
+        function_info.return_type = Some(String::from(
+            return_type_node.utf8_text(code.as_bytes()).unwrap(),
+        ));
     }
 
     // Check for visibility (pub)

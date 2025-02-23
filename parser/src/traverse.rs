@@ -1,8 +1,8 @@
-use std::collections::HashSet;
 use crate::extract::TypeAliasInfo;
 use crate::function_extractor::extract_function_info;
-use crate::struct_extractor::extract_struct_info;
 use crate::impl_extractor::extract_impl_info;
+use crate::struct_extractor::extract_struct_info;
+use std::collections::HashSet;
 use std::{any::Any, fs, path::Path};
 use tree_sitter::{Node, Parser};
 use walkdir::WalkDir;
@@ -18,7 +18,7 @@ pub fn traverse_tree(
     code: &str,
     extractors: &[&dyn InfoExtractor], // Use a slice of trait objects
     file_path: String,
-    results: &mut Vec<Box<dyn Any>>, // Store the results
+    results: &mut Vec<Box<dyn Any>>,  // Store the results
     node_kinds: &mut HashSet<String>, // Collect node kinds
 ) {
     println!("Node kind: {}", node.kind());
@@ -39,7 +39,14 @@ pub fn traverse_tree(
     let mut cursor = node.walk();
     if cursor.goto_first_child() {
         loop {
-            traverse_tree(cursor.node(), code, extractors, file_path.clone(), results, node_kinds);
+            traverse_tree(
+                cursor.node(),
+                code,
+                extractors,
+                file_path.clone(),
+                results,
+                node_kinds,
+            );
             if !cursor.goto_next_sibling() {
                 break;
             }
@@ -61,7 +68,11 @@ fn extract_type_alias_info(node: Node<'_>, source_code: &str, file_path: String)
     let mut cursor = node.walk();
 
     for child in node.children(&mut cursor) {
-        println!("Child Kind: {}, Text: {:?}", child.kind(), child.utf8_text(source_code.as_bytes()));
+        println!(
+            "Child Kind: {}, Text: {:?}",
+            child.kind(),
+            child.utf8_text(source_code.as_bytes())
+        );
         match child.kind() {
             "visibility_modifier" => {
                 println!("  Visibility Modifier found");
@@ -73,11 +84,14 @@ fn extract_type_alias_info(node: Node<'_>, source_code: &str, file_path: String)
             }
             "type" => {
                 println!("  Type found");
-                type_alias_info.aliased_type = child.utf8_text(source_code.as_bytes()).unwrap().to_string();
+                type_alias_info.aliased_type =
+                    child.utf8_text(source_code.as_bytes()).unwrap().to_string();
             }
             "attribute" => {
                 println!("  Attribute found");
-                type_alias_info.attributes.push(child.utf8_text(source_code.as_bytes()).unwrap().to_string());
+                type_alias_info
+                    .attributes
+                    .push(child.utf8_text(source_code.as_bytes()).unwrap().to_string());
             }
             _ => {
                 println!("  Other kind found: {}", child.kind());
@@ -141,12 +155,23 @@ pub fn traverse_and_parse_directory(
                             Some(syntax_tree) => {
                                 // Convert the relative path to an absolute path
                                 let absolute_path = path.canonicalize().map_err(|e| {
-                                    format!("Failed to canonicalize path: {} - {}", path.display(), e)
+                                    format!(
+                                        "Failed to canonicalize path: {} - {}",
+                                        path.display(),
+                                        e
+                                    )
                                 })?;
                                 let root_node = syntax_tree.root_node();
                                 let mut results: Vec<Box<dyn Any>> = Vec::new(); // Results for this file
                                 let mut node_kinds: HashSet<String> = HashSet::new(); // Collect node kinds
-                                traverse_tree(root_node, &code, &extractors, absolute_path.display().to_string(), &mut results, &mut node_kinds);
+                                traverse_tree(
+                                    root_node,
+                                    &code,
+                                    &extractors,
+                                    absolute_path.display().to_string(),
+                                    &mut results,
+                                    &mut node_kinds,
+                                );
                                 println!("Unique node kinds: {:?}", node_kinds); // Print node kinds
                                 all_results.extend(results); // Accumulate results from all files
                             }

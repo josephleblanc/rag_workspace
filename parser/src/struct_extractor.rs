@@ -1,5 +1,5 @@
-use tree_sitter::Node;
 use serde::{Deserialize, Serialize};
+use tree_sitter::Node;
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[allow(dead_code)]
@@ -22,7 +22,11 @@ pub struct StructInfo {
     pub file_path: String,
 }
 
-pub fn extract_struct_info(struct_node: Node<'_>, source_code: &str, file_path: String) -> StructInfo {
+pub fn extract_struct_info(
+    struct_node: Node<'_>,
+    source_code: &str,
+    file_path: String,
+) -> StructInfo {
     let mut struct_info = StructInfo::default();
 
     // Initialize end position (end position remains the same - end of struct definition)
@@ -35,10 +39,8 @@ pub fn extract_struct_info(struct_node: Node<'_>, source_code: &str, file_path: 
     while let Some(sibling) = current_sibling {
         match sibling.kind() {
             "line_comment" | "block_comment" => {
-                let comment_text = String::from(sibling
-                    .utf8_text(source_code.as_bytes())
-                    .unwrap()
-                    .trim());
+                let comment_text =
+                    String::from(sibling.utf8_text(source_code.as_bytes()).unwrap().trim());
                 if struct_info.doc_comment.is_none() {
                     // Currently storing only the *first* doc comment encountered (closest to struct)
                     struct_info.doc_comment = Some(comment_text);
@@ -46,10 +48,8 @@ pub fn extract_struct_info(struct_node: Node<'_>, source_code: &str, file_path: 
                 start_position = sibling.start_byte();
             }
             "attribute_item" => {
-                let attribute_text = String::from(sibling
-                    .utf8_text(source_code.as_bytes())
-                    .unwrap()
-                    .trim());
+                let attribute_text =
+                    String::from(sibling.utf8_text(source_code.as_bytes()).unwrap().trim());
                 struct_info.attributes.insert(0, attribute_text);
                 start_position = sibling.start_byte();
             }
@@ -76,9 +76,7 @@ pub fn extract_struct_info(struct_node: Node<'_>, source_code: &str, file_path: 
 
     // 3. Extract struct name (should still work - same as before)
     if let Some(name_node) = struct_node.child_by_field_name("name") {
-        struct_info.name = String::from(name_node
-            .utf8_text(source_code.as_bytes())
-            .unwrap());
+        struct_info.name = String::from(name_node.utf8_text(source_code.as_bytes()).unwrap());
     }
 
     // 4. Extract fields (should still work - same as before)
@@ -135,9 +133,7 @@ fn extract_field_info(field_node: Node<'_>, source_code: &str) -> FieldInfo {
 
     // 3. Extract field type (same as before)
     if let Some(type_node) = field_node.child_by_field_name("type") {
-        field_info.type_name = String::from(type_node
-            .utf8_text(source_code.as_bytes())
-            .unwrap());
+        field_info.type_name = String::from(type_node.utf8_text(source_code.as_bytes()).unwrap());
     }
 
     field_info

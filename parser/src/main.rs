@@ -1,5 +1,7 @@
 // src/main.rs
 use serde::{Deserialize, Serialize};
+use std::fs::File;
+use std::io::Write;
 use std::path::Path;
 use tree_sitter::Parser;
 
@@ -83,7 +85,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Serialize to RON and save to file
     let ron_string =
         ron::ser::to_string_pretty(&extracted_data, ron::ser::PrettyConfig::default())?;
-    let mut file = File::create("extracted_data.ron")?;
+    let mut file = File::create("~/code/rag_workspace/parser/data/extracted_data.ron")?;
     file.write_all(ron_string.as_bytes())?;
 
     println!("Extracted data saved to extracted_data.ron");
