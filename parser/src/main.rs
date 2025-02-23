@@ -87,9 +87,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     "#;
 
     let mut parser = Parser::new();
-    parser
-        .set_language(&tree_sitter_rust::LANGUAGE.into())
-        .expect("Error loading Rust grammar");
+    if let Err(e) = parser.set_language(&tree_sitter_rust::LANGUAGE.into()) {
+        eprintln!("Error loading Rust grammar: {}", e);
+        return Err(e.into());
+    }
 
     let tree = parser.parse(code_snippet, None).unwrap();
     let root_node = tree.root_node();
