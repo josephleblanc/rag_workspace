@@ -3,6 +3,7 @@ use crate::function_extractor::extract_function_info;
 use crate::struct_extractor::extract_struct_info;
 use crate::impl_extractor::extract_impl_info;
 use std::collections::HashSet;
+use anyhow::Result;
 use std::{any::Any, fs, path::Path};
 
 use tree_sitter::{Node, Parser};
