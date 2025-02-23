@@ -246,7 +246,10 @@ pub struct FunctionInfoExtractor {}
 impl InfoExtractor for FunctionInfoExtractor {
     fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
         if node.kind() == "function_item" {
-            Some(Box::new(extract_function_info(node, code, file_path)))
+            match extract_function_info(node, code, file_path) {
+                Ok(function_info) => Some(Box::new(function_info)),
+                Err(_) => None, // Handle the error case
+            }
         } else {
             None
         }
