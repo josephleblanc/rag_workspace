@@ -72,11 +72,12 @@ fn main() -> Result<()> {
     let ron_string =
         ron::ser::to_string_pretty(&extracted_data, ron::ser::PrettyConfig::default())?;
     let output_file_path = env::current_dir()?.join("data").join("extracted_data.ron");
-    let mut file = File::create(output_file_path)?;
+    let mut file = File::create(&output_file_path)?;
     file.write_all(ron_string.as_bytes())?;
 
     println!(
-        "Extracted data saved to extracted_data.ron with {} structs, {} functions, {} type aliases, and {} impls",
+        "Extracted data saved to {} with {} structs, {} functions, {} type aliases, and {} impls",
+        output_file_path.display(),
         extracted_data.structs.len(),
         extracted_data.functions.len(),
         extracted_data.type_aliases.len(),
