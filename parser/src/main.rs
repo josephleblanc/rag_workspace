@@ -87,7 +87,6 @@ fn main() -> Result<()> {
     println!("Directory parsing complete.");
 
     // --- Single file parsing section ---
-    println!("\n--- Single File Parsing ---");
     let code_snippet = r#"
         /// A [`Handle`] to the [`AnimationGraph`] to be used by the [`AnimationPlayer`](crate::AnimationPlayer) on the same entity.
         #[derive(Component, Clone, Debug, Default, Deref, DerefMut, Reflect, PartialEq, Eq, From)]
@@ -103,6 +102,36 @@ fn main() -> Result<()> {
             return "Hello World".to_string();
         }
     "#;
+
+    let mut extracted_data = extract_from_code_snippet(code_snippet, extracted_data)?;
+
+    // Serialize to RON and save to file
+    let ron_string =
+        ron::ser::to_string_pretty(&extracted_data, ron::ser::PrettyConfig::default())?;
+    let output_file_path = env::current_dir()?.join("data").join("extracted_data.ron");
+    let mut file = File::create(&output_file_path)?;
+    file.write_all(ron_string.as_bytes())?;
+
+    println!(
+        "Extracted data saved to {} with {} structs, {} functions, {} type aliases, and {} impls",
+        output_file_path.display(),
+        extracted_data.structs.len(),
+        extracted_data.functions.len(),
+        extracted_data.type_aliases.len(),
+        extracted_data.impls.len()
+    );
+
+    println!("Directory parsing complete.");
+    Ok(())
+}
+
+fn extract_from_code_snippet(code_snippet: &str, mut extracted_ ExtractedData) -> Result<ExtractedData> {
+    println!("\n--- Single File Parsing ---");
+
+    let struct_extractor = StructInfoExtractor {};
+    let function_extractor = FunctionInfoExtractor {};
+    let type_alias_extractor = TypeAliasInfoExtractor {};
+    let impl_extractor = ImplInfoExtractor {};
 
     let mut parser = Parser::new();
     if let Err(e) = parser.set_language(&tree_sitter_rust::LANGUAGE.into()) {
@@ -161,23 +190,5 @@ fn main() -> Result<()> {
             extracted_data.impls.push(impl_info.clone());
         }
     }
-
-    // Serialize to RON and save to file
-    let ron_string =
-        ron::ser::to_string_pretty(&extracted_data, ron::ser::PrettyConfig::default())?;
-    let output_file_path = env::current_dir()?.join("data").join("extracted_data.ron");
-    let mut file = File::create(&output_file_path)?;
-    file.write_all(ron_string.as_bytes())?;
-
-    println!(
-        "Extracted data saved to {} with {} structs, {} functions, {} type aliases, and {} impls",
-        output_file_path.display(),
-        extracted_data.structs.len(),
-        extracted_data.functions.len(),
-        extracted_data.type_aliases.len(),
-        extracted_data.impls.len()
-    );
-
-    println!("Directory parsing complete.");
-    Ok(())
+    Ok(extracted_data)
 }
