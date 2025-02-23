@@ -4,8 +4,8 @@ use tree_sitter::Parser;
 
 mod extract;
 mod function_extractor;
-mod struct_extractor;
 mod impl_extractor;
+mod struct_extractor;
 mod traverse;
 
 use extract::TypeAliasInfo;

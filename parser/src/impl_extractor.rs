@@ -30,7 +30,10 @@ pub fn extract_impl_info(impl_node: Node<'_>, source_code: &str, file_path: Stri
 
     // Extract the name of the type being implemented
     if let Some(type_node) = impl_node.child_by_field_name("type") {
-        impl_info.name = type_node.utf8_text(source_code.as_bytes()).unwrap().to_string();
+        impl_info.name = type_node
+            .utf8_text(source_code.as_bytes())
+            .unwrap()
+            .to_string();
     }
 
     // Check for visibility (pub keyword)
