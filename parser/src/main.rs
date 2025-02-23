@@ -7,6 +7,7 @@ mod function_extractor;
 mod struct_extractor;
 mod traverse;
 
+use extract::TypeAliasInfo;
 use function_extractor::FunctionInfo;
 use std::collections::HashSet;
 use struct_extractor::StructInfo;
@@ -14,7 +15,6 @@ use traverse::{
     traverse_and_parse_directory, FunctionInfoExtractor, InfoExtractor, StructInfoExtractor,
     TypeAliasInfoExtractor,
 };
-use extract::TypeAliasInfo;
 
 use serde::{Deserialize, Serialize};
 use std::fs::File;
@@ -69,15 +69,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         } else if let Some(type_alias_info) = result.downcast_ref::<TypeAliasInfo>() {
             println!("  Found type alias: {:?}", type_alias_info);
             extracted_data.type_aliases.push(type_alias_info.clone());
-        }
-        else {
+        } else {
             println!("  Unknown type of info extracted");
         }
     }
     println!("--- End Extracted Information ---");
 
     // Serialize to RON and save to file
-    let ron_string = ron::ser::to_string_pretty(&extracted_data, ron::ser::PrettyConfig::default())?;
+    let ron_string =
+        ron::ser::to_string_pretty(&extracted_data, ron::ser::PrettyConfig::default())?;
     let mut file = File::create("extracted_data.ron")?;
     file.write_all(ron_string.as_bytes())?;
 
@@ -96,6 +96,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         struct AnotherStruct {
             field1: i32,
         }
+        type TestPoint = (u8, u8);
 
         fn hello_world() -> String {
             return "Hello World".to_string();

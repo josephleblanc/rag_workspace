@@ -24,6 +24,18 @@ pub struct StructInfo {
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[allow(dead_code)]
+pub struct TypeAliasInfo {
+    pub name: String,
+    pub aliased_type: String,
+    pub is_pub: bool,
+    pub attributes: Vec<String>,
+    pub start_position: usize,
+    pub end_position: usize,
+    pub file_path: String,
+}
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[allow(dead_code)]
 pub struct FunctionInfo {
     pub name: String,
     pub parameters: Vec<(String, String)>,

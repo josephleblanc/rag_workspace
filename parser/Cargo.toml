@@ -10,3 +10,5 @@ cc = "*"
 tree-sitter = { version = "0.24", features = ["std"] }
 tree-sitter-rust = "0.23"
 walkdir = "2"
+ron = "0.8"
+serde = { version = "1", features = ["derive"] }

@@ -9,6 +9,9 @@ use bevy::{
 
 mod stepping;
 
+// Adding simple type alias for testing parser detection
+type Point = (u8, u8);
+
 // These constants are defined in `Transform` units.
 // Using the default 2D camera they correspond 1:1 with screen pixels.
 const PADDLE_SIZE: Vec2 = Vec2::new(120.0, 20.0);
@@ -118,6 +121,8 @@ enum WallLocation {
 impl WallLocation {
     /// Location of the *center* of the wall, used in `transform.translation()`
     fn position(&self) -> Vec2 {
+        // following line for testing type alias parser detection
+        let _point: Point = (1, 2);
         match self {
             WallLocation::Left => Vec2::new(LEFT_WALL, 0.),
             WallLocation::Right => Vec2::new(RIGHT_WALL, 0.),
