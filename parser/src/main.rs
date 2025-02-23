@@ -133,7 +133,7 @@ fn main() -> Result<()> {
 
     // println!("Unique node kinds (single file): {:?}", node_kinds);
 
-    for result in results {
+    for result in &results {
         if let Some(struct_info) = result.downcast_ref::<StructInfo>() {
             println!("  Found struct: {:?}", struct_info);
         } else if let Some(function_info) = result.downcast_ref::<FunctionInfo>() {
