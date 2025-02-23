@@ -4,7 +4,6 @@ use std::env;
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
-use tree_sitter::Parser;
 
 mod extract;
 mod function_extractor;
@@ -13,7 +12,6 @@ mod struct_extractor;
 mod traverse;
 
 use anyhow::Result;
-use ron::ser::PrettyConfig;
 // use serde::{Deserialize, Serialize}; // Removed as they are not directly used here
 // use tree_sitter::Parser; // Removed as it is not directly used here
 
@@ -51,19 +49,15 @@ fn main() -> Result<()> {
 
     for result in results {
         if let Some(struct_info) = result.downcast_ref::<StructInfo>() {
-            println!("  Found struct: {:?}", struct_info);
             extracted_data.structs.push(struct_info.clone());
         } else if let Some(function_info) = result.downcast_ref::<FunctionInfo>() {
-            println!("  Found function: {:?}", function_info);
             extracted_data.functions.push(function_info.clone());
         } else if let Some(type_alias_info) = result.downcast_ref::<TypeAliasInfo>() {
-            println!("  Found type alias: {:?}", type_alias_info);
             extracted_data.type_aliases.push(type_alias_info.clone());
         } else if let Some(impl_info) = result.downcast_ref::<ImplInfo>() {
-            println!("  Found impl: {:?}", impl_info);
             extracted_data.impls.push(impl_info.clone());
         } else {
-            println!("  Unknown type of info extracted");
+            // println!("  Unknown type of info extracted");
         }
     }
     println!("--- End Extracted Information ---");
@@ -86,98 +80,5 @@ fn main() -> Result<()> {
 
     println!("Directory parsing complete.");
 
-    // --- Single file parsing section ---
-    let code_snippet = r#"
-        /// A [`Handle`] to the [`AnimationGraph`] to be used by the [`AnimationPlayer`](crate::AnimationPlayer) on the same entity.
-        #[derive(Component, Clone, Debug, Default, Deref, DerefMut, Reflect, PartialEq, Eq, From)]
-        #[reflect(Component, Default)]
-        pub struct AnimationGraphHandle(pub Handle<AnimationGraph>);
-
-        struct AnotherStruct {
-            field1: i32,
-        }
-        type TestPoint = (u8, u8);
-
-        fn hello_world() -> String {
-            return "Hello World".to_string();
-        }
-    "#;
-
-    let extracted_data = extract_from_code_snippet(code_snippet, extracted_data)?;
-
-    Ok(extracted_data)
-}
-
-fn extract_from_code_snippet(code_snippet: &str, extracted_ ExtractedData) -> Result<ExtractedData> {
-    println!("\n--- Single File Parsing ---");
-
-    let struct_extractor = StructInfoExtractor {};
-    let function_extractor = FunctionInfoExtractor {};
-    let type_alias_extractor = TypeAliasInfoExtractor {};
-    let impl_extractor = ImplInfoExtractor {};
-
-    let mut parser = Parser::new();
-    if let Err(e) = parser.set_language(&tree_sitter_rust::LANGUAGE.into()) {
-        eprintln!("Error loading Rust grammar: {}", e);
-        return Err(e.into());
-    }
-
-    let tree = parser.parse(code_snippet, None);
-    let root_node = match tree {
-        Some(tree) => tree.root_node(),
-        None => {
-            eprintln!("Failed to parse code snippet.");
-            return Err(anyhow::anyhow!("Failed to parse code snippet."));
-        }
-    };
-
-    let mut results: Vec<Box<dyn std::any::Any>> = Vec::new();
-    let extractors: Vec<&dyn InfoExtractor> = vec![
-        &struct_extractor,
-        &function_extractor,
-        &type_alias_extractor,
-        &impl_extractor,
-    ];
-    // let mut node_kinds: HashSet<String> = HashSet::new();
-    traverse::traverse_tree(
-        root_node,
-        code_snippet,
-        &extractors,
-        "code_snippet.rs".to_string(),
-        &mut results,
-        // &mut node_kinds,
-        &mut std::collections::HashSet::new(),
-    );
-
-    // println!("Unique node kinds (single file): {:?}", node_kinds);
-
-    for result in &results {
-        if let Some(struct_info) = result.downcast_ref::<StructInfo>() {
-            println!("  Found struct: {:?}", struct_info);
-        } else if let Some(function_info) = result.downcast_ref::<FunctionInfo>() {
-            println!("  Found function: {:?}", function_info);
-        } else if let Some(type_alias_info) = result.downcast_ref::<TypeAliasInfo>() {
-            println!("  Found type alias: {:?}", type_alias_info);
-        } else if let Some(impl_info) = result.downcast_ref::<ImplInfo>() {
-            println!("  Found impl: {:?}", impl_info);
-        } else {
-            println!("  Unknown type of info extracted");
-        }
-    }
-
-    println!("Single file parsing complete.");
-
-    // Add the extracted structs and functions from the single file parsing section to the extracted_data
-    for result in results {
-        if let Some(struct_info) = result.downcast_ref::<StructInfo>() {
-            extracted_data.structs.push(struct_info.clone());
-        } else if let Some(function_info) = result.downcast_ref::<FunctionInfo>() {
-            extracted_data.functions.push(function_info.clone());
-        } else if let Some(type_alias_info) = result.downcast_ref::<TypeAliasInfo>() {
-            extracted_data.type_aliases.push(type_alias_info.clone());
-        } else if let Some(impl_info) = result.downcast_ref::<ImplInfo>() {
-            extracted_data.impls.push(impl_info.clone());
-        }
-    }
-    Ok(extracted_data)
+    Ok(())
 }
