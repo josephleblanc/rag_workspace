@@ -59,21 +59,27 @@ fn extract_type_alias_info(node: Node<'_>, source_code: &str, file_path: String)
     let mut cursor = node.walk();
 
     for child in node.children(&mut cursor) {
-            println!("Child Kind: {}, Text: {:?}", child.kind(), child.utf8_text(source_code.as_bytes()));
+        println!("Child Kind: {}, Text: {:?}", child.kind(), child.utf8_text(source_code.as_bytes()));
         match child.kind() {
             "visibility_modifier" => {
+                println!("  Visibility Modifier found");
                 type_alias_info.is_pub = true;
             }
             "type_identifier" => {
+                println!("  Type Identifier found");
                 type_alias_info.name = child.utf8_text(source_code.as_bytes()).unwrap().to_string();
             }
             "type" => {
+                println!("  Type found");
                 type_alias_info.aliased_type = child.utf8_text(source_code.as_bytes()).unwrap().to_string();
             }
             "attribute" => {
+                println!("  Attribute found");
                 type_alias_info.attributes.push(child.utf8_text(source_code.as_bytes()).unwrap().to_string());
             }
-            _ => {}
+            _ => {
+                println!("  Other kind found: {}", child.kind());
+            }
         }
     }
 
