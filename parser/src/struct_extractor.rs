@@ -1,13 +1,6 @@
+use crate::extract::FieldInfo;
 use serde::{Deserialize, Serialize};
 use tree_sitter::Node;
-
-#[derive(Clone, Debug, Default, Serialize, Deserialize)]
-#[allow(dead_code)]
-pub struct FieldInfo {
-    pub name: String,
-    pub type_name: String,
-    pub is_pub: bool,
-}
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[allow(dead_code)]
