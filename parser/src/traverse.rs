@@ -1,7 +1,7 @@
-use crate::extract::TypeAliasInfo;
+use crate::extract::{ImplInfo, TypeAliasInfo};
 use crate::function_extractor::extract_function_info;
-use crate::impl_extractor::extract_impl_info;
 use crate::struct_extractor::extract_struct_info;
+use crate::impl_extractor::extract_impl_info;
 use std::collections::HashSet;
 use std::{any::Any, fs, path::Path};
 use tree_sitter::{Node, Parser};
@@ -100,6 +100,22 @@ fn extract_type_alias_info(node: Node<'_>, source_code: &str, file_path: String)
     }
 
     Box::new(type_alias_info)
+}
+
+pub struct ImplInfoExtractor {}
+
+impl InfoExtractor for ImplInfoExtractor {
+    fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
+        if node.kind() == "impl_item" {
+            Some(Box::new(extract_impl_info(node, code, file_path)))
+        } else {
+            None
+        }
+    }
+
+    fn node_kind(&self) -> &'static str {
+        "impl_item"
+    }
 }
 
 pub struct ImplInfoExtractor {}

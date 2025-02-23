@@ -11,13 +11,12 @@ mod impl_extractor;
 mod struct_extractor;
 mod traverse;
 
-use extract::TypeAliasInfo;
+use extract::{ImplInfo, TypeAliasInfo};
 use function_extractor::FunctionInfo;
-use impl_extractor::ImplInfo;
 use std::collections::HashSet;
 use struct_extractor::StructInfo;
 use traverse::{
-    traverse_and_parse_directory, FunctionInfoExtractor, ImplInfoExtractor, InfoExtractor,
+    traverse_and_parse_directory, FunctionInfoExtractor, InfoExtractor, ImplInfoExtractor,
     StructInfoExtractor, TypeAliasInfoExtractor,
 };
 
@@ -76,7 +75,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         } else if let Some(impl_info) = result.downcast_ref::<ImplInfo>() {
             println!("  Found impl: {:?}", impl_info);
             extracted_data.impls.push(impl_info.clone());
-        } else {
+        }
+         else {
             println!("  Unknown type of info extracted");
         }
     }
@@ -145,7 +145,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("  Found function: {:?}", function_info);
         } else if let Some(type_alias_info) = result.downcast_ref::<TypeAliasInfo>() {
             println!("  Found type alias: {:?}", type_alias_info);
-        } else {
+        } else if let Some(impl_info) = result.downcast_ref::<ImplInfo>() {
+            println!("  Found impl: {:?}", impl_info);
+        }
+         else {
             println!("  Unknown type of info extracted");
         }
     }

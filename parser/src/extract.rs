@@ -24,6 +24,16 @@ pub struct StructInfo {
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 #[allow(dead_code)]
+pub struct ImplInfo {
+    pub name: String,
+    pub is_pub: bool,
+    pub start_position: usize,
+    pub end_position: usize,
+    pub file_path: String,
+}
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+#[allow(dead_code)]
 pub struct TypeAliasInfo {
     pub name: String,
     pub aliased_type: String,
