@@ -58,20 +58,31 @@ pub fn traverse_tree(
         }
     }
 
-    // Recursively traverse children
-    let mut cursor = node.walk();
-    if cursor.goto_first_child() {
-        loop {
-            traverse_tree(
-                cursor.node(),
-                code,
-                extractors,
-                file_path.clone(),
-                results,
-                node_kinds,
-            );
-            if !cursor.goto_next_sibling() {
-                break;
+    // Recursively traverse children, but only if the current node wasn't already extracted
+    // This prevents us from recursing too deeply after we've found a struct, function, etc.
+    let mut extracted = false;
+    for extractor in extractors {
+        if node.kind() == extractor.node_kind() {
+            extracted = true;
+            break;
+        }
+    }
+
+    if !extracted {
+        let mut cursor = node.walk();
+        if cursor.goto_first_child() {
+            loop {
+                traverse_tree(
+                    cursor.node(),
+                    code,
+                    extractors,
+                    file_path.clone(),
+                    results,
+                    node_kinds,
+                );
+                if !cursor.goto_next_sibling() {
+                    break;
+                }
             }
         }
     }
