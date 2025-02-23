@@ -139,8 +139,14 @@ fn extract_from_code_snippet(code_snippet: &str, mut extracted_ ExtractedData) -
         return Err(e.into());
     }
 
-    let tree = parser.parse(code_snippet, None).unwrap();
-    let root_node = tree.root_node();
+    let tree = parser.parse(code_snippet, None);
+    let root_node = match tree {
+        Some(tree) => tree.root_node(),
+        None => {
+            eprintln!("Failed to parse code snippet.");
+            return Err(anyhow::anyhow!("Failed to parse code snippet."));
+        }
+    };
 
     let mut results: Vec<Box<dyn std::any::Any>> = Vec::new();
     let extractors: Vec<&dyn InfoExtractor> = vec![
