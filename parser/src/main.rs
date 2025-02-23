@@ -1,10 +1,8 @@
 // src/main.rs
-use serde::{Deserialize, Serialize};
 use std::env;
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
-use std::fs;
 
 mod extract;
 mod function_extractor;
@@ -13,8 +11,6 @@ mod struct_extractor;
 mod traverse;
 
 use anyhow::Result;
-// use serde::{Deserialize, Serialize}; // Removed as they are not directly used here
-// use tree_sitter::Parser; // Removed as it is not directly used here
 use std::collections::HashMap;
 
 use extract::{ExtractedData, FunctionInfo, ImplInfo, StructInfo, TypeAliasInfo}; // Import FunctionInfo from extract
@@ -26,7 +22,7 @@ use traverse::{
 fn main() -> Result<()> {
     // Count node kinds
     let root_directory = Path::new("../example_traverse_target/src");
-    let node_kind_counts: HashMap<String, usize> = traverse::traverse_and_count_node_kinds(root_directory, None, vec![])?;
+    let node_kind_counts = traverse::traverse_and_count_node_kinds(root_directory, None, vec![])?;
     println!("Node kind counts: {:?}", node_kind_counts);
 
     println!("Current directory: {:?}", env::current_dir()?);
@@ -48,7 +44,7 @@ fn main() -> Result<()> {
     ];
 
     // Traverse the directory and extract information
-    let results = traverse_and_parse_directory(root_directory, directories_to_ignore, extractors)?;
+    let results = traverse_and_parse_directory(root_directory, directories_to_ignore, extractors.clone())?;
 
     // Process the results
     println!("\n--- Extracted Information ---");

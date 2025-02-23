@@ -1,5 +1,4 @@
 use crate::function_extractor::extract_function_info;
-use crate::impl_extractor::extract_impl_info;
 use crate::struct_extractor::extract_struct_info;
 use std::collections::HashSet;
 use std::{any::Any, fs, path::Path};
@@ -93,7 +92,7 @@ pub fn traverse_and_count_node_kinds(
     ignored_directories: Option<Vec<String>>,
     _extractors: Vec<&dyn InfoExtractor>,
 ) -> Result<HashMap<String, usize>> {
-    let mut node_kind_counts: HashMap<String, usize> = HashMap::new();
+    let mut node_kind_counts: HashMap<String, usize> =  HashMap::new();
 
     for entry in WalkDir::new(root_dir).into_iter().filter_map(|e| e.ok()) {
         let path = entry.path();
@@ -110,8 +109,11 @@ pub fn traverse_and_count_node_kinds(
 
         if path.is_file() && path.extension().map_or(false, |ext| ext == "rs") {
             let code = fs::read_to_string(path)?;
-            let tree = tree_sitter::Parser::new().parse(&code, None).unwrap();
-            println!("{:?}", tree.root_node().kind());
+            let mut parser = Parser::new();
+            parser.set_language(&tree_sitter_rust::LANGUAGE.into()).context("Error loading Rust grammar")?;
+            let tree = parser.parse(&code, None).unwrap();
+            let root_node = tree.root_node();
+            *node_kind_counts.entry(root_node.kind().to_string()).or_insert(0) += 1;
         }
     }
     Ok(node_kind_counts)

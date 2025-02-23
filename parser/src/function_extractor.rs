@@ -23,7 +23,7 @@ pub fn extract_function_info(
     function_info.start_position = node.start_byte();
     function_info.end_position = node.end_byte();
 
-    let cursor = node.walk();
+    let _cursor = node.walk();
 
     // Extract function name
     if let Some(name_node) = node.child_by_field_name("name") {
