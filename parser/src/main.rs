@@ -103,29 +103,12 @@ fn main() -> Result<()> {
         }
     "#;
 
-    let mut extracted_data = extract_from_code_snippet(code_snippet, extracted_data)?;
+    let extracted_data = extract_from_code_snippet(code_snippet, extracted_data)?;
 
-    // Serialize to RON and save to file
-    let ron_string =
-        ron::ser::to_string_pretty(&extracted_data, ron::ser::PrettyConfig::default())?;
-    let output_file_path = env::current_dir()?.join("data").join("extracted_data.ron");
-    let mut file = File::create(&output_file_path)?;
-    file.write_all(ron_string.as_bytes())?;
-
-    println!(
-        "Extracted data saved to {} with {} structs, {} functions, {} type aliases, and {} impls",
-        output_file_path.display(),
-        extracted_data.structs.len(),
-        extracted_data.functions.len(),
-        extracted_data.type_aliases.len(),
-        extracted_data.impls.len()
-    );
-
-    println!("Directory parsing complete.");
-    Ok(())
+    Ok(extracted_data)
 }
 
-fn extract_from_code_snippet(code_snippet: &str, mut extracted_ ExtractedData) -> Result<ExtractedData> {
+fn extract_from_code_snippet(code_snippet: &str, extracted_ ExtractedData) -> Result<ExtractedData> {
     println!("\n--- Single File Parsing ---");
 
     let struct_extractor = StructInfoExtractor {};
