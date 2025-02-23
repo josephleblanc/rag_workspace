@@ -1,9 +1,8 @@
 use crate::extract::{ImplInfo, TypeAliasInfo};
 use crate::function_extractor::extract_function_info;
-use crate::struct_extractor::extract_struct_info;
 use crate::impl_extractor::extract_impl_info;
+use crate::struct_extractor::extract_struct_info;
 use std::collections::HashSet;
-use anyhow::Result;
 use std::{any::Any, fs, path::Path};
 
 use tree_sitter::{Node, Parser};
@@ -108,8 +107,6 @@ fn extract_type_alias_info(node: Node<'_>, source_code: &str, file_path: String)
 
 pub struct ImplInfoExtractor {}
 
-use anyhow::Result;
-
 impl InfoExtractor for ImplInfoExtractor {
     fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
         if node.kind() == "impl_item" {
@@ -166,9 +163,9 @@ pub fn traverse_and_parse_directory(
                 match tree {
                     Some(syntax_tree) => {
                         // Convert the relative path to an absolute path
-                        let absolute_path = path
-                            .canonicalize()
-                            .with_context(|| format!("Failed to canonicalize path: {}", path.display()))?;
+                        let absolute_path = path.canonicalize().with_context(|| {
+                            format!("Failed to canonicalize path: {}", path.display())
+                        })?;
                         let root_node = syntax_tree.root_node();
                         let mut results: Vec<Box<dyn Any>> = Vec::new(); // Results for this file
                         let mut node_kinds: HashSet<String> = HashSet::new(); // Collect node kinds
