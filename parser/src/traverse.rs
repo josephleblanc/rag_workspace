@@ -124,12 +124,47 @@ pub fn traverse_and_parse_directory(
 }
 
 // Example implementations for StructInfo and FunctionInfo extractors
+use crate::extract::{ImplInfo, TypeAliasInfo};
+
 pub struct TypeAliasInfoExtractor {}
 
 impl InfoExtractor for TypeAliasInfoExtractor {
     fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
         if node.kind() == "type_item" {
-            Some(extract_type_alias_info(node, code, file_path))
+            let mut type_alias_info = TypeAliasInfo {
+                name: String::new(),
+                aliased_type: String::new(),
+                is_pub: false,
+                attributes: Vec::new(),
+                start_position: node.start_byte(),
+                end_position: node.end_byte(),
+                file_path: file_path.to_string(),
+            };
+
+            let mut cursor = node.walk();
+
+            for child in node.children(&mut cursor) {
+                match child.kind() {
+                    "visibility_modifier" => {
+                        type_alias_info.is_pub = true;
+                    }
+                    "type_identifier" => {
+                        type_alias_info.name = child.utf8_text(code.as_bytes()).unwrap().to_string();
+                    }
+                    "type" => {
+                        type_alias_info.aliased_type =
+                            child.utf8_text(code.as_bytes()).unwrap().to_string();
+                    }
+                    "attribute" => {
+                        type_alias_info
+                            .attributes
+                            .push(child.utf8_text(code.as_bytes()).unwrap().to_string());
+                    }
+                    _ => {}
+                }
+            }
+
+            Some(Box::new(type_alias_info))
         } else {
             None
         }
