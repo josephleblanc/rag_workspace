@@ -107,10 +107,18 @@ fn extract_type_alias_info(node: Node<'_>, source_code: &str, file_path: String)
 
 pub struct ImplInfoExtractor {}
 
+use anyhow::Result;
+
 impl InfoExtractor for ImplInfoExtractor {
     fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
         if node.kind() == "impl_item" {
-            Some(Box::new(extract_impl_info(node, code, file_path)))
+            match extract_impl_info(node, code, file_path) {
+                Ok(impl_info) => Some(Box::new(impl_info)),
+                Err(e) => {
+                    eprintln!("Failed to extract impl info: {}", e);
+                    None // Or handle the error as appropriate for your application
+                }
+            }
         } else {
             None
         }
