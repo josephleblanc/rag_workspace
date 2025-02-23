@@ -173,9 +173,7 @@ pub fn traverse_and_parse_directory(
                         traverse_tree(
                             root_node,
                             &code,
-                            &[
-                                &impl_extractor, // Pass the ImplInfoExtractor
-                            ],
+                            _extractors.as_slice(),
                             absolute_path.display().to_string(),
                             &mut results,
                             &mut node_kinds,
