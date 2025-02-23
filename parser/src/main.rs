@@ -16,7 +16,7 @@ use function_extractor::FunctionInfo;
 use std::collections::HashSet;
 use struct_extractor::StructInfo;
 use traverse::{
-    traverse_and_parse_directory, FunctionInfoExtractor, InfoExtractor, ImplInfoExtractor,
+    traverse_and_parse_directory, FunctionInfoExtractor, ImplInfoExtractor, InfoExtractor,
     StructInfoExtractor, TypeAliasInfoExtractor,
 };
 
@@ -75,8 +75,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         } else if let Some(impl_info) = result.downcast_ref::<ImplInfo>() {
             println!("  Found impl: {:?}", impl_info);
             extracted_data.impls.push(impl_info.clone());
-        }
-         else {
+        } else {
             println!("  Unknown type of info extracted");
         }
     }
@@ -85,7 +84,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Serialize to RON and save to file
     let ron_string =
         ron::ser::to_string_pretty(&extracted_data, ron::ser::PrettyConfig::default())?;
-    let mut file = File::create("~/code/rag_workspace/parser/data/extracted_data.ron")?;
+    let mut file = File::create("./data/extracted_data.ron")?;
     file.write_all(ron_string.as_bytes())?;
 
     println!("Extracted data saved to extracted_data.ron");
@@ -147,8 +146,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             println!("  Found type alias: {:?}", type_alias_info);
         } else if let Some(impl_info) = result.downcast_ref::<ImplInfo>() {
             println!("  Found impl: {:?}", impl_info);
-        }
-         else {
+        } else {
             println!("  Unknown type of info extracted");
         }
     }
