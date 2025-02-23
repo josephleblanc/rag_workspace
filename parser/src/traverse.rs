@@ -178,6 +178,7 @@ pub struct TypeAliasInfoExtractor {}
 
 impl InfoExtractor for TypeAliasInfoExtractor {
     fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
+        println!("Extracting type alias: {}", node.kind());
         if node.kind() == "type_item" {
             let mut type_alias_info = TypeAliasInfo {
                 name: String::new(),
@@ -244,6 +245,7 @@ pub struct FunctionInfoExtractor {}
 impl InfoExtractor for FunctionInfoExtractor {
     fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
         if node.kind() == "function_item" {
+            println!("Extracting function: {}", node.kind());
             match extract_function_info(node, code, file_path) {
                 Ok(function_info) => Some(Box::new(function_info)),
                 Err(_) => None, // Handle the error case
