@@ -1,4 +1,5 @@
 use std::collections::HashSet;
+use crate::extract::TypeAliasInfo;
 use crate::function_extractor::extract_function_info;
 use crate::struct_extractor::extract_struct_info;
 use std::{any::Any, fs, path::Path};
@@ -41,7 +42,42 @@ pub fn traverse_tree(
                 break;
             }
         }
+    } // Closing brace for if cursor.goto_first_child()
+}
+
+fn extract_type_alias_info(node: Node<'_>, source_code: &str, file_path: String) -> TypeAliasInfo {
+    let mut type_alias_info = TypeAliasInfo {
+        name: String::new(),
+        aliased_type: String::new(),
+        is_pub: false,
+        attributes: Vec::new(),
+        start_position: node.start_byte(),
+        end_position: node.end_byte(),
+        file_path: file_path.to_string(),
+    };
+
+    let mut cursor = node.walk();
+
+    for child in node.children(&mut cursor) {
+            println!("Child Kind: {}, Text: {:?}", child.kind(), child.utf8_text(source_code.as_bytes()));
+        match child.kind() {
+            "visibility_modifier" => {
+                type_alias_info.is_pub = true;
+            }
+            "type_identifier" => {
+                type_alias_info.name = child.utf8_text(source_code.as_bytes()).unwrap().to_string();
+            }
+            "type" => {
+                type_alias_info.aliased_type = child.utf8_text(source_code.as_bytes()).unwrap().to_string();
+            }
+            "attribute" => {
+                type_alias_info.attributes.push(child.utf8_text(source_code.as_bytes()).unwrap().to_string());
+            }
+            _ => {}
+        }
     }
+
+    type_alias_info
 }
 
 pub fn traverse_and_parse_directory(
@@ -106,6 +142,21 @@ pub fn traverse_and_parse_directory(
 }
 
 // Example implementations for StructInfo and FunctionInfo extractors
+pub struct TypeAliasInfoExtractor {}
+
+impl InfoExtractor for TypeAliasInfoExtractor {
+    fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
+        if node.kind() == "type_item" {
+            Some(Box::new(extract_type_alias_info(node, code, file_path)))
+        } else {
+            None
+        }
+    }
+
+    fn node_kind(&self) -> &'static str {
+        "type_item"
+    }
+}
 
 pub struct StructInfoExtractor {}
 
