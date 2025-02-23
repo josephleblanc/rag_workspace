@@ -109,11 +109,15 @@ pub fn traverse_and_count_node_kinds(
 
         if path.is_file() && path.extension().map_or(false, |ext| ext == "rs") {
             let code = fs::read_to_string(path)?;
-            let mut parser = Parser::new();
-            parser.set_language(&tree_sitter_rust::LANGUAGE.into()).context("Error loading Rust grammar")?;
-            let tree = parser.parse(&code, None).unwrap();
-            let root_node = tree.root_node();
-            *node_kind_counts.entry(root_node.kind().to_string()).or_insert(0) += 1;
+             let mut parser = Parser::new();
+                parser
+                    .set_language(&tree_sitter_rust::LANGUAGE.into())
+                    .context("Error loading Rust grammar")?;
+                let tree = parser.parse(&code, None).unwrap();
+                let root_node = tree.root_node();
+                let mut node_kinds: HashSet<String> = HashSet::new();
+                traverse_tree(root_node, &code, &[], "".to_string(), &mut Vec::new(), &mut node_kinds);
+                node_kinds.iter().for_each(|kind| *node_kind_counts.entry(kind.clone()).or_insert(0) += 1);
         }
     }
     Ok(node_kind_counts)
@@ -122,7 +126,7 @@ pub fn traverse_and_count_node_kinds(
 pub fn traverse_and_parse_directory(
     root_dir: &Path,
     ignored_directories: Option<Vec<String>>,
-    _extractors: Vec<&dyn InfoExtractor>,
+    extractors: Vec<&dyn InfoExtractor>,
 ) -> Result<Vec<Box<dyn Any>>> {
     let mut all_results: Vec<Box<dyn Any>> = Vec::new();
 
@@ -164,7 +168,7 @@ pub fn traverse_and_parse_directory(
                         traverse_tree(
                             root_node,
                             &code,
-                            _extractors.as_slice(),
+                            extractors.as_slice(),
                             absolute_path.display().to_string(),
                             &mut results,
                             &mut node_kinds,
