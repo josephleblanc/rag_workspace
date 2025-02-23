@@ -168,18 +168,20 @@ pub fn traverse_and_parse_directory(
                             format!("Failed to canonicalize path: {}", path.display())
                         })?;
                         let root_node = syntax_tree.root_node();
-                        let mut results: Vec<Box<dyn Any>> = Vec::new(); // Results for this file
-                        let mut node_kinds: HashSet<String> = HashSet::new(); // Collect node kinds
+                        let mut results: Vec<Box<dyn Any>> = Vec::new();
+                        let mut node_kinds: HashSet<String> = HashSet::new();
                         traverse_tree(
                             root_node,
                             &code,
-                            &extractors,
+                            &[
+                                &impl_extractor, // Pass the ImplInfoExtractor
+                            ],
                             absolute_path.display().to_string(),
                             &mut results,
                             &mut node_kinds,
                         );
-                        println!("Unique node kinds: {:?}", node_kinds); // Print node kinds
-                        all_results.extend(results); // Accumulate results from all files
+                        println!("Unique node kinds: {:?}", node_kinds);
+                        all_results.extend(results);
                     }
                     None => {
                         println!("Parsing failed for file: {}", path.display());
@@ -188,7 +190,7 @@ pub fn traverse_and_parse_directory(
             }
         }
     }
-    Ok(all_results) // Return the accumulated results
+    Ok(all_results)
 }
 
 // Example implementations for StructInfo and FunctionInfo extractors
