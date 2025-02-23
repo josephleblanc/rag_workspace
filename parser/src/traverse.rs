@@ -23,9 +23,29 @@ pub fn traverse_tree(
     results: &mut Vec<Box<dyn Any>>,  // Store the results
     node_kinds: &mut HashSet<String>, // Collect node kinds
 ) {
-    // println!("Node kind: {}", node.kind());
+    println!("Visiting node kind: {}", node.kind());
     // Collect node kinds
     node_kinds.insert(node.kind().to_string());
+
+    if node.kind() == "source_file" {
+        let mut cursor = node.walk();
+        if cursor.goto_first_child() {
+            loop {
+                traverse_tree(
+                    cursor.node(),
+                    code,
+                    extractors,
+                    file_path.clone(),
+                    results,
+                    node_kinds,
+                );
+                if !cursor.goto_next_sibling() {
+                    break;
+                }
+            }
+        }
+        return;
+    }
 
     // Check if any extractor matches the current node
     for extractor in extractors {
