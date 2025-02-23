@@ -86,6 +86,37 @@ pub fn traverse_tree(
     }
 }
 
+use std::collections::HashMap;
+
+pub fn traverse_and_count_node_kinds(
+    root_dir: &Path,
+    ignored_directories: Option<Vec<String>>,
+    _extractors: Vec<&dyn InfoExtractor>,
+) -> Result<HashMap<String, usize>> {
+    let mut node_kind_counts: HashMap<String, usize> = HashMap::new();
+
+    for entry in WalkDir::new(root_dir).into_iter().filter_map(|e| e.ok()) {
+        let path = entry.path();
+        let entry_name = entry.file_name().to_string_lossy();
+
+        if let Some(ref ignore_list) = ignored_directories {
+            if entry.depth() > 0
+                && entry.file_type().is_dir()
+                && ignore_list.contains(&entry_name.to_string())
+            {
+                continue;
+            }
+        }
+
+        if path.is_file() && path.extension().map_or(false, |ext| ext == "rs") {
+            let code = fs::read_to_string(path)?;
+            let tree = tree_sitter::Parser::new().parse(&code, None).unwrap();
+            println!("{:?}", tree.root_node().kind());
+        }
+    }
+    Ok(node_kind_counts)
+}
+
 pub fn traverse_and_parse_directory(
     root_dir: &Path,
     ignored_directories: Option<Vec<String>>,
