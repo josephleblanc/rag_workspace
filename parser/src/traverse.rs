@@ -1,4 +1,3 @@
-use crate::extract::{ImplInfo, TypeAliasInfo};
 use crate::function_extractor::extract_function_info;
 use crate::impl_extractor::extract_impl_info;
 use crate::struct_extractor::extract_struct_info;
@@ -53,72 +52,6 @@ pub fn traverse_tree(
             if !cursor.goto_next_sibling() {
                 break;
             }
-        }
-    } // Closing brace for if cursor.goto_first_child()
-}
-
-fn extract_type_alias_info(node: Node<'_>, source_code: &str, file_path: String) -> Box<dyn Any> {
-    let mut type_alias_info = TypeAliasInfo {
-        name: String::new(),
-        aliased_type: String::new(),
-        is_pub: false,
-        attributes: Vec::new(),
-        start_position: node.start_byte(),
-        end_position: node.end_byte(),
-        file_path: file_path.to_string(),
-    };
-
-    let mut cursor = node.walk();
-
-    for child in node.children(&mut cursor) {
-        println!(
-            "Child Kind: {}, Text: {:?}",
-            child.kind(),
-            child.utf8_text(source_code.as_bytes())
-        );
-        match child.kind() {
-            "visibility_modifier" => {
-                println!("  Visibility Modifier found");
-                type_alias_info.is_pub = true;
-            }
-            "type_identifier" => {
-                println!("  Type Identifier found");
-                type_alias_info.name = child.utf8_text(source_code.as_bytes()).unwrap().to_string();
-            }
-            "type" => {
-                println!("  Type found");
-                type_alias_info.aliased_type =
-                    child.utf8_text(source_code.as_bytes()).unwrap().to_string();
-            }
-            "attribute" => {
-                println!("  Attribute found");
-                type_alias_info
-                    .attributes
-                    .push(child.utf8_text(source_code.as_bytes()).unwrap().to_string());
-            }
-            _ => {
-                println!("  Other kind found: {}", child.kind());
-            }
-        }
-    }
-
-    Box::new(type_alias_info)
-}
-
-pub struct ImplInfoExtractor {}
-
-impl InfoExtractor for ImplInfoExtractor {
-    fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
-        if node.kind() == "impl_item" {
-            match extract_impl_info(node, code, file_path) {
-                Ok(impl_info) => Some(Box::new(impl_info)),
-                Err(e) => {
-                    eprintln!("Failed to extract impl info: {}", e);
-                    None // Or handle the error as appropriate for your application
-                }
-            }
-        } else {
-            None
         }
     }
 
