@@ -48,7 +48,9 @@ pub fn traverse_tree(
 
     // Check if any extractor matches the current node
     for extractor in extractors {
+        println!("Current node kind: {}, Extractor node kind: {}", node.kind(), extractor.node_kind());
         if node.kind() == extractor.node_kind() {
+            println!("  Extractor matched for node kind: {}", node.kind());
             if let Some(info) = extractor.extract(node, code, file_path.clone()) {
                 // Store the extracted info
                 results.push(info);
