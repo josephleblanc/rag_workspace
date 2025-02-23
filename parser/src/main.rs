@@ -5,15 +5,17 @@ use tree_sitter::Parser;
 mod extract;
 mod function_extractor;
 mod struct_extractor;
+mod impl_extractor;
 mod traverse;
 
 use extract::TypeAliasInfo;
 use function_extractor::FunctionInfo;
+use impl_extractor::ImplInfo;
 use std::collections::HashSet;
 use struct_extractor::StructInfo;
 use traverse::{
-    traverse_and_parse_directory, FunctionInfoExtractor, InfoExtractor, StructInfoExtractor,
-    TypeAliasInfoExtractor,
+    traverse_and_parse_directory, FunctionInfoExtractor, ImplInfoExtractor, InfoExtractor,
+    StructInfoExtractor, TypeAliasInfoExtractor,
 };
 
 use serde::{Deserialize, Serialize};
@@ -25,7 +27,8 @@ use std::io::Write;
 struct ExtractedData {
     structs: Vec<StructInfo>,
     functions: Vec<FunctionInfo>,
-    type_aliases: Vec<TypeAliasInfo>, // Add this line
+    type_aliases: Vec<TypeAliasInfo>,
+    impls: Vec<ImplInfo>,
 }
 
 use std::env;
@@ -39,13 +42,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create extractors
     let struct_extractor = StructInfoExtractor {};
     let function_extractor = FunctionInfoExtractor {};
-    let type_alias_extractor = TypeAliasInfoExtractor {}; // Create the new extractor
+    let type_alias_extractor = TypeAliasInfoExtractor {};
+    let impl_extractor = ImplInfoExtractor {};
 
-    // Collect extractors into a Vec<&dyn InfoExtractor>
     let extractors: Vec<&dyn InfoExtractor> = vec![
         &struct_extractor,
         &function_extractor,
-        &type_alias_extractor, // Add the new extractor to the list
+        &type_alias_extractor,
+        &impl_extractor,
     ];
 
     // Traverse the directory and extract information
@@ -56,7 +60,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut extracted_data = ExtractedData {
         structs: Vec::new(),
         functions: Vec::new(),
-        type_aliases: Vec::new(), // Initialize the new field
+        type_aliases: Vec::new(),
+        impls: Vec::new(),
     };
 
     for result in results {
@@ -69,8 +74,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         } else if let Some(type_alias_info) = result.downcast_ref::<TypeAliasInfo>() {
             println!("  Found type alias: {:?}", type_alias_info);
             extracted_data.type_aliases.push(type_alias_info.clone());
-        }
-         else {
+        } else if let Some(impl_info) = result.downcast_ref::<ImplInfo>() {
+            println!("  Found impl: {:?}", impl_info);
+            extracted_data.impls.push(impl_info.clone());
+        } else {
             println!("  Unknown type of info extracted");
         }
     }
@@ -117,7 +124,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let extractors: Vec<&dyn InfoExtractor> = vec![
         &struct_extractor,
         &function_extractor,
-        &type_alias_extractor, // Add the new extractor here too
+        &type_alias_extractor,
+        &impl_extractor,
     ];
     let mut node_kinds: HashSet<String> = HashSet::new();
     traverse::traverse_tree(
