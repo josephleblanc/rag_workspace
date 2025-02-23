@@ -148,5 +148,36 @@ fn main() -> Result<()> {
     }
 
     println!("Single file parsing complete.");
+
+    // Add the extracted structs and functions from the single file parsing section to the extracted_data
+    for result in results {
+        if let Some(struct_info) = result.downcast_ref::<StructInfo>() {
+            extracted_data.structs.push(struct_info.clone());
+        } else if let Some(function_info) = result.downcast_ref::<FunctionInfo>() {
+            extracted_data.functions.push(function_info.clone());
+        } else if let Some(type_alias_info) = result.downcast_ref::<TypeAliasInfo>() {
+            extracted_data.type_aliases.push(type_alias_info.clone());
+        } else if let Some(impl_info) = result.downcast_ref::<ImplInfo>() {
+            extracted_data.impls.push(impl_info.clone());
+        }
+    }
+
+    // Serialize to RON and save to file
+    let ron_string =
+        ron::ser::to_string_pretty(&extracted_data, ron::ser::PrettyConfig::default())?;
+    let output_file_path = env::current_dir()?.join("data").join("extracted_data.ron");
+    let mut file = File::create(&output_file_path)?;
+    file.write_all(ron_string.as_bytes())?;
+
+    println!(
+        "Extracted data saved to {} with {} structs, {} functions, {} type aliases, and {} impls",
+        output_file_path.display(),
+        extracted_data.structs.len(),
+        extracted_data.functions.len(),
+        extracted_data.type_aliases.len(),
+        extracted_data.impls.len()
+    );
+
+    println!("Directory parsing complete.");
     Ok(())
 }
