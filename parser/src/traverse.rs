@@ -54,10 +54,6 @@ pub fn traverse_tree(
             }
         }
     }
-
-    fn node_kind(&self) -> &'static str {
-        "impl_item"
-    }
 }
 
 pub fn traverse_and_parse_directory(
@@ -125,6 +121,28 @@ pub fn traverse_and_parse_directory(
 
 // Example implementations for StructInfo and FunctionInfo extractors
 use crate::extract::{ImplInfo, TypeAliasInfo};
+
+pub struct ImplInfoExtractor {}
+
+impl InfoExtractor for ImplInfoExtractor {
+    fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
+        if node.kind() == "impl_item" {
+            match crate::impl_extractor::extract_impl_info(node, code, file_path) {
+                Ok(impl_info) => Some(Box::new(impl_info)),
+                Err(e) => {
+                    eprintln!("Failed to extract impl info: {}", e);
+                    None // Or handle the error as appropriate for your application
+                }
+            }
+        } else {
+            None
+        }
+    }
+
+    fn node_kind(&self) -> &'static str {
+        "impl_item"
+    }
+}
 
 pub struct TypeAliasInfoExtractor {}
 
