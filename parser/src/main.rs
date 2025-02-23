@@ -19,7 +19,7 @@ use ron::ser::PrettyConfig;
 
 use extract::{ExtractedData, FunctionInfo, ImplInfo, StructInfo, TypeAliasInfo}; // Import FunctionInfo from extract
 use traverse::{
-    traverse_and_parse_directory, FunctionInfoExtractor, InfoExtractor,
+    traverse_and_parse_directory, FunctionInfoExtractor, ImplInfoExtractor, InfoExtractor,
     StructInfoExtractor, TypeAliasInfoExtractor,
 };
 
