@@ -1,4 +1,5 @@
 // src/main.rs
+use serde::{Deserialize, Serialize};
 use std::path::Path;
 use tree_sitter::Parser;
 

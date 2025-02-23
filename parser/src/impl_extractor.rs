@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use tree_sitter::Node;
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
