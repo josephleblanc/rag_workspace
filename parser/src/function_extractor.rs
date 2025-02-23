@@ -22,19 +22,16 @@ pub fn extract_function_info(node: tree_sitter::Node, code: &str, file_path: Str
 
     // Extract function name
     if let Some(name_node) = node.child_by_field_name("name") {
-        println!("name_node: {:?}", name_node); // Debug print
         function_info.name = name_node.utf8_text(code.as_bytes()).unwrap().to_string();
     }
 
     // Extract parameters
     if let Some(parameters_node) = node.child_by_field_name("parameters") {
-		println!("parameters_node: {:?}", parameters_node); // Debug print
         let mut param_cursor = parameters_node.walk();
         if param_cursor.goto_first_child() {
             loop {
                 let param_node = param_cursor.node();
                 if param_node.kind() == "parameter" {
-                    println!("param_node: {:?}", param_node);
                     let mut name = String::new();
                     let mut type_name = String::new();
 
@@ -69,7 +66,6 @@ pub fn extract_function_info(node: tree_sitter::Node, code: &str, file_path: Str
 
     // Extract return type
     if let Some(return_type_node) = node.child_by_field_name("return_type") {
-		println!("return_type_node: {:?}", return_type_node); // Debug print
         function_info.return_type =
             Some(return_type_node.utf8_text(code.as_bytes()).unwrap().to_string());
     }
@@ -80,7 +76,6 @@ pub fn extract_function_info(node: tree_sitter::Node, code: &str, file_path: Str
         loop {
             let child_node = cursor.node();
             if child_node.kind() == "visibility_modifier" {
-				println!("visibility_modifier: {:?}", child_node); // Debug print
                 function_info.is_pub = true;
                 break;
             }

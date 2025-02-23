@@ -44,7 +44,7 @@ pub fn extract_struct_info(struct_node: Node<'_>, source_code: &str, file_path: 
                     // Currently storing only the *first* doc comment encountered (closest to struct)
                     struct_info.doc_comment = Some(comment_text);
                 }
-                start_position = sibling.start_byte(); // Move start position backwards
+                start_position = sibling.start_byte();
             }
             "attribute_item" => {
                 let attribute_text = sibling
@@ -52,14 +52,14 @@ pub fn extract_struct_info(struct_node: Node<'_>, source_code: &str, file_path: 
                     .unwrap()
                     .trim()
                     .to_string();
-                struct_info.attributes.insert(0, attribute_text); // Add attributes to the front to maintain order
-                start_position = sibling.start_byte(); // Move start position backwards
+                struct_info.attributes.insert(0, attribute_text);
+                start_position = sibling.start_byte();
             }
-            _ => break, // Stop if not a comment or attribute
+            _ => break,
         }
         current_sibling = sibling.prev_sibling();
     }
-    struct_info.start_position = start_position; // Final start position after checking preceding siblings
+    struct_info.start_position = start_position;
 
     // 2. Check for visibility (pub) - Revised method: Iterate children and check kind (same as before)
     let mut cursor = struct_node.walk();
