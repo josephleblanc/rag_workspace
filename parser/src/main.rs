@@ -4,6 +4,7 @@ use std::env;
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
+use std::fs;
 
 mod extract;
 mod function_extractor;
@@ -65,6 +66,13 @@ fn main() -> Result<()> {
     // Serialize to RON and save to file
     let ron_string =
         ron::ser::to_string_pretty(&extracted_data, ron::ser::PrettyConfig::default())?;
+
+    // Ensure the 'data' directory exists
+    let output_dir = env::current_dir()?.join("data");
+    if !output_dir.exists() {
+        std::fs::create_dir_all(&output_dir)?;
+    }
+
     let output_file_path = env::current_dir()?.join("data").join("extracted_data.ron");
     let mut file = File::create(&output_file_path)?;
     file.write_all(ron_string.as_bytes())?;
