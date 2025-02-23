@@ -115,6 +115,8 @@ impl InfoExtractor for ImplInfoExtractor {
 
     fn node_kind(&self) -> &'static str {
         "impl_item"
+    }
+}
 
 pub fn traverse_and_parse_directory(
     root_dir: &Path,
