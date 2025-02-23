@@ -19,10 +19,6 @@ use traverse::{
     StructInfoExtractor, TypeAliasInfoExtractor,
 };
 
-use serde::{Deserialize, Serialize};
-use std::fs::File;
-use std::io::Write;
-
 // Define a struct to hold all extracted information
 #[derive(Serialize, Deserialize, Debug)]
 struct ExtractedData {
