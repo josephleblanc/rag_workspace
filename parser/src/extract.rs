@@ -143,32 +143,35 @@ impl InfoExtractor for UseDependencyInfoExtractor {
                         use_dependency_info.is_pub = true;
                     }
                     "scoped_identifier" | "path" => {
+                        println!("Found scoped_identifier or path: {:?}", child.utf8_text(code.as_bytes()).unwrap());
                         // Extract the path segments
                         extract_path_segments(child, code, &mut use_dependency_info.segments);
                     }
-                    "scoped_use_list" => {
-                        let mut list_cursor = child.walk();
-                        for list_child in child.children(&mut list_cursor) {
-                            match list_child.kind() {
-                                "path" => {
-                                    extract_path_segments(list_child, code, &mut use_dependency_info.segments);
-                                }
+                    "use_group" => {
+                        println!("Found use_group");
+                        let mut use_list_cursor = child.walk();
+                        for use_list_child in child.children(&mut use_list_cursor) {
+                            match use_list_child.kind() {
                                 "use_list" => {
-                                    let mut use_list_cursor = list_child.walk();
-                                    for use_list_child in list_child.children(&mut use_list_cursor) {
-                                        match use_list_child.kind() {
+                                    let mut list_cursor = use_list_child.walk();
+                                    for list_child in use_list_child.children(&mut list_cursor) {
+                                        match list_child.kind() {
                                             "scoped_identifier" | "identifier" => {
-                                                extract_path_segments(use_list_child, code, &mut use_dependency_info.segments);
+                                                extract_path_segments(list_child, code, &mut use_dependency_info.segments);
                                             }
                                             "use_wildcard" => {
                                                 // Handle wildcard imports (e.g., `*`)
                                                 use_dependency_info.segments.push("*".to_string());
                                             }
-                                            _ => {}
+                                            _ => {
+                                                println!("Unexpected child in use_list: {:?}", list_child.kind());
+                                            }
                                         }
                                     }
                                 }
-                                _ => {}
+                                _ => {
+                                    println!("Unexpected child in use_group: {:?}", use_list_child.kind());
+                                }
                             }
                         }
                     }
@@ -183,7 +186,9 @@ impl InfoExtractor for UseDependencyInfoExtractor {
                             }
                         }
                     }
-                    _ => {}
+                    _ => {
+                        println!("Unexpected child in use_declaration: {:?}", child.kind());
+                    }
                 }
             }
 
@@ -199,17 +204,17 @@ impl InfoExtractor for UseDependencyInfoExtractor {
 }
 
 fn extract_path_segments(node: Node, code: &str, segments: &mut Vec<String>) {
-    let mut cursor = node.walk();
-    for child in node.children(&mut cursor) {
-        match child.kind() {
-            "identifier" => {
-                segments.push(child.utf8_text(code.as_bytes()).unwrap().to_string());
-            }
-            "scoped_identifier" => {
+    match node.kind() {
+        "identifier" => {
+            segments.push(node.utf8_text(code.as_bytes()).unwrap().to_string());
+        }
+        "scoped_identifier" => {
+            let mut cursor = node.walk();
+            for child in node.children(&mut cursor) {
                 extract_path_segments(child, code, segments);
             }
-            _ => {}
         }
+        _ => {}
     }
 }
 
