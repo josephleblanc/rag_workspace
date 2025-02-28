@@ -22,10 +22,6 @@ use debug::{process_any_debug, process_box_take_ownership};
 
 fn main() -> Result<()> {
     // Count node kinds
-    let root_directory = Path::new("../example_traverse_target/src");
-    let node_kind_counts = traverse::traverse_and_count_node_kinds(root_directory, None, vec![])?;
-    println!("Node kind counts: {:?}", node_kind_counts);
-
     println!("Current directory: {:?}", env::current_dir()?);
     let root_directory = Path::new("../example_traverse_target/src");
 

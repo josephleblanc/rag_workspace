@@ -6,9 +6,6 @@ edition = "2021"
 [build-dependencies]
 cc = "*"
 
-[features]
-collect_node_kinds = []
-
 [dependencies]
 tree-sitter = { version = "0.24", features = ["std"] }
 tree-sitter-rust = "0.23"

@@ -62,8 +62,3 @@ pub fn process_box_take_ownership(boxed_any: Box<dyn Any>) {
     }
     // No box is dropped here explicitly, ownership handled within match arms.
 }
-
-#[cfg(feature = "collect_node_kinds")]
-pub(crate) fn maybe_collect_node_kind(node: Node, node_kinds: &mut HashSet<String>) {
-    node_kinds.insert(node.kind().to_string());
-}
