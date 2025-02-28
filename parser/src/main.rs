@@ -8,6 +8,7 @@ use crate::{
     extract::{
         ExtractedData, FunctionInfo, FunctionInfoExtractor, ImplInfo, ImplInfoExtractor,
         StructInfo, StructInfoExtractor, TypeAliasInfo, TypeAliasInfoExtractor,
+        UseDependencyInfoExtractor,
     },
     print_extracted_stats::print_extracted_stats,
     traverse::{traverse_and_parse_directory, InfoExtractor},
