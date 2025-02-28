@@ -139,6 +139,9 @@ impl InfoExtractor for UseDependencyInfoExtractor {
             let mut cursor = node.walk();
             for child in node.children(&mut cursor) {
                 match child.kind() {
+                    "use" => {
+                        continue; // Skip the "use" keyword
+                    }
                     "visibility_modifier" => {
                         use_dependency_info.is_pub = true;
                     }
@@ -186,6 +189,9 @@ impl InfoExtractor for UseDependencyInfoExtractor {
                             }
                         }
                     }
+                    ";" => {
+                        continue; // Skip the semicolon
+                    }
                     _ => {
                         println!("Unexpected child in use_declaration: {:?}", child.kind());
                     }
@@ -209,6 +215,12 @@ fn extract_path_segments(node: Node, code: &str, segments: &mut Vec<String>) {
             segments.push(node.utf8_text(code.as_bytes()).unwrap().to_string());
         }
         "scoped_identifier" => {
+            let mut cursor = node.walk();
+            for child in node.children(&mut cursor) {
+                extract_path_segments(child, code, segments);
+            }
+        }
+        "path" => {
             let mut cursor = node.walk();
             for child in node.children(&mut cursor) {
                 extract_path_segments(child, code, segments);
