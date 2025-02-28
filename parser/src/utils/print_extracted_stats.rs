@@ -30,6 +30,11 @@ pub fn print_extracted_stats(extracted: ExtractedData, output_file_path: &Path) 
         Cell::new(&extracted.impls.len().to_string()),
     ]));
 
+    table.add_row(Row::new(vec![
+        Cell::new("Use Dependencies"),
+        Cell::new(&extracted.use_dependencies.len().to_string()),
+    ]));
+
     println!("Extracted data saved to {}", output_file_path.display());
     table.printstd();
 }
