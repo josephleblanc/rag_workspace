@@ -29,6 +29,17 @@ pub fn traverse_tree(
         let mut cursor = node.walk();
         if cursor.goto_first_child() {
             loop {
+                // Check if any extractor matches the current node
+                // for extractor in extractors {
+                //     if node.kind() == extractor.node_kind() {
+                //         if let Some(info) = extractor.extract(node, code, file_path.clone()) {
+                //             // Store the extracted info
+                //             results.push(info);
+                //         }
+                //     }
+                // }
+                //
+                extract_results(node, code, extractors, &file_path, results);
                 traverse_tree(
                     cursor.node(),
                     code,
@@ -45,21 +56,12 @@ pub fn traverse_tree(
         return;
     }
 
-    // Check if any extractor matches the current node
-    for extractor in extractors {
-        if node.kind() == extractor.node_kind() {
-            if let Some(info) = extractor.extract(node, code, file_path.clone()) {
-                // Store the extracted info
-                results.push(info);
-            }
-        }
-    }
-
     // Recursively traverse children, but only if the current node wasn't already extracted
     // This prevents us from recursing too deeply after we've found a struct, function, etc.
     let mut extracted = false;
     for extractor in extractors {
         if node.kind() == extractor.node_kind() {
+            extract_results(node, code, extractors, &file_path, results);
             extracted = true;
             break;
         }
@@ -69,6 +71,7 @@ pub fn traverse_tree(
         let mut cursor = node.walk();
         if cursor.goto_first_child() {
             loop {
+                extract_results(node, code, extractors, &file_path, results);
                 traverse_tree(
                     cursor.node(),
                     code,
@@ -85,6 +88,23 @@ pub fn traverse_tree(
     }
 }
 
+fn extract_results(
+    node: Node<'_>,
+    code: &str,
+    extractors: &[&dyn InfoExtractor],
+    file_path: &String,
+    results: &mut Vec<Box<dyn Any>>,
+) {
+    for extractor in extractors {
+        if node.kind() == extractor.node_kind() {
+            if let Some(info) = extractor.extract(node, code, file_path.clone()) {
+                // Store the extracted info
+                results.push(info);
+            }
+        }
+    }
+}
+
 use std::collections::HashMap;
 
 pub fn traverse_and_count_node_kinds(
@@ -92,7 +112,7 @@ pub fn traverse_and_count_node_kinds(
     ignored_directories: Option<Vec<String>>,
     _extractors: Vec<&dyn InfoExtractor>,
 ) -> Result<HashMap<String, usize>> {
-    let mut node_kind_counts: HashMap<String, usize> =  HashMap::new();
+    let mut node_kind_counts: HashMap<String, usize> = HashMap::new();
 
     for entry in WalkDir::new(root_dir).into_iter().filter_map(|e| e.ok()) {
         let path = entry.path();
@@ -109,15 +129,24 @@ pub fn traverse_and_count_node_kinds(
 
         if path.is_file() && path.extension().map_or(false, |ext| ext == "rs") {
             let code = fs::read_to_string(path)?;
-             let mut parser = Parser::new();
-                parser
-                    .set_language(&tree_sitter_rust::LANGUAGE.into())
-                    .context("Error loading Rust grammar")?;
-                let tree = parser.parse(&code, None).unwrap();
-                let root_node = tree.root_node();
-                let mut node_kinds: HashSet<String> = HashSet::new();
-                traverse_tree(root_node, &code, &[], "".to_string(), &mut Vec::new(), &mut node_kinds);
-                node_kinds.iter().for_each(|kind| *node_kind_counts.entry(kind.clone()).or_insert(0) += 1);
+            let mut parser = Parser::new();
+            parser
+                .set_language(&tree_sitter_rust::LANGUAGE.into())
+                .context("Error loading Rust grammar")?;
+            let tree = parser.parse(&code, None).unwrap();
+            let root_node = tree.root_node();
+            let mut node_kinds: HashSet<String> = HashSet::new();
+            traverse_tree(
+                root_node,
+                &code,
+                &[],
+                "".to_string(),
+                &mut Vec::new(),
+                &mut node_kinds,
+            );
+            node_kinds
+                .iter()
+                .for_each(|kind| *node_kind_counts.entry(kind.clone()).or_insert(0) += 1);
         }
     }
     Ok(node_kind_counts)
@@ -187,23 +216,49 @@ pub fn traverse_and_parse_directory(
 }
 
 // Example implementations for StructInfo and FunctionInfo extractors
-use crate::extract::{ImplInfo, TypeAliasInfo};
+use crate::extract::{FunctionInfo, ImplInfo, StructInfo, TypeAliasInfo};
 
 pub struct ImplInfoExtractor {}
 
 impl InfoExtractor for ImplInfoExtractor {
     fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
         if node.kind() == "impl_item" {
-            match crate::impl_extractor::extract_impl_info(node, code, file_path) {
-                Ok(impl_info) => Some(Box::new(impl_info)),
-                Err(e) => {
-                    eprintln!("Failed to extract impl info: {}", e);
-                    None // Or handle the error as appropriate for your application
+            let mut cursor = node.walk();
+            let mut impl_info = ImplInfo {
+                start_position: node.start_byte(),
+                end_position: node.end_byte(),
+                file_path: file_path.to_string(),
+                ..Default::default()
+            };
+            for child in node.children(&mut cursor) {
+                match child.kind() {
+                    "visibility_modifier" => {
+                        impl_info.is_pub = true;
+                    }
+                    "type_identifier" => {
+                        impl_info.name = child.utf8_text(code.as_bytes()).unwrap().to_string();
+                    }
+                    _ => {}
                 }
             }
+            Some(Box::new(impl_info))
         } else {
             None
         }
+        // TODO: Restructure the downcaste in main.rs to try getting this to work again.
+        // The current problem is that the downcaste is from the `Any` type and does not
+        // correctly downcast into the `ImplInfo` type.
+        // if node.kind() == "impl_item" {
+        //     match crate::impl_extractor::extract_impl_info(node, code, file_path) {
+        //         Ok(impl_info) => Some(Box::new(impl_info)),
+        //         Err(e) => {
+        //             eprintln!("Failed to extract impl info: {}", e);
+        //             None // Or handle the error as appropriate for your application
+        //         }
+        //     }
+        // } else {
+        //     None
+        // }
     }
 
     fn node_kind(&self) -> &'static str {
@@ -215,7 +270,6 @@ pub struct TypeAliasInfoExtractor {}
 
 impl InfoExtractor for TypeAliasInfoExtractor {
     fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
-        println!("Extracting type alias: {}", node.kind());
         if node.kind() == "type_item" {
             let mut type_alias_info = TypeAliasInfo {
                 name: String::new(),
@@ -235,7 +289,8 @@ impl InfoExtractor for TypeAliasInfoExtractor {
                         type_alias_info.is_pub = true;
                     }
                     "type_identifier" => {
-                        type_alias_info.name = child.utf8_text(code.as_bytes()).unwrap().to_string();
+                        type_alias_info.name =
+                            child.utf8_text(code.as_bytes()).unwrap().to_string();
                     }
                     "type" => {
                         type_alias_info.aliased_type =
@@ -266,7 +321,31 @@ pub struct StructInfoExtractor {}
 impl InfoExtractor for StructInfoExtractor {
     fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
         if node.kind() == "struct_item" {
-            Some(Box::new(extract_struct_info(node, code, file_path)))
+            let mut cursor = node.walk();
+            let mut struct_info = StructInfo {
+                start_position: node.start_byte(),
+                end_position: node.end_byte(),
+                file_path: file_path.to_string(),
+                ..Default::default()
+            };
+            for child in node.children(&mut cursor) {
+                match child.kind() {
+                    "visibility_modifier" => {
+                        struct_info.is_pub = true;
+                    }
+                    "type_identifier" => {
+                        struct_info.name = child.utf8_text(code.as_bytes()).unwrap().to_string();
+                    }
+                    "attribute" => {
+                        struct_info
+                            .attributes
+                            .push(child.utf8_text(code.as_bytes()).unwrap().to_string());
+                    }
+                    _ => {}
+                }
+            }
+            // println!("Extracting struct: {}", struct_info.name);
+            Some(Box::new(struct_info))
         } else {
             None
         }
@@ -279,14 +358,32 @@ impl InfoExtractor for StructInfoExtractor {
 
 pub struct FunctionInfoExtractor {}
 
+use std::any::TypeId;
+
 impl InfoExtractor for FunctionInfoExtractor {
     fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
         if node.kind() == "function_item" {
-            println!("Extracting function: {}", node.kind());
-            match extract_function_info(node, code, file_path) {
-                Ok(function_info) => Some(Box::new(function_info)),
-                Err(_) => None, // Handle the error case
+            let mut cursor = node.walk();
+            let mut function_info = FunctionInfo {
+                start_position: node.start_byte(),
+                end_position: node.end_byte(),
+                file_path: file_path.to_string(),
+                ..Default::default()
+            };
+            for child in node.children(&mut cursor) {
+                match child.kind() {
+                    "visibility_modifier" => {
+                        function_info.is_pub = true;
+                    }
+                    "type_identifier" => {
+                        function_info.name = child.utf8_text(code.as_bytes()).unwrap().to_string();
+                    }
+                    // more here
+                    _ => {}
+                }
             }
+            // println!("Extracting function: {}", struct_info.name);
+            Some(Box::new(function_info))
         } else {
             None
         }

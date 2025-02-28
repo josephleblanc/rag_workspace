@@ -1,17 +1,17 @@
 // src/main.rs
-use std::env;
-use std::fs::File;
-use std::io::Write;
-use std::path::Path;
 
+mod debug;
 mod extract;
 mod function_extractor;
 mod impl_extractor;
 mod struct_extractor;
 mod traverse;
 
+use debug::{process_any_debug, process_box_take_ownership};
+
+use std::{any::Any, env, fs::File, io::Write, path::Path};
+
 use anyhow::Result;
-use std::collections::HashMap;
 
 use extract::{ExtractedData, FunctionInfo, ImplInfo, StructInfo, TypeAliasInfo}; // Import FunctionInfo from extract
 use traverse::{
@@ -44,10 +44,18 @@ fn main() -> Result<()> {
     ];
 
     // Traverse the directory and extract information
-    let results = traverse_and_parse_directory(root_directory, directories_to_ignore, extractors.clone())?;
+    let results =
+        traverse_and_parse_directory(root_directory, directories_to_ignore, extractors.clone())?;
+
+    use std::any::TypeId;
 
     // Process the results
     println!("\n--- Extracted Information ---");
+    println!(
+        "main.rs: ImplInfoInfo TypeId: {:?}",
+        TypeId::of::<ImplInfo>()
+    );
+
     let mut extracted_data = ExtractedData::default();
 
     for result in results {
@@ -60,7 +68,9 @@ fn main() -> Result<()> {
         } else if let Some(impl_info) = result.downcast_ref::<ImplInfo>() {
             extracted_data.impls.push(impl_info.clone());
         } else {
-            // println!("  Unknown type of info extracted");
+            println!("  Unknown type of info extracted");
+            let uncertain_id = (result).type_id();
+            println!("  Unceratin Type: {:?}", uncertain_id);
         }
     }
     println!("--- End Extracted Information ---");

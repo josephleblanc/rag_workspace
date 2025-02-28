@@ -2,7 +2,6 @@ use serde::{Deserialize, Serialize};
 
 use anyhow::Result;
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
-#[allow(dead_code)]
 pub struct FunctionInfo {
     pub name: String,
     pub parameters: Vec<(String, String)>,
@@ -28,15 +27,20 @@ pub fn extract_function_info(
     // Extract function name
     if let Some(name_node) = node.child_by_field_name("name") {
         function_info.name = String::from(name_node.utf8_text(code.as_bytes())?);
+        println!("found function name: {}", function_info.name);
     }
 
     // Extract parameters
     if let Some(parameters_node) = node.child_by_field_name("parameters") {
+        println!("Found parameters node");
+        println!("parameters_node kind: {}", parameters_node.kind());
         let mut param_cursor = parameters_node.walk();
         if param_cursor.goto_first_child() {
             loop {
                 let param_node = param_cursor.node();
+                println!("Parameter node kind: {}", param_node.kind());
                 if param_node.kind() == "parameter" {
+                    println!("Found parameter node");
                     let mut name = String::new();
                     let mut type_name = String::new();
 
@@ -44,14 +48,32 @@ pub fn extract_function_info(
                     if param_child_cursor.goto_first_child() {
                         loop {
                             let child_node = param_child_cursor.node();
+                            println!("Parameter child node kind: {}", child_node.kind());
                             match child_node.kind() {
-                                "identifier" => {
-                                    name = String::from(child_node.utf8_text(code.as_bytes())?);
+                                "identifier" => match child_node.utf8_text(code.as_bytes()) {
+                                    Ok(text) => {
+                                        name = String::from(text);
+                                        println!("Found parameter name: {}", name);
+                                    }
+                                    Err(e) => {
+                                        eprintln!("Error extracting parameter name: {}", e);
+                                    }
+                                },
+                                "type_identifier" => match child_node.utf8_text(code.as_bytes()) {
+                                    Ok(text) => {
+                                        type_name = String::from(text);
+                                        println!("Found parameter type: {}", type_name);
+                                    }
+                                    Err(e) => {
+                                        eprintln!("Error extracting parameter type: {}", e);
+                                    }
+                                },
+                                _ => {
+                                    println!(
+                                        "Unexpected parameter child node kind: {}",
+                                        child_node.kind()
+                                    );
                                 }
-                                "type_identifier" => {
-                                    type_name = String::from(child_node.utf8_text(code.as_bytes())?);
-                                }
-                                _ => {}
                             }
                             if !param_child_cursor.goto_next_sibling() {
                                 break;
@@ -71,25 +93,20 @@ pub fn extract_function_info(
 
     // Extract return type
     if let Some(return_type_node) = node.child_by_field_name("return_type") {
-        function_info.return_type = Some(String::from(return_type_node.utf8_text(code.as_bytes())?));
+        function_info.return_type =
+            Some(String::from(return_type_node.utf8_text(code.as_bytes())?));
     }
 
     // Check for visibility (pub)
-    let mut cursor = node.walk();
-    if cursor.goto_first_child() {
-        loop {
-            let child_node = cursor.node();
-            if child_node.kind() == "visibility_modifier" {
-                function_info.is_pub = true;
-                break;
-            }
-            if !cursor.goto_next_sibling() {
-                break;
-            }
-        }
+    if let Some(visibility_node) = node.child_by_field_name("visibility_modifier") {
+        function_info.is_pub = true;
     }
-
     function_info.file_path = file_path;
 
+    println!(
+        "--> function_info() returning function named {}",
+        function_info.name
+    );
+    println!("function_info: {:?}", function_info);
     Ok(function_info)
 }
