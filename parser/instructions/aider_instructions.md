@@ -14,7 +14,7 @@ semantically meaningful data that will later be passed into a database for an
 RAG pipeline. The RAG is intended to assist in an LLM's code generation and
 refactoring.
 
-The inteded database will be a heterogeneous graph database. This means it will
+The intended database will be a heterogeneous graph database. This means it will
 be important to identify relationships between data structures. Those
 relashionships will later allow us to create edges in the graph to represent
 meaningful connections, and improve the capability of the RAG and thereby the
@@ -32,9 +32,9 @@ The project aims to accept a directory as input, and then parse the `.rs` files 
 Currently we have a simple way to display output in `main.rs`, but this should
 split off into its own file in a `untils` called `print_extracted_stats.rs`
 
-- [ ] `print_extracted_stats` Split printing functions displaying numbers of
+- [x] `print_extracted_stats` Split printing functions displaying numbers of
 extracted items into a separate function.
-- [ ] Move `print_extracted_stats.rs` into the `utils` folder.
+- [x] Move `print_extracted_stats.rs` into the `utils` folder.
 - [ ] Test output and fix if needed.
 - [ ] Refactor for improvements
 - [ ] Test output again and fix if needed.

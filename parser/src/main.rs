@@ -1,24 +1,24 @@
 // src/main.rs
 mod debug;
 mod extract;
-mod utils;
 mod traverse;
-
-#[allow(unused_imports)]
-use debug::{process_any_debug, process_box_take_ownership};
-
-use std::{any::Any, env, fs::File, io::Write, path::Path};
-
-use anyhow::Result;
+mod utils;
 
 use crate::{
-    utils::print_extracted_stats,
     extract::{
         ExtractedData, FunctionInfo, FunctionInfoExtractor, ImplInfo, ImplInfoExtractor,
         StructInfo, StructInfoExtractor, TypeAliasInfo, TypeAliasInfoExtractor,
     },
+    print_extracted_stats::print_extracted_stats,
     traverse::{traverse_and_parse_directory, InfoExtractor},
+    utils::print_extracted_stats,
 };
+
+use anyhow::Result;
+use std::{any::Any, env, fs::File, io::Write, path::Path};
+
+#[allow(unused_imports)]
+use debug::{process_any_debug, process_box_take_ownership};
 
 fn main() -> Result<()> {
     // Count node kinds
