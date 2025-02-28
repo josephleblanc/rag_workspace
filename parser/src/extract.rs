@@ -148,7 +148,9 @@ impl InfoExtractor for UseDependencyInfoExtractor {
                         // Handle the "as" alias
                         let mut alias_cursor = child.walk();
                         for alias_child in child.children(&mut alias_cursor) {
-                            if alias_child.kind() == "identifier" | alias_child.kind() == "scoped_identifier"{
+                            if alias_child.kind() == "identifier"
+                                || alias_child.kind() == "scoped_identifier"
+                            {
                                 if let Ok(alias) = alias_child.utf8_text(code.as_bytes()) {
                                     use_dependency_info.alias = Some(alias.to_string());
                                     break;
@@ -278,7 +280,9 @@ impl InfoExtractor for StructInfoExtractor {
                             .push(child.utf8_text(code.as_bytes()).unwrap().to_string());
                     }
                     "attribute_item" => {
-                        struct_info.attributes.push(child.utf8_text(code.as_bytes()).unwrap().to_string());
+                        struct_info
+                            .attributes
+                            .push(child.utf8_text(code.as_bytes()).unwrap().to_string());
                     }
                     _ => {}
                 }
