@@ -6,6 +6,7 @@ use tree_sitter::{Node, Parser};
 use walkdir::WalkDir;
 
 use anyhow::{Context, Result};
+use crate::debug::maybe_collect_node_kind;
 
 // Define a trait for extraction
 pub trait InfoExtractor {
@@ -20,40 +21,7 @@ pub fn traverse_tree(
     file_path: String,
     results: &mut Vec<Box<dyn Any>>,  // Store the results
     node_kinds: &mut HashSet<String>, // Collect node kinds
-) {
-    // Collect node kinds
-    node_kinds.insert(node.kind().to_string());
-
-    if node.kind() == "source_file" {
-        let mut cursor = node.walk();
-        if cursor.goto_first_child() {
-            loop {
-                // Check if any extractor matches the current node
-                // for extractor in extractors {
-                //     if node.kind() == extractor.node_kind() {
-                //         if let Some(info) = extractor.extract(node, code, file_path.clone()) {
-                //             // Store the extracted info
-                //             results.push(info);
-                //         }
-                //     }
-                // }
-                //
-                extract_results(node, code, extractors, &file_path, results);
-                traverse_tree(
-                    cursor.node(),
-                    code,
-                    extractors,
-                    file_path.clone(),
-                    results,
-                    node_kinds,
-                );
-                if !cursor.goto_next_sibling() {
-                    break;
-                }
-            }
-        }
-        return;
-    }
+    ) {
 
     // Recursively traverse children, but only if the current node wasn't already extracted
     // This prevents us from recursing too deeply after we've found a struct, function, etc.
