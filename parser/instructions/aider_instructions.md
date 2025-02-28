@@ -92,3 +92,6 @@ It might be good to implement a feature flag to collect node kinds during
 traversal. This would allow us to print out the unique node kinds found in a
 directory, which could be useful for debugging and understanding the structure
 of the code.
+
+- Regarding this feature, there is a function in `traverse.rs` that I have used
+`#ignore(dead_code)` on, which we can revisit later.

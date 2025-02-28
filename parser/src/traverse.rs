@@ -20,8 +20,7 @@ pub fn traverse_tree(
     file_path: String,
     results: &mut Vec<Box<dyn Any>>,  // Store the results
     node_kinds: &mut HashSet<String>, // Collect node kinds
-    ) {
-
+) {
     // Recursively traverse children, but only if the current node wasn't already extracted
     // This prevents us from recursing too deeply after we've found a struct, function, etc.
     let mut extracted = false;
@@ -53,7 +52,6 @@ pub fn traverse_tree(
         }
     }
 }
-
 fn extract_results(
     node: Node<'_>,
     code: &str,
@@ -71,6 +69,7 @@ fn extract_results(
     }
 }
 
+#[allow(dead_code)]
 pub fn traverse_and_count_node_kinds(
     root_dir: &Path,
     ignored_directories: Option<Vec<String>>,
