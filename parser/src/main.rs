@@ -45,8 +45,6 @@ fn main() -> Result<()> {
         traverse_and_parse_directory(root_directory, directories_to_ignore, extractors.clone())?;
 
     // Process the results
-    println!("\n--- Extracted Information ---");
-
     let mut extracted_data = ExtractedData::default();
 
     for result in results {
@@ -64,7 +62,6 @@ fn main() -> Result<()> {
             println!("  Unceratin Type: {:?}", uncertain_id);
         }
     }
-    println!("--- End Extracted Information ---");
 
     // Serialize to RON and save to file
     let ron_string =
