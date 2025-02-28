@@ -77,7 +77,7 @@ pub fn traverse_and_count_node_kinds(
     ignored_directories: Option<Vec<String>>,
     _extractors: Vec<&dyn InfoExtractor>,
 ) -> Result<HashMap<String, usize>> {
-    let mut node_kind_counts: HashMap<String, usize> = HashMap::new();
+    let node_kind_counts: HashMap<String, usize> = HashMap::new();
 
     for entry in WalkDir::new(root_dir).into_iter().filter_map(|e| e.ok()) {
         let path = entry.path();
