@@ -10,10 +10,12 @@ use std::{any::Any, env, fs::File, io::Write, path::Path};
 
 use anyhow::Result;
 
-use extract::{ExtractedData, FunctionInfo, ImplInfo, StructInfo, TypeAliasInfo}; // Import FunctionInfo from extract
-use traverse::{
-    traverse_and_parse_directory, FunctionInfoExtractor, ImplInfoExtractor, InfoExtractor,
-    StructInfoExtractor, TypeAliasInfoExtractor,
+use crate::{
+    extract::{
+        ExtractedData, FunctionInfo, FunctionInfoExtractor, ImplInfo, ImplInfoExtractor,
+        StructInfo, StructInfoExtractor, TypeAliasInfo, TypeAliasInfoExtractor,
+    },
+    traverse::{traverse_and_parse_directory, InfoExtractor},
 };
 
 fn main() -> Result<()> {
@@ -44,14 +46,8 @@ fn main() -> Result<()> {
     let results =
         traverse_and_parse_directory(root_directory, directories_to_ignore, extractors.clone())?;
 
-    use std::any::TypeId;
-
     // Process the results
     println!("\n--- Extracted Information ---");
-    println!(
-        "main.rs: ImplInfoInfo TypeId: {:?}",
-        TypeId::of::<ImplInfo>()
-    );
 
     let mut extracted_data = ExtractedData::default();
 

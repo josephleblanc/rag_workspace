@@ -104,7 +104,7 @@ impl InfoExtractor for ImplInfoExtractor {
         //     }
         // } else {
         //     None
-        // }
+        // } [ #someday ]
     }
 
     fn node_kind(&self) -> &'static str {

@@ -418,6 +418,25 @@ enum Collision {
     Bottom,
 }
 
+enum Example {}
+
+enum NewThing {
+    Some(i32),
+    Another(String),
+    Nothing,
+}
+
+struct Pos {
+    x: f32,
+    y: f32,
+}
+
+enum Matrix {
+    Location(Pos),
+    Nowhere,
+    WithoutReason(NewThing),
+}
+
 // Returns `Some` if `ball` collides with `bounding_box`.
 // The returned `Collision` is the side of `bounding_box` that `ball` hit.
 fn ball_collision(ball: BoundingCircle, bounding_box: Aabb2d) -> Option<Collision> {

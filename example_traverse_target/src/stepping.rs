@@ -1,4 +1,5 @@
-use bevy::{app::MainScheduleOrder, ecs::schedule::*, prelude::*};
+use bevy::app::MainScheduleOrder;
+use bevy::{ecs::schedule::*, prelude::*};
 
 /// Independent [`Schedule`] for stepping systems.
 ///
