@@ -127,6 +127,7 @@ pub struct UseDependencyInfoExtractor {}
 
 impl InfoExtractor for UseDependencyInfoExtractor {
     fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
+        println!("UseDependencyInfoExtractor::extract called with node kind: {}", node.kind());
         if node.kind() == "use_declaration" {
             let mut use_dependency_info = UseDependencyInfo {
                 start_position: node.start_byte(),
