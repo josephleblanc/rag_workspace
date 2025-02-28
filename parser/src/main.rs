@@ -1,6 +1,7 @@
 // src/main.rs
 mod debug;
 mod extract;
+mod utils;
 mod traverse;
 
 #[allow(unused_imports)]
@@ -11,6 +12,7 @@ use std::{any::Any, env, fs::File, io::Write, path::Path};
 use anyhow::Result;
 
 use crate::{
+    utils::print_extracted_stats,
     extract::{
         ExtractedData, FunctionInfo, FunctionInfoExtractor, ImplInfo, ImplInfoExtractor,
         StructInfo, StructInfoExtractor, TypeAliasInfo, TypeAliasInfoExtractor,
