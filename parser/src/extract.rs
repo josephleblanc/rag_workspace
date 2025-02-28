@@ -182,10 +182,16 @@ impl InfoExtractor for StructInfoExtractor {
                     "type_identifier" => {
                         struct_info.name = child.utf8_text(code.as_bytes()).unwrap().to_string();
                     }
+                    "block" => {
+                        // handle block - not relevant for struct definition itself
+                    }
                     "attribute" => {
                         struct_info
                             .attributes
                             .push(child.utf8_text(code.as_bytes()).unwrap().to_string());
+                    }
+                    "attribute_item" => {
+                        struct_info.attributes.push(child.utf8_text(code.as_bytes()).unwrap().to_string());
                     }
                     _ => {}
                 }
