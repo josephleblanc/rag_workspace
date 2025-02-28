@@ -127,7 +127,6 @@ pub struct UseDependencyInfoExtractor {}
 
 impl InfoExtractor for UseDependencyInfoExtractor {
     fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
-        println!("UseDependencyInfoExtractor::extract called with node kind: {}", node.kind());
         if node.kind() == "use_declaration" {
             let mut use_dependency_info = UseDependencyInfo {
                 start_position: node.start_byte(),
@@ -139,58 +138,23 @@ impl InfoExtractor for UseDependencyInfoExtractor {
             let mut cursor = node.walk();
             for child in node.children(&mut cursor) {
                 match child.kind() {
-                    "use" => {
-                        continue; // Skip the "use" keyword
+                    "use" | ";" | "visibility_modifier" => {
+                        continue; // Skip the "use" keyword, semicolon, and visibility modifier
                     }
-                    "visibility_modifier" => {
-                        use_dependency_info.is_pub = true;
-                    }
-                    "scoped_identifier" | "path" => {
-                        println!("Found scoped_identifier or path: {:?}", child.utf8_text(code.as_bytes()).unwrap());
-                        // Extract the path segments
+                    "scoped_identifier" | "path" | "use_group" | "identifier" => {
                         extract_path_segments(child, code, &mut use_dependency_info.segments);
-                    }
-                    "use_group" => {
-                        println!("Found use_group");
-                        let mut use_list_cursor = child.walk();
-                        for use_list_child in child.children(&mut use_list_cursor) {
-                            match use_list_child.kind() {
-                                "use_list" => {
-                                    let mut list_cursor = use_list_child.walk();
-                                    for list_child in use_list_child.children(&mut list_cursor) {
-                                        match list_child.kind() {
-                                            "scoped_identifier" | "identifier" => {
-                                                extract_path_segments(list_child, code, &mut use_dependency_info.segments);
-                                            }
-                                            "use_wildcard" => {
-                                                // Handle wildcard imports (e.g., `*`)
-                                                use_dependency_info.segments.push("*".to_string());
-                                            }
-                                            _ => {
-                                                println!("Unexpected child in use_list: {:?}", list_child.kind());
-                                            }
-                                        }
-                                    }
-                                }
-                                _ => {
-                                    println!("Unexpected child in use_group: {:?}", use_list_child.kind());
-                                }
-                            }
-                        }
                     }
                     "use_as_clause" => {
                         // Handle the "as" alias
                         let mut alias_cursor = child.walk();
                         for alias_child in child.children(&mut alias_cursor) {
-                            if alias_child.kind() == "identifier" {
-                                use_dependency_info.alias =
-                                    Some(alias_child.utf8_text(code.as_bytes()).unwrap().to_string());
-                                break;
+                            if alias_child.kind() == "identifier" | alias_child.kind() == "scoped_identifier"{
+                                if let Ok(alias) = alias_child.utf8_text(code.as_bytes()) {
+                                    use_dependency_info.alias = Some(alias.to_string());
+                                    break;
+                                }
                             }
                         }
-                    }
-                    ";" => {
-                        continue; // Skip the semicolon
                     }
                     _ => {
                         println!("Unexpected child in use_declaration: {:?}", child.kind());
@@ -212,19 +176,24 @@ impl InfoExtractor for UseDependencyInfoExtractor {
 fn extract_path_segments(node: Node, code: &str, segments: &mut Vec<String>) {
     match node.kind() {
         "identifier" => {
-            segments.push(node.utf8_text(code.as_bytes()).unwrap().to_string());
+            if let Ok(segment) = node.utf8_text(code.as_bytes()) {
+                segments.push(segment.to_string());
+            }
         }
-        "scoped_identifier" => {
+        "scoped_identifier" | "path" => {
             let mut cursor = node.walk();
             for child in node.children(&mut cursor) {
                 extract_path_segments(child, code, segments);
             }
         }
-        "path" => {
+        "use_group" => {
             let mut cursor = node.walk();
             for child in node.children(&mut cursor) {
                 extract_path_segments(child, code, segments);
             }
+        }
+        "use_wildcard" => {
+            segments.push("*".to_string());
         }
         _ => {}
     }
