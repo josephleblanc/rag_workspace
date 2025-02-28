@@ -26,7 +26,7 @@ The project aims to accept a directory as input, and then parse the `.rs` files 
 
 #### Goal 1. Make better feedback mechanism
 
-- [ ] Started?
+- [x] Started?
 - [ ] Finished?
 
 Currently we have a simple way to display output in `main.rs`, but this should
@@ -35,7 +35,7 @@ split off into its own file in a `untils` called `print_extracted_stats.rs`
 - [x] `print_extracted_stats` Split printing functions displaying numbers of
 extracted items into a separate function.
 - [x] Move `print_extracted_stats.rs` into the `utils` folder.
-- [ ] Test output and fix if needed.
+- [x] Test output and fix if needed.
 - [ ] Refactor for improvements
 - [ ] Test output again and fix if needed.
 - [ ] Add improvements to printed formatting:
