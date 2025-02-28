@@ -6,7 +6,6 @@ use tree_sitter::{Node, Parser};
 use walkdir::WalkDir;
 
 use anyhow::{Context, Result};
-use crate::debug::maybe_collect_node_kind;
 
 // Define a trait for extraction
 pub trait InfoExtractor {
