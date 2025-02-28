@@ -7,7 +7,7 @@ edition = "2021"
 cc = "*"
 
 [features]
-debug_print_node_kinds = []
+collect_node_kinds = []
 
 [dependencies]
 tree-sitter = { version = "0.24", features = ["std"] }

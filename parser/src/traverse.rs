@@ -22,6 +22,9 @@ pub fn traverse_tree(
     node_kinds: &mut HashSet<String>, // Collect node kinds
     ) {
 
+    #[cfg(feature = "collect_node_kinds")]
+    crate::debug::maybe_collect_node_kind(node, node_kinds);
+
     // Recursively traverse children, but only if the current node wasn't already extracted
     // This prevents us from recursing too deeply after we've found a struct, function, etc.
     let mut extracted = false;
