@@ -311,4 +311,5 @@
             file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/stepping.rs",
         ),
     ],
+    use_dependencies: [],
 )

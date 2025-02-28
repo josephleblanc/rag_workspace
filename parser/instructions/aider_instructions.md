@@ -3,7 +3,7 @@
 While working on different projects it will be good to have a set of
 instructions I can copy and paste as needed.
 
-## Project
+## Project: Parser
 
 This is the `parser` project inside the `rag_worspace` cargo workspace.
 
@@ -24,7 +24,26 @@ The project aims to accept a directory as input, and then parse the `.rs` files 
 
 ### Goals
 
-#### Goal 1. Expand the semantic chunks that can be identified and extracted
+#### Goal 1. Make better feedback mechanism
+
+- [ ] Started?
+- [ ] Finished?
+
+Currently we have a simple way to display output in `main.rs`, but this should
+split off into its own file in a `untils` called `print_extracted_stats.rs`
+
+- [ ] `print_extracted_stats` Split printing functions displaying numbers of
+extracted items into a separate function.
+- [ ] Move `print_extracted_stats.rs` into the `utils` folder.
+- [ ] Test output and fix if needed.
+- [ ] Refactor for improvements
+- [ ] Test output again and fix if needed.
+- [ ] Add improvements to printed formatting:
+  - [ ] print stats in table
+
+**1.1**
+
+#### Goal 2. Expand the semantic chunks that can be identified and extracted
 
   [x] Started?
   [ ] Finished?
@@ -40,6 +59,7 @@ Add node detection and extraction for the following: \
 
 - [ ] `use` dependency
 - [ ] `mod` inclusion (in main)
+- [ ] update `parser/src/traverse.rs` with the new extractor
 
 ##### 2. Enums
 
@@ -47,6 +67,9 @@ Add node detection and extraction for the following: \
 - [ ] regular fields
 - [ ] `i32` and such inside
 - [ ] User-made structs inside
+Incorporate the new changes
+- [ ] update `parser/src/traverse.rs` with the new extractor
+- [ ] update `` with the new extractor
 
 ##### 3. Macros
 
@@ -58,7 +81,7 @@ Add node detection and extraction for the following: \
 - [ ] `&self` function
 - [ ] non-`&self` function
 
-##### <maybe more here later>
+##### \<maybe more here later\>
 
-- [ ] <task here>
-- [ ] <task here>
+- [ ] task
+- [ ] task
