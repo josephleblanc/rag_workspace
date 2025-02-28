@@ -84,7 +84,7 @@ fn main() -> Result<()> {
     println!("Output file path: {}", output_file_path.display());
     let mut file = File::create(&output_file_path)?;
     file.write_all(ron_string.as_bytes())?;
-    print_extracted_stats(&extracted_data, &output_file_path);
+    print_extracted_stats(extracted_data, &output_file_path);
 
     println!("Directory parsing complete.");
 
