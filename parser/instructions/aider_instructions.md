@@ -81,7 +81,14 @@ Incorporate the new changes
 - [ ] `&self` function
 - [ ] non-`&self` function
 
-##### \<maybe more here later\>
+##### <maybe more here later>
 
 - [ ] task
 - [ ] task
+
+### Someday maybe
+
+It might be good to implement a feature flag to collect node kinds during
+traversal. This would allow us to print out the unique node kinds found in a
+directory, which could be useful for debugging and understanding the structure
+of the code.
