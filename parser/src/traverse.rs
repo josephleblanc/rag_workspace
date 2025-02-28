@@ -109,9 +109,6 @@ pub fn traverse_and_count_node_kinds(
                 &mut Vec::new(),
                 &mut node_kinds,
             );
-            node_kinds
-                .iter()
-                .for_each(|kind| *node_kind_counts.entry(kind.clone()).or_insert(0) += 1);
         }
     }
     Ok(node_kind_counts)
@@ -167,6 +164,7 @@ pub fn traverse_and_parse_directory(
                             &mut results,
                             &mut node_kinds,
                         );
+                        #[cfg(debug_print_node_kinds)]
                         println!("Unique node kinds: {:?}", node_kinds);
                         all_results.extend(results);
                     }
