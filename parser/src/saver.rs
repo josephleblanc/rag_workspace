@@ -1,9 +1,22 @@
-// src/main.rs
-mod debug;
-mod extract;
-mod traverse;
-mod utils;
+use std::{fs::File, io::Write, path::Path};
+use anyhow::Result;
+use ron::ser::{PrettyConfig};
+use crate::extract::ExtractedData;
 
+pub fn save_extracted_data(extracted_ ExtractedData, output_file_path: &Path) -> Result<()> {
+    // Serialize to RON and save to file
+    let ron_string =
+        ron::ser::to_string_pretty(&extracted_data, PrettyConfig::default())?;
+
+    let mut file = File::create(&output_file_path)?;
+    file.write_all(ron_string.as_bytes())?;
+    Ok(())
+}
+```
+
+parser/src/main.rs
+```rust
+<<<<<<< SEARCH
 use crate::{
     extract::{
         ExtractedData, FunctionInfo, FunctionInfoExtractor, ImplInfo, ImplInfoExtractor,
@@ -16,13 +29,10 @@ use crate::{
 };
 
 use anyhow::Result;
-use std::{any::Any, env, path::Path};
+use std::{any::Any, env, fs::File, io::Write, path::Path};
 
 #[allow(unused_imports)]
 use debug::{process_any_debug, process_box_take_ownership};
-mod saver;
-
-use saver::save_extracted_data;
 
 fn main() -> Result<()> {
     // Count node kinds
@@ -88,3 +98,9 @@ fn main() -> Result<()> {
 
     Ok(())
 }
+```
+
+parser/src/main.rs
+```rust
+<<<<<<< SEARCH
+use std::{any::Any, env, fs::File, io::Write, path::Path};
