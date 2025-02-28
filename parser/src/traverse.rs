@@ -164,7 +164,7 @@ pub fn traverse_and_parse_directory(
                             &mut results,
                             &mut node_kinds,
                         );
-                        #[cfg(debug_print_node_kinds)]
+                        #[cfg(feature = "debug_print_node_kinds")]
                         println!("Unique node kinds: {:?}", node_kinds);
                         all_results.extend(results);
                     }
