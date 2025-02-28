@@ -1,12 +1,9 @@
 // src/main.rs
-
 mod debug;
 mod extract;
-mod function_extractor;
-mod impl_extractor;
-mod struct_extractor;
 mod traverse;
 
+#[allow(unused_imports)]
 use debug::{process_any_debug, process_box_take_ownership};
 
 use std::{any::Any, env, fs::File, io::Write, path::Path};

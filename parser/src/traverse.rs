@@ -1,5 +1,4 @@
-use crate::function_extractor::extract_function_info;
-use crate::struct_extractor::extract_struct_info;
+use std::collections::HashMap;
 use std::collections::HashSet;
 use std::{any::Any, fs, path::Path};
 
@@ -104,8 +103,6 @@ fn extract_results(
         }
     }
 }
-
-use std::collections::HashMap;
 
 pub fn traverse_and_count_node_kinds(
     root_dir: &Path,
@@ -357,8 +354,6 @@ impl InfoExtractor for StructInfoExtractor {
 }
 
 pub struct FunctionInfoExtractor {}
-
-use std::any::TypeId;
 
 impl InfoExtractor for FunctionInfoExtractor {
     fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {

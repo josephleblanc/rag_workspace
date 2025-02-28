@@ -1,10 +1,10 @@
 use crate::extract::ImplInfo;
 // src/debug.rs
 use crate::Any;
-use crate::FunctionInfo;
 use std::any::type_name_of_val;
 use tree_sitter::Node;
 
+#[allow(dead_code)]
 // Recursive function to print the syntax tree
 pub fn print_syntax_tree(node: Node, source_code: &str, indent: usize) {
     let node_kind = node.kind();
@@ -27,6 +27,7 @@ pub fn print_syntax_tree(node: Node, source_code: &str, indent: usize) {
     }
 }
 
+#[allow(dead_code)]
 pub(crate) fn process_any_debug(boxed_any: &Box<dyn Any>) {
     println!("Type inside Box<dyn Any>: {}", type_name_of_val(boxed_any));
 
@@ -37,6 +38,7 @@ pub(crate) fn process_any_debug(boxed_any: &Box<dyn Any>) {
     }
 }
 
+#[allow(dead_code)]
 pub fn process_box_take_ownership(boxed_any: Box<dyn Any>) {
     let none: Option<ImplInfo> = None;
     println!(
