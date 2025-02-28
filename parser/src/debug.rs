@@ -3,6 +3,7 @@ use crate::extract::ImplInfo;
 use crate::Any;
 use std::any::type_name_of_val;
 use tree_sitter::Node;
+use std::collections::HashSet;
 
 #[allow(dead_code)]
 // Recursive function to print the syntax tree
