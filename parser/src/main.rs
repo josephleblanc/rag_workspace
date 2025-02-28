@@ -59,7 +59,10 @@ fn main() -> Result<()> {
             extracted_data.type_aliases.push(type_alias_info.clone());
         } else if let Some(impl_info) = result.downcast_ref::<ImplInfo>() {
             extracted_data.impls.push(impl_info.clone());
-        } else {
+        } else if let Some(use_dependency_info) = result.downcast_ref::<extract::UseDependencyInfo>() {
+            extracted_data.use_dependencies.push(use_dependency_info.clone());
+        }
+         else {
             println!("  Unknown type of info extracted");
             let uncertain_id = (result).type_id();
             println!("  Unceratin Type: {:?}", uncertain_id);
