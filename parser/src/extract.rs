@@ -31,11 +31,22 @@ pub struct ExtractedData {
     pub functions: Vec<FunctionInfo>,
     pub type_aliases: Vec<TypeAliasInfo>,
     pub impls: Vec<ImplInfo>,
+    pub use_dependencies: Vec<UseDependencyInfo>,
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct ImplInfo {
     pub name: String,
+    pub is_pub: bool,
+    pub start_position: usize,
+    pub end_position: usize,
+    pub file_path: String,
+}
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+pub struct UseDependencyInfo {
+    pub segments: Vec<String>,
+    pub alias: Option<String>,
     pub is_pub: bool,
     pub start_position: usize,
     pub end_position: usize,
@@ -109,6 +120,95 @@ impl InfoExtractor for ImplInfoExtractor {
 
     fn node_kind(&self) -> &'static str {
         "impl_item"
+    }
+}
+
+pub struct UseDependencyInfoExtractor {}
+
+impl InfoExtractor for UseDependencyInfoExtractor {
+    fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
+        if node.kind() == "use_declaration" {
+            let mut use_dependency_info = UseDependencyInfo {
+                start_position: node.start_byte(),
+                end_position: node.end_byte(),
+                file_path: file_path.to_string(),
+                ..Default::default()
+            };
+
+            let mut cursor = node.walk();
+            for child in node.children(&mut cursor) {
+                match child.kind() {
+                    "visibility_modifier" => {
+                        use_dependency_info.is_pub = true;
+                    }
+                    "scoped_identifier" | "path" => {
+                        // Extract the path segments
+                        extract_path_segments(child, code, &mut use_dependency_info.segments);
+                    }
+                    "scoped_use_list" => {
+                        let mut list_cursor = child.walk();
+                        for list_child in child.children(&mut list_cursor) {
+                            match list_child.kind() {
+                                "path" => {
+                                    extract_path_segments(list_child, code, &mut use_dependency_info.segments);
+                                }
+                                "use_list" => {
+                                    let mut use_list_cursor = list_child.walk();
+                                    for use_list_child in list_child.children(&mut use_list_cursor) {
+                                        match use_list_child.kind() {
+                                            "scoped_identifier" | "identifier" => {
+                                                extract_path_segments(use_list_child, code, &mut use_dependency_info.segments);
+                                            }
+                                            "use_wildcard" => {
+                                                // Handle wildcard imports (e.g., `*`)
+                                                use_dependency_info.segments.push("*".to_string());
+                                            }
+                                            _ => {}
+                                        }
+                                    }
+                                }
+                                _ => {}
+                            }
+                        }
+                    }
+                    "use_as_clause" => {
+                        // Handle the "as" alias
+                        let mut alias_cursor = child.walk();
+                        for alias_child in child.children(&mut alias_cursor) {
+                            if alias_child.kind() == "identifier" {
+                                use_dependency_info.alias =
+                                    Some(alias_child.utf8_text(code.as_bytes()).unwrap().to_string());
+                                break;
+                            }
+                        }
+                    }
+                    _ => {}
+                }
+            }
+
+            Some(Box::new(use_dependency_info))
+        } else {
+            None
+        }
+    }
+
+    fn node_kind(&self) -> &'static str {
+        "use_declaration"
+    }
+}
+
+fn extract_path_segments(node: Node, code: &str, segments: &mut Vec<String>) {
+    let mut cursor = node.walk();
+    for child in node.children(&mut cursor) {
+        match child.kind() {
+            "identifier" => {
+                segments.push(child.utf8_text(code.as_bytes()).unwrap().to_string());
+            }
+            "scoped_identifier" => {
+                extract_path_segments(child, code, segments);
+            }
+            _ => {}
+        }
     }
 }
 
