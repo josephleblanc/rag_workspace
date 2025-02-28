@@ -95,3 +95,17 @@ of the code.
 
 - Regarding this feature, there is a function in `traverse.rs` that I have used
 `#ignore(dead_code)` on, which we can revisit later.
+
+### Message to Future Self
+
+*   **Project:** `parser` (part of `rag_workspace`)
+*   **Goal:** Extract semantic chunks from Rust code.
+*   **Current Task:** Extract `use` dependencies correctly. The `UseDependencyInfoExtractor` is added to the list of extractors, but it's not currently extracting any `use` statements.
+*   **Important:** The `traverse_tree` function's recursion was previously modified, but this caused issues with function extraction and was reverted. We need to find a different way to extract `use` dependencies without breaking other extractors.
+*   **Next Steps:**
+    1.  Verify that `UseDependencyInfoExtractor::extract` is being called with `use_declaration` nodes. (The print statement was added in commit `69473cd`).
+    2.  Carefully examine the `extract` method of `UseDependencyInfoExtractor` to ensure it's correctly traversing the `use_declaration` node and extracting the necessary information (segments, alias, etc.).
+    3.  Refer to the Tree-sitter grammar for Rust to understand the structure of `use_declaration` nodes.
+    4.  Remember that the recursion in `traverse_tree` should *not* be stopped after extracting a node.
+    5.  Be mindful of token usage and avoid unnecessary print statements or debugging code.
+    6.  The current file contents are as of the last "Trust this message" from the user.
