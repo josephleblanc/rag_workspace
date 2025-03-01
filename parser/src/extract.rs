@@ -68,7 +68,7 @@ pub struct StructInfo {
 #[derive(Clone, Debug, Serialize, Deserialize, Default)]
 pub struct ExtractedData {
     pub structs: Vec<StructInfo>,
-    pub functions: Vec<FunctionInfo<()>>,
+    pub functions: Vec<FunctionInfo>,
     pub type_aliases: Vec<TypeAliasInfo>,
     pub impls: Vec<ImplInfo>,
     pub use_dependencies: Vec<UseDependencyInfo>,
@@ -566,12 +566,16 @@ impl InfoExtractor for FunctionInfoExtractor {
                                     for param_child in param.children(&mut param_cursor2) {
                                         match param_child.kind() {
                                             "identifier" => {
-                                                if let Ok(name) = param_child.utf8_text(code.as_bytes()) {
+                                                if let Ok(name) =
+                                                    param_child.utf8_text(code.as_bytes())
+                                                {
                                                     param_info.name = name.to_string();
                                                 }
                                             }
                                             "type" => {
-                                                if let Ok(type_name) = param_child.utf8_text(code.as_bytes()) {
+                                                if let Ok(type_name) =
+                                                    param_child.utf8_text(code.as_bytes())
+                                                {
                                                     param_info.type_name = type_name.to_string();
                                                 }
                                             }

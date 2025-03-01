@@ -153,118 +153,287 @@
     ],
     functions: [
         (
-            name: "",
+            name: "main",
             parameters: [],
             return_type: None,
             is_pub: false,
+            is_method: false,
             start_position: 1992,
             end_position: 2943,
             file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
         ),
         (
-            name: "",
-            parameters: [],
+            name: "setup",
+            parameters: [
+                (
+                    name: "commands",
+                    type_name: "",
+                ),
+                (
+                    name: "meshes",
+                    type_name: "",
+                ),
+                (
+                    name: "materials",
+                    type_name: "",
+                ),
+                (
+                    name: "asset_server",
+                    type_name: "",
+                ),
+            ],
             return_type: None,
             is_pub: false,
+            is_method: false,
             start_position: 6031,
             end_position: 10141,
             file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
         ),
         (
-            name: "",
-            parameters: [],
+            name: "move_paddle",
+            parameters: [
+                (
+                    name: "keyboard_input",
+                    type_name: "",
+                ),
+                (
+                    name: "paddle_transform",
+                    type_name: "",
+                ),
+                (
+                    name: "time",
+                    type_name: "",
+                ),
+            ],
             return_type: None,
             is_pub: false,
+            is_method: false,
             start_position: 10143,
             end_position: 11070,
             file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
         ),
         (
-            name: "",
-            parameters: [],
+            name: "apply_velocity",
+            parameters: [
+                (
+                    name: "query",
+                    type_name: "",
+                ),
+                (
+                    name: "time",
+                    type_name: "",
+                ),
+            ],
             return_type: None,
             is_pub: false,
+            is_method: false,
             start_position: 11072,
             end_position: 11347,
             file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
         ),
         (
-            name: "",
-            parameters: [],
+            name: "update_scoreboard",
+            parameters: [
+                (
+                    name: "score",
+                    type_name: "",
+                ),
+                (
+                    name: "score_root",
+                    type_name: "",
+                ),
+                (
+                    name: "writer",
+                    type_name: "",
+                ),
+            ],
             return_type: None,
             is_pub: false,
+            is_method: false,
             start_position: 11349,
             end_position: 11549,
             file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
         ),
         (
-            name: "",
-            parameters: [],
+            name: "check_for_collisions",
+            parameters: [
+                (
+                    name: "commands",
+                    type_name: "",
+                ),
+                (
+                    name: "score",
+                    type_name: "",
+                ),
+                (
+                    name: "ball_query",
+                    type_name: "",
+                ),
+                (
+                    name: "collider_query",
+                    type_name: "",
+                ),
+                (
+                    name: "collision_events",
+                    type_name: "",
+                ),
+            ],
             return_type: None,
             is_pub: false,
+            is_method: false,
             start_position: 11551,
             end_position: 13691,
             file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
         ),
         (
-            name: "",
-            parameters: [],
+            name: "play_collision_sound",
+            parameters: [
+                (
+                    name: "commands",
+                    type_name: "",
+                ),
+                (
+                    name: "collision_events",
+                    type_name: "",
+                ),
+                (
+                    name: "sound",
+                    type_name: "",
+                ),
+            ],
             return_type: None,
             is_pub: false,
+            is_method: false,
             start_position: 13693,
             end_position: 14123,
             file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
         ),
         (
-            name: "",
-            parameters: [],
+            name: "ball_collision",
+            parameters: [
+                (
+                    name: "ball",
+                    type_name: "",
+                ),
+                (
+                    name: "bounding_box",
+                    type_name: "",
+                ),
+            ],
             return_type: None,
             is_pub: false,
+            is_method: false,
             start_position: 14568,
             end_position: 15104,
             file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
         ),
         (
-            name: "",
-            parameters: [],
+            name: "initialized",
+            parameters: [
+                (
+                    name: "state",
+                    type_name: "",
+                ),
+            ],
             return_type: None,
             is_pub: false,
+            is_method: false,
             start_position: 2614,
             end_position: 2689,
             file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/stepping.rs",
         ),
         (
-            name: "",
-            parameters: [],
+            name: "build_ui",
+            parameters: [
+                (
+                    name: "commands",
+                    type_name: "",
+                ),
+                (
+                    name: "asset_server",
+                    type_name: "",
+                ),
+                (
+                    name: "schedules",
+                    type_name: "",
+                ),
+                (
+                    name: "stepping",
+                    type_name: "",
+                ),
+                (
+                    name: "state",
+                    type_name: "",
+                ),
+            ],
             return_type: None,
             is_pub: false,
+            is_method: false,
             start_position: 3129,
             end_position: 5776,
             file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/stepping.rs",
         ),
         (
-            name: "",
-            parameters: [],
+            name: "build_stepping_hint",
+            parameters: [
+                (
+                    name: "commands",
+                    type_name: "",
+                ),
+            ],
             return_type: None,
             is_pub: false,
+            is_method: false,
             start_position: 5778,
             end_position: 6505,
             file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/stepping.rs",
         ),
         (
-            name: "",
-            parameters: [],
+            name: "handle_input",
+            parameters: [
+                (
+                    name: "keyboard_input",
+                    type_name: "",
+                ),
+                (
+                    name: "stepping",
+                    type_name: "",
+                ),
+            ],
             return_type: None,
             is_pub: false,
+            is_method: false,
             start_position: 6507,
             end_position: 7390,
             file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/stepping.rs",
         ),
         (
-            name: "",
-            parameters: [],
+            name: "update_ui",
+            parameters: [
+                (
+                    name: "commands",
+                    type_name: "",
+                ),
+                (
+                    name: "state",
+                    type_name: "",
+                ),
+                (
+                    name: "stepping",
+                    type_name: "",
+                ),
+                (
+                    name: "ui",
+                    type_name: "",
+                ),
+                (
+                    name: "writer",
+                    type_name: "",
+                ),
+            ],
             return_type: None,
             is_pub: false,
+            is_method: false,
             start_position: 7392,
             end_position: 8559,
             file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/stepping.rs",
