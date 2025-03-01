@@ -17,7 +17,7 @@ pub trait InfoExtractor {
         code: &str,
         file_path: String,
         extracted_data_: &mut ExtractedData,
-    ) -> Result<()>;
+    ) -> Result<(), anyhow::Error>;
     fn node_kind(&self) -> &'static str;
 }
 

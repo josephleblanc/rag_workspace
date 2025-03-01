@@ -120,7 +120,7 @@ impl InfoExtractor for ImplInfoExtractor {
         code: &str,
         file_path: String,
         extracted_data_: &mut ExtractedData,
-    ) -> Result<()> {
+    ) -> Result<(), anyhow::Error> {
         if node.kind() == "impl_item" {
             let mut cursor = node.walk();
             let mut impl_info = ImplInfo {
@@ -173,7 +173,7 @@ impl InfoExtractor for EnumInfoExtractor {
         code: &str,
         file_path: String,
         extracted_data_: &mut ExtractedData,
-    ) -> Result<()> {
+    ) -> Result<(), anyhow::Error> {
         if node.kind() == "enum_item" {
             let mut enum_info = EnumInfo {
                 name: String::new(),
@@ -307,7 +307,7 @@ impl InfoExtractor for ModInfoExtractor {
         code: &str,
         file_path: String,
         extracted_data_: &mut ExtractedData,
-    ) -> Result<()> {
+    ) -> Result<(), anyhow::Error> {
         if node.kind() == "mod_item" {
             let mut mod_info = ModInfo {
                 name: String::new(),
@@ -351,7 +351,7 @@ impl InfoExtractor for UseDependencyInfoExtractor {
         code: &str,
         file_path: String,
         extracted_data_: &mut ExtractedData,
-    ) -> Result<()> {
+    ) -> Result<(), anyhow::Error> {
         if node.kind() == "use_declaration" {
             let mut use_dependency_info = UseDependencyInfo {
                 start_position: node.start_byte(),
@@ -433,7 +433,7 @@ impl InfoExtractor for TypeAliasInfoExtractor {
         code: &str,
         file_path: String,
         extracted_data_: &mut ExtractedData,
-    ) -> Result<()> {
+    ) -> Result<(), anyhow::Error> {
         if node.kind() == "type_item" {
             let mut type_alias_info = TypeAliasInfo {
                 name: String::new(),
@@ -488,7 +488,7 @@ impl InfoExtractor for StructInfoExtractor {
         code: &str,
         file_path: String,
         extracted_data_: &mut ExtractedData,
-    ) -> Result<()> {
+    ) -> Result<(), anyhow::Error> {
         if node.kind() == "struct_item" {
             let mut cursor = node.walk();
             let mut struct_info = StructInfo {
@@ -541,7 +541,7 @@ impl InfoExtractor for FunctionInfoExtractor {
         code: &str,
         file_path: String,
         extracted_data_: &mut ExtractedData,
-    ) -> Result<()> {
+    ) -> Result<(), anyhow::Error> {
         if node.kind() == "function_item" {
             let mut cursor = node.walk();
             let mut function_info: FunctionInfo<()> = FunctionInfo {
