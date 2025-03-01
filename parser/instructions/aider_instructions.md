@@ -69,9 +69,9 @@ Add node detection and extraction for the following: \
 - [x] regular fields
 - [x] `i32` and such inside
 - [x] User-made structs inside
-Incorporate the new changes
-- [ ] update `parser/src/traverse.rs` with the new extractor
-- [ ] update `` with the new extractor
+  - [ ] Implement extraction
+  - [ ] Implement saving
+  - [ ] Update printed table
 
 ##### 3. Macros
 
