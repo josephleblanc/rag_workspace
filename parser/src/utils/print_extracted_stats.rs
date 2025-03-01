@@ -10,6 +10,11 @@ pub fn print_extracted_stats(extracted: ExtractedData, output_file_path: &Path) 
     table.add_row(row!["Structs", extracted.structs.len()]);
 
     table.add_row(row!["Functions", extracted.functions.len()]);
+    let mut total_params = 0;
+    for function_info in &extracted.functions {
+        total_params += function_info.parameters.len();
+    }
+    table.add_row(row!["Function Parameters", total_params]);
 
     table.add_row(row!["Type Aliases", extracted.type_aliases.len()]);
 
