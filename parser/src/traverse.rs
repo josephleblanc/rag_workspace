@@ -20,7 +20,7 @@ pub fn traverse_tree(
     code: &str,
     extractors: &[&dyn InfoExtractor], // Use a slice of trait objects
     file_path: String,
-    extracted_ &mut ExtractedData,
+    extracted_data_ &mut ExtractedData,
     node_kinds: &mut HashSet<String>, // Collect node kinds
 ) {
     // Recursively traverse children, but only if the current node wasn't already extracted
@@ -28,7 +28,7 @@ pub fn traverse_tree(
     let mut extracted = false;
     for extractor in extractors {
         if node.kind() == extractor.node_kind() {
-            extract_results(node, code, extractors, &file_path, extracted_data);
+            extract_results(node, code, extractors, &file_path, extracted_data_);
             extracted = true;
             break;
         }
@@ -38,13 +38,13 @@ pub fn traverse_tree(
         let mut cursor = node.walk();
         if cursor.goto_first_child() {
             loop {
-                extract_results(node, code, extractors, &file_path, extracted_data);
+                extract_results(node, code, extractors, &file_path, extracted_data_);
                 traverse_tree(
                     cursor.node(),
                     code,
                     extractors,
                     file_path.clone(),
-                    extracted_data,
+                    extracted_data_,
                     node_kinds,
                 );
                 if !cursor.goto_next_sibling() {
@@ -59,11 +59,11 @@ fn extract_results(
     code: &str,
     extractors: &[&dyn InfoExtractor],
     file_path: &String,
-    extracted_ &mut ExtractedData,
+    extracted_data_ &mut ExtractedData,
 ) {
     for extractor in extractors {
         if node.kind() == extractor.node_kind() {
-            if let Err(e) = extractor.extract(node, code, file_path.clone(), extracted_data) {
+            if let Err(e) = extractor.extract(node, code, file_path.clone(), extracted_data_) {
                 eprintln!("Failed to extract info: {}", e);
             }
         }
