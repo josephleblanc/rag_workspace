@@ -341,4 +341,14 @@
             file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/stepping.rs",
         ),
     ],
+    mods: [
+        (
+            name: "stepping",
+            is_pub: false,
+            start_position: 279,
+            end_position: 292,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
+        ),
+    ],
+    enums: [],
 )
