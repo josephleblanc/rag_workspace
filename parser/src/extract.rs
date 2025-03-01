@@ -538,6 +538,7 @@ impl InfoExtractor for StructInfoExtractor {
                 ..Default::default()
             };
 
+            let mut has_fields = false;
             for child in node.children(&mut cursor) {
                 match child.kind() {
                     "attribute_item" => {
@@ -555,6 +556,32 @@ impl InfoExtractor for StructInfoExtractor {
                     }
                     "type_identifier" => {
                         struct_info.name = child.utf8_text(code.as_bytes()).unwrap().to_string();
+                    }
+                     "field_declaration_list" => {
+                        has_fields = true;
+                        let mut field_cursor = child.walk();
+                        for field in child.children(&mut field_cursor) {
+                            if field.kind() == "field_declaration" {
+                                let mut field_info = FieldInfo::default();
+                                let mut field_cursor2 = field.walk();
+                                for field_child in field.children(&mut field_cursor2) {
+                                    match field_child.kind() {
+                                        "field_identifier" => {
+                                            if let Ok(name) = field_child.utf8_text(code.as_bytes()) {
+                                                field_info.name = name.to_string();
+                                            }
+                                        }
+                                        "type" => {
+                                            if let Ok(typ) = field_child.utf8_text(code.as_bytes()) {
+                                                field_info.type_name = typ.to_string();
+                                            }
+                                        }
+                                        _ => {}
+                                    }
+                                }
+                                struct_info.fields.push(field_info);
+                            }
+                        }
                     }
                     "block" => {
                         // handle block - not relevant for struct definition itself
@@ -621,8 +648,15 @@ impl InfoExtractor for FunctionInfoExtractor {
                                                     param_info.name = name.to_string();
                                                 }
                                             }
-                                            "type" | "generic_type" => {
+                                            "type"  => {
                                                 if let Ok(type_name) =
+                                                    param_child.utf8_text(code.as_bytes())
+                                                {
+                                                    param_info.type_name = type_name.to_string();
+                                                }
+                                            }
+                                            "generic_type" => {
+                                                 if let Ok(type_name) =
                                                     param_child.utf8_text(code.as_bytes())
                                                 {
                                                     param_info.type_name = type_name.to_string();
@@ -640,13 +674,6 @@ impl InfoExtractor for FunctionInfoExtractor {
                         if let Some(return_type_node) = node.child_by_field_name("return_type") {
                             if let Ok(return_type) = return_type_node.utf8_text(code.as_bytes()) {
                                 function_info.return_type = Some(return_type.to_string());
-                            }
-                        }
-                    }
-                    "self_parameter" => {
-                        if let Ok(self_param) = child.utf8_text(code.as_bytes()) {
-                            if self_param == "&self" || self_param == "&mut self" || self_param == "self" {
-                                function_info.is_method = true;
                             }
                         }
                     }
