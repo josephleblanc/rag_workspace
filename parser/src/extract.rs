@@ -209,88 +209,79 @@ impl InfoExtractor for EnumInfoExtractor {
     }
 }
 
-fn extract_enum_variants(node: Node, code: &str, enum_info: &mut EnumInfo) {
-    println!("  Found enum_body");
-    let mut variant_cursor = node.walk();
-    for variant in node.children(&mut variant_cursor) {
-        println!("    Variant kind: {}", variant.kind());
-        if variant.kind() == "enum_variant" {
-            let mut variant_info = EnumVariantInfo {
-                name: String::new(),
-                variant_type: EnumVariantType::Unit, // Default to Unit
-            };
-            let mut name_cursor = variant.walk();
-            for name_child in variant.children(&mut name_cursor) {
-                println!("      Name child kind: {}", name_child.kind());
-                match name_child.kind() {
-                    "identifier" => {
-                        if let Ok(name) = name_child.utf8_text(code.as_bytes())
-                        {
-                            variant_info.name = name.to_string();
-                            println!("      Variant name: {}", variant_info.name);
-                        }
-                    }
-                    "ordered_field_declaration_list" => {
-                        // Handle tuple-like variants
-                        println!("      Found ordered_field_declaration_list");
-                        let mut tuple_fields: Vec<String> = Vec::new();
-                        let mut field_cursor = name_child.walk();
-                        for field in name_child.children(&mut field_cursor) {
-                            println!("        Field kind: {}", field.kind());
-                            if field.kind() == "type" {
-                                if let Ok(field_type) =
-                                    field.utf8_text(code.as_bytes())
-                                {
-                                    tuple_fields.push(field_type.to_string());
-                                    println!("        Tuple field type: {}", field_type);
-                                }
-                            }
-                        }
-                        variant_info.variant_type =
-                            EnumVariantType::Tuple(tuple_fields);
-                    }
-                    "record_field_list" => {
-                        // Handle struct-like variants
-                        println!("      Found record_field_list");
-                        let mut struct_fields: Vec<(String, String)> = Vec::new();
-                        let mut field_cursor = name_child.walk();
-                        for field in name_child.children(&mut field_cursor) {
-                            println!("        Field kind: {}", field.kind());
-                            if field.kind() == "field_declaration" {
-                                let mut field_name = String::new();
-                                let mut field_type = String::new();
-                                let mut field_cursor2 = field.walk();
-                                for field_child in field.children(&mut field_cursor2) {
-                                    println!("          Field child kind: {}", field_child.kind());
-                                    match field_child.kind() {
-                                        "field_identifier" => {
-                                            if let Ok(name) = field_child.utf8_text(code.as_bytes()) {
-                                                field_name = name.to_string();
-                                                println!("          Field name: {}", field_name);
-                                            }
-                                        }
-                                        "type" | "primitive_type" => {
-                                            if let Ok(typ) = field_child.utf8_text(code.as_bytes()) {
-                                                field_type = typ.to_string();
-                                                println!("          Field type: {}", field_type);
-                                            }
-                                        }
-                                        _ => {}
-                                    }
-                                }
-                                struct_fields.push((field_name, field_type));
-                            }
-                        }
-                        variant_info.variant_type =
-                            EnumVariantType::Struct(struct_fields);
-                    }
-                    _ => {}
+fn extract_enum_variant(node: Node, code: &str, enum_info: &mut EnumInfo) {
+    println!("    Found enum_variant");
+    let mut variant_info = EnumVariantInfo {
+        name: String::new(),
+        variant_type: EnumVariantType::Unit, // Default to Unit
+    };
+    let mut name_cursor = node.walk();
+    for name_child in node.children(&mut name_cursor) {
+        println!("      Name child kind: {}", name_child.kind());
+        match name_child.kind() {
+            "identifier" => {
+                if let Ok(name) = name_child.utf8_text(code.as_bytes()) {
+                    variant_info.name = name.to_string();
+                    println!("      Variant name: {}", variant_info.name);
                 }
             }
-            enum_info.variants.push(variant_info.clone());
+            "ordered_field_declaration_list" => {
+                // Handle tuple-like variants
+                println!("      Found ordered_field_declaration_list");
+                let mut tuple_fields: Vec<String> = Vec::new();
+                let mut field_cursor = name_child.walk();
+                for field in name_child.children(&mut field_cursor) {
+                    println!("        Field kind: {}", field.kind());
+                    if field.kind() == "type" | field.kind() == "primitive_type"{
+                        if let Ok(field_type) = field.utf8_text(code.as_bytes()) {
+                            tuple_fields.push(field_type.to_string());
+                            println!("        Tuple field type: {}", field_type);
+                        }
+                    }
+                }
+                variant_info.variant_type = EnumVariantType::Tuple(tuple_fields);
+            }
+            "record_field_list" => {
+                // Handle struct-like variants
+                println!("      Found record_field_list");
+                let mut struct_fields: Vec<(String, String)> = Vec::new();
+                let mut field_cursor = name_child.walk();
+                for field in name_child.children(&mut field_cursor) {
+                    println!("        Field kind: {}", field.kind());
+                    if field.kind() == "field_declaration" {
+                        let mut field_name = String::new();
+                        let mut field_type = String::new();
+                        let mut field_cursor2 = field.walk();
+                        for field_child in field.children(&mut field_cursor2) {
+                            println!("          Field child kind: {}", field_child.kind());
+                            match field_child.kind() {
+                                "field_identifier" => {
+                                    if let Ok(name) = field_child.utf8_text(code.as_bytes()) {
+                                        field_name = name.to_string();
+                                        println!("          Field name: {}", field_name);
+                                    }
+                                }
+                                "type" | "primitive_type" => {
+                                    if let Ok(typ) = field_child.utf8_text(code.as_bytes()) {
+                                        field_type = typ.to_string();
+                                        println!("          Field type: {}", field_type);
+                                    }
+                                }
+                                _ => {}
+                            }
+                        }
+                        struct_fields.push((field_name, field_type));
+                    }
+                }
+                variant_info.variant_type = EnumVariantType::Struct(struct_fields);
+            }
+            _ => {}
         }
     }
+    enum_info.variants.push(variant_info.clone());
 }
+
+fn extract_enum_variants(node: Node, code: &str, enum_info: &mut EnumInfo) {}
 
 pub struct ModInfoExtractor {}
 
