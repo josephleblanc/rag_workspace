@@ -177,7 +177,19 @@ impl InfoExtractor for ImplInfoExtractor {
 
     fn node_kind(&self) -> &'static str {
         "impl_item"
+}
+
+fn extract_doc_comment(node: Node, code: &str) -> Option<String> {
+    let mut cursor = node.walk();
+    for child in node.children(&mut cursor) {
+        if child.kind() == "outer_attribute" {
+            let text = child.utf8_text(code.as_bytes()).unwrap().to_string();
+            if text.starts_with("//!") {
+                return Some(text);
+            }
+        }
     }
+    None
 }
 
 pub struct MacroInfoExtractor {}
@@ -524,6 +536,12 @@ impl InfoExtractor for StructInfoExtractor {
                 file_path: file_path.to_string(),
                 ..Default::default()
             };
+
+            // Extract doc comments
+            if let Some(doc_comment) = extract_doc_comment(node, code) {
+                struct_info.doc_comment = Some(doc_comment);
+            }
+
             for child in node.children(&mut cursor) {
                 match child.kind() {
                     "visibility_modifier" => {
@@ -536,19 +554,18 @@ impl InfoExtractor for StructInfoExtractor {
                         // handle block - not relevant for struct definition itself
                     }
                     "attribute" => {
-                        struct_info
-                            .attributes
-                            .push(child.utf8_text(code.as_bytes()).unwrap().to_string());
+                        if let Ok(attribute) = child.utf8_text(code.as_bytes()) {
+                            struct_info.attributes.push(attribute.to_string());
+                        }
                     }
                     "attribute_item" => {
-                        struct_info
-                            .attributes
-                            .push(child.utf8_text(code.as_bytes()).unwrap().to_string());
+                        if let Ok(attribute) = child.utf8_text(code.as_bytes()) {
+                            struct_info.attributes.push(attribute.to_string());
+                        }
                     }
                     _ => {}
                 }
             }
-            // println!("Extracting struct: {}", struct_info.name);
             extracted_data_.structs.push(struct_info);
         }
         Ok(())
