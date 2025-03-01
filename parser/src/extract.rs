@@ -237,7 +237,7 @@ fn extract_enum_variant(node: Node, code: &str, enum_info: &mut EnumInfo) {
                 let mut field_cursor = name_child.walk();
                 for field in name_child.children(&mut field_cursor) {
                     println!("        Field kind: {}", field.kind());
-                    if field.kind() == "type" | field.kind() == "primitive_type"{
+                    if field.kind() == "type" || field.kind() == "primitive_type"{
                         if let Ok(field_type) = field.utf8_text(code.as_bytes()) {
                             tuple_fields.push(field_type.to_string());
                             println!("        Tuple field type: {}", field_type);
@@ -266,7 +266,7 @@ fn extract_enum_variant(node: Node, code: &str, enum_info: &mut EnumInfo) {
                                         println!("          Field name: {}", field_name);
                                     }
                                 }
-                                "type" | "primitive_type" => {
+                                "type" || "primitive_type" => {
                                     if let Ok(typ) = field_child.utf8_text(code.as_bytes()) {
                                         field_type = typ.to_string();
                                         println!("          Field type: {}", field_type);
