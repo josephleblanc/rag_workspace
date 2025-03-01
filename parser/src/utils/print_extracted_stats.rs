@@ -7,7 +7,6 @@ use std::path::Path;
 
 pub fn print_extracted_stats(extracted: ExtractedData, output_file_path: &Path) {
     let mut table = Table::new();
-
     // Define a custom table format with periods for internal spacing
     let table_format: TableFormat = FormatBuilder::new()
         .column_separator('│')
@@ -15,10 +14,7 @@ pub fn print_extracted_stats(extracted: ExtractedData, output_file_path: &Path) 
         .inter_row(LinePosition::Intern)
         .separators(&[LinePosition::Top, LinePosition::Bottom], "─")
         .borders('─')
-        .padding_left(2)
-        .padding_right(2)
-        .indent(2)
-        .dotted_lines(true)
+        .indent(1)
         .build();
     table.set_format(table_format);
 
