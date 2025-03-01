@@ -187,10 +187,15 @@ impl InfoExtractor for EnumInfoExtractor {
                             println!("  Enum name: {}", enum_info.name);
                         }
                     }
-                    "enum_body" | "block" => {
+                    "enum_variant_list" => {
                         // Extract enum variants here
-                        println!("  Found enum_body");
-                        extract_enum_variants(child, code, &mut enum_info);
+                        println!("  Found enum_variant_list");
+                        let mut variant_cursor = child.walk();
+                        for variant in child.children(&mut variant_cursor) {
+                            if variant.kind() == "enum_variant" {
+                                extract_enum_variant(variant, code, &mut enum_info);
+                            }
+                        }
                     }
                     _ => {
                         println!("  Unknown child kind: {}", child.kind());
