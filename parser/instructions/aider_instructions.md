@@ -58,10 +58,10 @@ Add node detection and extraction for the following: \
 ##### 1. Dependencies
 
 - [x] `use` dependency
-- [ ] `mod` inclusion (in main)
-  - [ ] Implement extraction
-  - [ ] Implement saving
-  - [ ] Update printed table
+- [x] `mod` inclusion (in main)
+  - [x] Implement extraction
+  - [x] Implement saving
+  - [x] Update printed table
 
 ##### 2. Enums
 
@@ -69,10 +69,10 @@ Add node detection and extraction for the following: \
 - [x] regular fields
 - [x] `i32` and such inside
 - [x] User-made structs inside
-  - [ ] Implement extraction
-  - [ ] Implement saving
-  - [ ] Update printed table
-  - [ ] Fix enum variant extraction
+  - [x] Implement extraction
+  - [x] Implement saving
+  - [x] Update printed table
+  - [x] Fix enum variant extraction
 
 ##### 3. Macros
 
@@ -83,12 +83,13 @@ Add node detection and extraction for the following: \
 
 ##### 4. functions
 
-- [x] parameters
+- [ ] parameters
+- [ ] parameter types
 - [x] `&self` function
 - [x] non-`&self` function
-  - [ ] Implement extraction
-  - [ ] Implement saving
-  - [ ] Update printed table
+  - [x] Implement extraction
+  - [x] Implement saving
+  - [x] Update printed table
 
 ##### <maybe more here later>
 
@@ -107,18 +108,18 @@ of the code.
 
 ### Message to Future Self
 
-*   **Project:** `parser` (part of `rag_workspace`)
-*   **Goal:** Extract semantic chunks from Rust code.
-*   **Current Task:** Debug enum variant extraction.
-*   **Progress:**
-    *   Extracted `use` dependencies and `mod` inclusions correctly.
-    *   The `EnumInfoExtractor` identifies enums, but doesn't extract variants.
-    *   Added debug prints to `EnumInfoExtractor::extract` to trace execution.
-    *   Refactored `EnumInfoExtractor` to use `extract_enum_variants` helper.
-    *   Successfully extracted enum variants and updated the printed table.
-    *   Extracted macros.
-    *   Extracted function parameters and identified methods (`&self` functions).
-*   **Next Steps:**
-    1.  Implement saving of function parameter and method information to the `ron` file.
-    2.  Update the printed table to display function parameter and method information.
-    3.  Consider adding more detailed information about function parameters to the printed table (e.g., the types of parameters).
+- **Project:** `parser` (part of `rag_workspace`)
+- **Goal:** Extract semantic chunks from Rust code.
+- **Current Task:** Debug enum variant extraction.
+- **Progress:**
+  - Extracted `use` dependencies and `mod` inclusions correctly.
+  - The `EnumInfoExtractor` identifies enums, but doesn't extract variants.
+  - Added debug prints to `EnumInfoExtractor::extract` to trace execution.
+  - Refactored `EnumInfoExtractor` to use `extract_enum_variants` helper.
+  - Successfully extracted enum variants and updated the printed table.
+  - Extracted macros.
+  - Extracted function parameters and identified methods (`&self` functions).
+- **Next Steps:**
+    1. Implement saving of function parameter and method information to the `ron` file.
+    2. Update the printed table to display function parameter and method information.
+    3. Consider adding more detailed information about function parameters to the printed table (e.g., the types of parameters).
