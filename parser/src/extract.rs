@@ -218,6 +218,36 @@ impl InfoExtractor for EnumInfoExtractor {
                                             variant_info.variant_type =
                                                 EnumVariantType::Tuple(tuple_fields);
                                         }
+                                        "field_declaration_list" => {
+                                            // Handle struct-like variants
+                                            let mut struct_fields: Vec<(String, String)> = Vec::new();
+                                            let mut field_cursor = name_child.walk();
+                                            for field in name_child.children(&mut field_cursor) {
+                                                if field.kind() == "field_declaration" {
+                                                    let mut field_name = String::new();
+                                                    let mut field_type = String::new();
+                                                    let mut field_cursor2 = field.walk();
+                                                    for field_child in field.children(&mut field_cursor2) {
+                                                        match field_child.kind() {
+                                                            "field_identifier" => {
+                                                                if let Ok(name) = field_child.utf8_text(code.as_bytes()) {
+                                                                    field_name = name.to_string();
+                                                                }
+                                                            }
+                                                            "type" => {
+                                                                if let Ok(typ) = field_child.utf8_text(code.as_bytes()) {
+                                                                    field_type = typ.to_string();
+                                                                }
+                                                            }
+                                                            _ => {}
+                                                        }
+                                                    }
+                                                    struct_fields.push((field_name, field_type));
+                                                }
+                                            }
+                                            variant_info.variant_type =
+                                                EnumVariantType::Struct(struct_fields);
+                                        }
                                         _ => {}
                                     }
                                 }
