@@ -173,8 +173,10 @@ impl InfoExtractor for EnumInfoExtractor {
                 file_path: file_path.to_string(),
             };
 
+            println!("EnumInfoExtractor::extract - Node kind: {}", node.kind());
             let mut cursor = node.walk();
             for child in node.children(&mut cursor) {
+                println!("  Child kind: {}", child.kind());
                 match child.kind() {
                     "visibility_modifier" => {
                         enum_info.is_pub = true;
@@ -182,12 +184,15 @@ impl InfoExtractor for EnumInfoExtractor {
                     "type_identifier" => {
                         if let Ok(name) = child.utf8_text(code.as_bytes()) {
                             enum_info.name = name.to_string();
+                            println!("  Enum name: {}", enum_info.name);
                         }
                     }
                     "enum_body" => {
                         // Extract enum variants here
+                        println!("  Found enum_body");
                         let mut variant_cursor = child.walk();
                         for variant in child.children(&mut variant_cursor) {
+                            println!("    Variant kind: {}", variant.kind());
                             if variant.kind() == "enum_variant" {
                                 let mut variant_info = EnumVariantInfo {
                                     name: String::new(),
@@ -195,23 +200,28 @@ impl InfoExtractor for EnumInfoExtractor {
                                 };
                                 let mut name_cursor = variant.walk();
                                 for name_child in variant.children(&mut name_cursor) {
+                                    println!("      Name child kind: {}", name_child.kind());
                                     match name_child.kind() {
                                         "identifier" => {
                                             if let Ok(name) = name_child.utf8_text(code.as_bytes())
                                             {
                                                 variant_info.name = name.to_string();
+                                                println!("      Variant name: {}", variant_info.name);
                                             }
                                         }
                                         "ordered_field_declaration_list" => {
                                             // Handle tuple-like variants
+                                            println!("      Found ordered_field_declaration_list");
                                             let mut tuple_fields: Vec<String> = Vec::new();
                                             let mut field_cursor = name_child.walk();
                                             for field in name_child.children(&mut field_cursor) {
+                                                println!("        Field kind: {}", field.kind());
                                                 if field.kind() == "type" {
                                                     if let Ok(field_type) =
                                                         field.utf8_text(code.as_bytes())
                                                     {
                                                         tuple_fields.push(field_type.to_string());
+                                                        println!("        Tuple field type: {}", field_type);
                                                     }
                                                 }
                                             }
@@ -220,23 +230,28 @@ impl InfoExtractor for EnumInfoExtractor {
                                         }
                                         "record_field_list" => {
                                             // Handle struct-like variants
+                                            println!("      Found record_field_list");
                                             let mut struct_fields: Vec<(String, String)> = Vec::new();
                                             let mut field_cursor = name_child.walk();
                                             for field in name_child.children(&mut field_cursor) {
+                                                println!("        Field kind: {}", field.kind());
                                                 if field.kind() == "field_declaration" {
                                                     let mut field_name = String::new();
                                                     let mut field_type = String::new();
                                                     let mut field_cursor2 = field.walk();
                                                     for field_child in field.children(&mut field_cursor2) {
+                                                        println!("          Field child kind: {}", field_child.kind());
                                                         match field_child.kind() {
                                                             "field_identifier" => {
                                                                 if let Ok(name) = field_child.utf8_text(code.as_bytes()) {
                                                                     field_name = name.to_string();
+                                                                    println!("          Field name: {}", field_name);
                                                                 }
                                                             }
                                                             "type" | "primitive_type" => {
                                                                 if let Ok(typ) = field_child.utf8_text(code.as_bytes()) {
                                                                     field_type = typ.to_string();
+                                                                    println!("          Field type: {}", field_type);
                                                                 }
                                                             }
                                                             _ => {}
