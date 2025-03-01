@@ -590,7 +590,11 @@ impl InfoExtractor for FunctionInfoExtractor {
                             let mut param_cursor = params_node.walk();
                             for param in params_node.children(&mut param_cursor) {
                                 if param.kind() == "self_parameter" {
-                                    function_info.is_method = true;
+                                    if let Ok(self_param) = param.utf8_text(code.as_bytes()) {
+                                        if self_param == "&self" || self_param == "&mut self" || self_param == "self" {
+                                            function_info.is_method = true;
+                                        }
+                                    }
                                 }
                                 if param.kind() == "parameter" {
                                     let mut param_info = ParameterInfo::default();
