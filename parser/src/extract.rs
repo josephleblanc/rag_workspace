@@ -309,6 +309,45 @@ impl InfoExtractor for ModInfoExtractor {
     }
 }
 
+pub struct ModInfoExtractor {}
+
+impl InfoExtractor for ModInfoExtractor {
+    fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
+        if node.kind() == "mod_item" {
+            let mut mod_info = ModInfo {
+                name: String::new(),
+                is_pub: false,
+                start_position: node.start_byte(),
+                end_position: node.end_byte(),
+                file_path: file_path.to_string(),
+            };
+
+            let mut cursor = node.walk();
+            for child in node.children(&mut cursor) {
+                match child.kind() {
+                    "visibility_modifier" => {
+                        mod_info.is_pub = true;
+                    }
+                    "identifier" => {
+                        if let Ok(name) = child.utf8_text(code.as_bytes()) {
+                            mod_info.name = name.to_string();
+                        }
+                    }
+                    _ => {}
+                }
+            }
+
+            Some(Box::new(mod_info))
+        } else {
+            None
+        }
+    }
+
+    fn node_kind(&self) -> &'static str {
+        "mod_item"
+    }
+}
+
 pub struct UseDependencyInfoExtractor {}
 
 impl InfoExtractor for UseDependencyInfoExtractor {
