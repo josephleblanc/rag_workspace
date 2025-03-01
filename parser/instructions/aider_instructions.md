@@ -108,14 +108,21 @@ of the code.
 
 ### Message to Future Self
 
-- **Project:** `parser` (part of `rag_workspace`)
-- **Goal:** Extract semantic chunks from Rust code.
-- **Current Task:** Refactor extract functions.
-- **Progress:**
-  - Implemented extraction and saving for `use` dependencies, `mod` inclusions, enums, macros, and function parameters.
-  - Improved feedback mechanism with `print_extracted_stats.rs` and table formatting.
-  - Refactored `StructInfoExtractor` and `FunctionInfoExtractor` to be more modular.
-- **Next Steps:**
-    1.  Continue refactoring and simplifying the extract functions.
-    2.  Improve the accuracy of extracted information, particularly struct attributes, doc comments, and function parameter types.
-    3.  Consider adding more detailed information about function parameters to the printed table (e.g., the types of parameters).
+ • Project: parser (part of rag_workspace)
+ • Goal: Extract semantic chunks from Rust code.
+ • Current Task: Improve accuracy of extracted function parameter types.
+ • Progress:
+    • Implemented extraction and saving for use dependencies, mod inclusions,
+    enums, macros, and function parameters.
+    • Improved feedback mechanism with print_extracted_stats.rs and table
+    formatting.
+    • Refactored StructInfoExtractor and
+    FunctionInfoExtractor to be more modular.
+ • Next Steps:
+    1 Improve the accuracy of extracted information, particularly struct
+    attributes, doc comments, and function parameter types.
+    2 Continue refactoring and simplifying the extract functions.
+    3 Consider adding more detailed information about function parameters to the
+    printed table (e.g., the types of parameters).
+    4 Begin researching and experimenting with graph databases for storing and
+    querying extracted code         information.

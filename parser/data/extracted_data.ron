@@ -105,7 +105,18 @@
             is_pub: false,
             doc_comment: None,
             attributes: [],
-            fields: [],
+            fields: [
+                (
+                    name: "x",
+                    type_name: "",
+                    is_pub: false,
+                ),
+                (
+                    name: "y",
+                    type_name: "",
+                    is_pub: false,
+                ),
+            ],
             start_position: 14317,
             end_position: 14355,
             file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
@@ -125,7 +136,23 @@
             is_pub: true,
             doc_comment: None,
             attributes: [],
-            fields: [],
+            fields: [
+                (
+                    name: "schedule_labels",
+                    type_name: "",
+                    is_pub: false,
+                ),
+                (
+                    name: "top",
+                    type_name: "",
+                    is_pub: false,
+                ),
+                (
+                    name: "left",
+                    type_name: "",
+                    is_pub: false,
+                ),
+            ],
             start_position: 526,
             end_position: 633,
             file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/stepping.rs",
@@ -135,7 +162,23 @@
             is_pub: false,
             doc_comment: None,
             attributes: [],
-            fields: [],
+            fields: [
+                (
+                    name: "systems",
+                    type_name: "",
+                    is_pub: false,
+                ),
+                (
+                    name: "ui_top",
+                    type_name: "",
+                    is_pub: false,
+                ),
+                (
+                    name: "ui_left",
+                    type_name: "",
+                    is_pub: false,
+                ),
+            ],
             start_position: 2363,
             end_position: 2549,
             file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/stepping.rs",
@@ -206,15 +249,15 @@
                 ),
                 (
                     name: "meshes",
-                    type_name: "",
+                    type_name: "ResMut<Assets<Mesh>>",
                 ),
                 (
                     name: "materials",
-                    type_name: "",
+                    type_name: "ResMut<Assets<ColorMaterial>>",
                 ),
                 (
                     name: "asset_server",
-                    type_name: "",
+                    type_name: "Res<AssetServer>",
                 ),
             ],
             return_type: None,
@@ -229,15 +272,15 @@
             parameters: [
                 (
                     name: "keyboard_input",
-                    type_name: "",
+                    type_name: "Res<ButtonInput<KeyCode>>",
                 ),
                 (
                     name: "paddle_transform",
-                    type_name: "",
+                    type_name: "Single<&mut Transform, With<Paddle>>",
                 ),
                 (
                     name: "time",
-                    type_name: "",
+                    type_name: "Res<Time>",
                 ),
             ],
             return_type: None,
@@ -252,11 +295,11 @@
             parameters: [
                 (
                     name: "query",
-                    type_name: "",
+                    type_name: "Query<(&mut Transform, &Velocity)>",
                 ),
                 (
                     name: "time",
-                    type_name: "",
+                    type_name: "Res<Time>",
                 ),
             ],
             return_type: None,
@@ -271,11 +314,11 @@
             parameters: [
                 (
                     name: "score",
-                    type_name: "",
+                    type_name: "Res<Score>",
                 ),
                 (
                     name: "score_root",
-                    type_name: "",
+                    type_name: "Single<Entity, (With<ScoreboardUi>, With<Text>)>",
                 ),
                 (
                     name: "writer",
@@ -298,19 +341,19 @@
                 ),
                 (
                     name: "score",
-                    type_name: "",
+                    type_name: "ResMut<Score>",
                 ),
                 (
                     name: "ball_query",
-                    type_name: "",
+                    type_name: "Single<(&mut Velocity, &Transform), With<Ball>>",
                 ),
                 (
                     name: "collider_query",
-                    type_name: "",
+                    type_name: "Query<(Entity, &Transform, Option<&Brick>), With<Collider>>",
                 ),
                 (
                     name: "collision_events",
-                    type_name: "",
+                    type_name: "EventWriter<CollisionEvent>",
                 ),
             ],
             return_type: None,
@@ -329,11 +372,11 @@
                 ),
                 (
                     name: "collision_events",
-                    type_name: "",
+                    type_name: "EventReader<CollisionEvent>",
                 ),
                 (
                     name: "sound",
-                    type_name: "",
+                    type_name: "Res<CollisionSound>",
                 ),
             ],
             return_type: None,
@@ -416,7 +459,7 @@
             parameters: [
                 (
                     name: "state",
-                    type_name: "",
+                    type_name: "Res<State>",
                 ),
             ],
             return_type: None,
@@ -435,19 +478,19 @@
                 ),
                 (
                     name: "asset_server",
-                    type_name: "",
+                    type_name: "Res<AssetServer>",
                 ),
                 (
                     name: "schedules",
-                    type_name: "",
+                    type_name: "Res<Schedules>",
                 ),
                 (
                     name: "stepping",
-                    type_name: "",
+                    type_name: "ResMut<Stepping>",
                 ),
                 (
                     name: "state",
-                    type_name: "",
+                    type_name: "ResMut<State>",
                 ),
             ],
             return_type: None,
@@ -477,11 +520,11 @@
             parameters: [
                 (
                     name: "keyboard_input",
-                    type_name: "",
+                    type_name: "Res<ButtonInput<KeyCode>>",
                 ),
                 (
                     name: "stepping",
-                    type_name: "",
+                    type_name: "ResMut<Stepping>",
                 ),
             ],
             return_type: None,
@@ -500,15 +543,15 @@
                 ),
                 (
                     name: "state",
-                    type_name: "",
+                    type_name: "Res<State>",
                 ),
                 (
                     name: "stepping",
-                    type_name: "",
+                    type_name: "Res<Stepping>",
                 ),
                 (
                     name: "ui",
-                    type_name: "",
+                    type_name: "Single<(Entity, &Visibility), With<SteppingUi>>",
                 ),
                 (
                     name: "writer",
