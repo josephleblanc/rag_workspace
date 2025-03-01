@@ -76,12 +76,18 @@ Add node detection and extraction for the following: \
 ##### 3. Macros
 
 - [ ] Macros
+  - [ ] Implement extraction
+  - [ ] Implement saving
+  - [ ] Update printed table
 
 ##### 4. functions
 
 - [ ] parameters
 - [ ] `&self` function
 - [ ] non-`&self` function
+  - [ ] Implement extraction
+  - [ ] Implement saving
+  - [ ] Update printed table
 
 ##### <maybe more here later>
 
