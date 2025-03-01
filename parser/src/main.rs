@@ -81,10 +81,10 @@ fn main() -> Result<()> {
         std::fs::create_dir_all(&output_dir)?;
     }
 
-    let output_file_path = env::current_dir()?.join("data").join("extracted_data.ron");
+    let output_file_path = output_dir.join("extracted_data.ron");
     println!("Output file path: {}", output_file_path.display());
 
-    save_extracted_data(extracted_data, &output_file_path)?;
+    save_extracted_data(extracted_data.clone(), &output_file_path)?;
     print_extracted_stats(extracted_data, &output_file_path);
 
     println!("Directory parsing complete.");
