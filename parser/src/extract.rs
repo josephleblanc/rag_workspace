@@ -185,31 +185,22 @@ impl InfoExtractor for EnumInfoExtractor {
             };
 
             println!("EnumInfoExtractor::extract - Node kind: {}", node.kind());
-            let mut cursor = node.walk();
-            for child in node.children(&mut cursor) {
-                println!("  Child kind: {}", child.kind());
-                match child.kind() {
-                    "visibility_modifier" => {
-                        enum_info.is_pub = true;
-                    }
-                    "type_identifier" => {
-                        if let Ok(name) = child.utf8_text(code.as_bytes()) {
-                            enum_info.name = name.to_string();
-                            println!("  Enum name: {}", enum_info.name);
-                        }
-                    }
-                    "enum_variant_list" => {
-                        // Extract enum variants here
-                        println!("  Found enum_variant_list");
-                        let mut variant_cursor = child.walk();
-                        for variant in child.children(&mut variant_cursor) {
-                            if variant.kind() == "enum_variant" {
-                                extract_enum_variant(variant, code, &mut enum_info);
-                            }
-                        }
-                    }
-                    _ => {
-                        println!("  Unknown child kind: {}", child.kind());
+
+            // Extract enum name
+            if let Some(name_node) = node.child_by_field_name("name") {
+                if let Ok(name) = name_node.utf8_text(code.as_bytes()) {
+                    enum_info.name = name.to_string();
+                    println!("  Enum name: {}", enum_info.name);
+                }
+            }
+
+            // Extract enum variants
+            if let Some(body_node) = node.child_by_field_name("body") {
+                println!("  Found enum_variant_list");
+                let mut variant_cursor = body_node.walk();
+                for variant in body_node.children(&mut variant_cursor) {
+                    if variant.kind() == "enum_variant" {
+                        extract_enum_variant(variant, code, &mut enum_info);
                     }
                 }
             }
