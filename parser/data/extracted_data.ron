@@ -311,5 +311,34 @@
             file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/stepping.rs",
         ),
     ],
-    use_dependencies: [],
+    use_dependencies: [
+        (
+            segments: [],
+            alias: None,
+            is_pub: false,
+            start_position: 167,
+            end_position: 277,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
+        ),
+        (
+            segments: [
+                "bevy",
+                "app",
+                "MainScheduleOrder",
+            ],
+            alias: None,
+            is_pub: false,
+            start_position: 0,
+            end_position: 33,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/stepping.rs",
+        ),
+        (
+            segments: [],
+            alias: None,
+            is_pub: false,
+            start_position: 34,
+            end_position: 75,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/stepping.rs",
+        ),
+    ],
 )
