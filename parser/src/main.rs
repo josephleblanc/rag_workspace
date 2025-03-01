@@ -37,18 +37,9 @@ fn main() -> Result<()> {
     let type_alias_extractor = TypeAliasInfoExtractor {};
     let impl_extractor = ImplInfoExtractor {};
     let use_dependency_extractor = UseDependencyInfoExtractor {};
-
-    let extractors: Vec<&dyn InfoExtractor> = vec![
-        &struct_extractor,
-        &function_extractor,
-        &type_alias_extractor,
-        &impl_extractor,
-        &use_dependency_extractor,
-    ];
-
-    use crate::extract::{ModInfoExtractor, EnumInfoExtractor};
     let mod_extractor = ModInfoExtractor {};
     let enum_extractor = EnumInfoExtractor {};
+    let macro_extractor = MacroInfoExtractor {};
 
     let extractors: Vec<&dyn InfoExtractor> = vec![
         &struct_extractor,
@@ -58,6 +49,7 @@ fn main() -> Result<()> {
         &use_dependency_extractor,
         &mod_extractor,
         &enum_extractor,
+        &macro_extractor,
     ];
 
     // Traverse the directory and extract information

@@ -47,6 +47,14 @@ pub struct ModInfo {
 use crate::traverse::InfoExtractor;
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
+pub struct MacroInfo {
+    pub name: String,
+    pub start_position: usize,
+    pub end_position: usize,
+    pub file_path: String,
+}
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct FieldInfo {
     pub name: String,
     pub type_name: String,
@@ -74,6 +82,7 @@ pub struct ExtractedData {
     pub use_dependencies: Vec<UseDependencyInfo>,
     pub mods: Vec<ModInfo>,
     pub enums: Vec<EnumInfo>,
+    pub macros: Vec<MacroInfo>,
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
@@ -168,6 +177,40 @@ impl InfoExtractor for ImplInfoExtractor {
 
     fn node_kind(&self) -> &'static str {
         "impl_item"
+}
+
+pub struct MacroInfoExtractor {}
+
+impl InfoExtractor for MacroInfoExtractor {
+    fn extract(
+        &self,
+        node: Node,
+        code: &str,
+        file_path: String,
+        extracted_data_: &mut ExtractedData,
+    ) -> Result<(), anyhow::Error> {
+        if node.kind() == "macro_invocation" {
+            let mut macro_info = MacroInfo {
+                name: String::new(),
+                start_position: node.start_byte(),
+                end_position: node.end_byte(),
+                file_path: file_path.to_string(),
+            };
+
+            // Extract macro name
+            if let Some(name_node) = node.child_by_field_name("macro") {
+                if let Ok(name) = name_node.utf8_text(code.as_bytes()) {
+                    macro_info.name = name.to_string();
+                }
+            }
+
+            extracted_data_.macros.push(macro_info);
+        }
+        Ok(())
+    }
+
+    fn node_kind(&self) -> &'static str {
+        "macro_invocation"
     }
 }
 

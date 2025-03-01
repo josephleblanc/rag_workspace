@@ -29,16 +29,73 @@ pub fn traverse_tree(
     extracted_data_: &mut ExtractedData,
     node_kinds: &mut HashSet<String>, // Collect node kinds
 ) {
-    // Recursively traverse children, but only if the current node wasn't already extracted
-    // This prevents us from recursing too deeply after we've found a struct, function, etc.
-    let mut extracted = false;
     for extractor in extractors {
         if node.kind() == extractor.node_kind() {
             extract_results(node, code, extractors, &file_path, extracted_data_);
-            extracted = true;
-            break;
         }
     }
+
+    // Recursively traverse children
+    let mut cursor = node.walk();
+    if cursor.goto_first_child() {
+        loop {
+            traverse_tree(
+                cursor.node(),
+                code,
+                extractors,
+                file_path.clone(),
+                extracted_data_,
+                node_kinds,
+            );
+            if !cursor.goto_next_sibling() {
+                break;
+            }
+        }
+    }
+}
+
+fn extract_results(
+    node: Node<'_>,
+    code: &str,
+    extractors: &[&dyn InfoExtractor],
+    file_path: &String,
+    extracted_data_: &mut ExtractedData,
+) {
+    // Recursively traverse children, but only if the current node wasn't already extracted
+    // This prevents us from recursing too deeply after we've found a struct, function, etc.
+    // let mut extracted = false;
+    for extractor in extractors {
+        if node.kind() == extractor.node_kind() {
+            if let Err(e) =
+                extractor.extract(node, code, file_path.clone(), extracted_data_)
+            {
+                eprintln!("Failed to extract info: {}", e);
+            }
+            // extracted = true;
+            // break;
+        }
+    }
+
+    // if !extracted {
+    //     let mut cursor = node.walk();
+    //     if cursor.goto_first_child() {
+    //         loop {
+    //             extract_results(node, code, extractors, &file_path, extracted_data_);
+    //             traverse_tree(
+    //                 cursor.node(),
+    //                 code,
+    //                 extractors,
+    //                 file_path.clone(),
+    //                 extracted_data_,
+    //                 node_kinds,
+    //             );
+    //             if !cursor.goto_next_sibling() {
+    //                 break;
+    //             }
+    //         }
+    //     }
+    // }
+}
 
     if !extracted {
         let mut cursor = node.walk();
