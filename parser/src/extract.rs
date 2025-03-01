@@ -4,6 +4,15 @@ use std::any::Any;
 use serde::{Deserialize, Serialize};
 use tree_sitter::Node;
 
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+pub struct ModInfo {
+    pub name: String,
+    pub is_pub: bool,
+    pub start_position: usize,
+    pub end_position: usize,
+    pub file_path: String,
+}
+
 use crate::traverse::InfoExtractor;
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
@@ -32,6 +41,7 @@ pub struct ExtractedData {
     pub type_aliases: Vec<TypeAliasInfo>,
     pub impls: Vec<ImplInfo>,
     pub use_dependencies: Vec<UseDependencyInfo>,
+    pub mods: Vec<ModInfo>,
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
@@ -120,6 +130,45 @@ impl InfoExtractor for ImplInfoExtractor {
 
     fn node_kind(&self) -> &'static str {
         "impl_item"
+    }
+}
+
+pub struct ModInfoExtractor {}
+
+impl InfoExtractor for ModInfoExtractor {
+    fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
+        if node.kind() == "mod_item" {
+            let mut mod_info = ModInfo {
+                name: String::new(),
+                is_pub: false,
+                start_position: node.start_byte(),
+                end_position: node.end_byte(),
+                file_path: file_path.to_string(),
+            };
+
+            let mut cursor = node.walk();
+            for child in node.children(&mut cursor) {
+                match child.kind() {
+                    "visibility_modifier" => {
+                        mod_info.is_pub = true;
+                    }
+                    "identifier" => {
+                        if let Ok(name) = child.utf8_text(code.as_bytes()) {
+                            mod_info.name = name.to_string();
+                        }
+                    }
+                    _ => {}
+                }
+            }
+
+            Some(Box::new(mod_info))
+        } else {
+            None
+        }
+    }
+
+    fn node_kind(&self) -> &'static str {
+        "mod_item"
     }
 }
 
