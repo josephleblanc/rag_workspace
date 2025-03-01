@@ -218,7 +218,7 @@ impl InfoExtractor for EnumInfoExtractor {
                                             variant_info.variant_type =
                                                 EnumVariantType::Tuple(tuple_fields);
                                         }
-                                        "field_declaration_list" => {
+                                        "record_field_list" => {
                                             // Handle struct-like variants
                                             let mut struct_fields: Vec<(String, String)> = Vec::new();
                                             let mut field_cursor = name_child.walk();
@@ -234,7 +234,7 @@ impl InfoExtractor for EnumInfoExtractor {
                                                                     field_name = name.to_string();
                                                                 }
                                                             }
-                                                            "type" => {
+                                                            "type" | "primitive_type" => {
                                                                 if let Ok(typ) = field_child.utf8_text(code.as_bytes()) {
                                                                     field_type = typ.to_string();
                                                                 }
