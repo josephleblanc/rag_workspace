@@ -28,7 +28,7 @@ pub struct StructInfo {
 #[derive(Clone, Debug, Serialize, Deserialize, Default)]
 pub struct ExtractedData {
     pub structs: Vec<StructInfo>,
-    pub functions: Vec<FunctionInfo>,
+    pub functions: Vec<FunctionInfo<()>>,
     pub type_aliases: Vec<TypeAliasInfo>,
     pub impls: Vec<ImplInfo>,
     pub use_dependencies: Vec<UseDependencyInfo>,
@@ -304,7 +304,7 @@ impl InfoExtractor for FunctionInfoExtractor {
     fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
         if node.kind() == "function_item" {
             let mut cursor = node.walk();
-            let mut function_info = FunctionInfo {
+            let mut function_info: FunctionInfo<()> = FunctionInfo {
                 start_position: node.start_byte(),
                 end_position: node.end_byte(),
                 file_path: file_path.to_string(),

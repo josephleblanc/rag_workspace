@@ -56,7 +56,7 @@ fn main() -> Result<()> {
     for result in results {
         if let Some(struct_info) = result.downcast_ref::<StructInfo>() {
             extracted_data.structs.push(struct_info.clone());
-        } else if let Some(function_info) = result.downcast_ref::<FunctionInfo>() {
+        } else if let Some(function_info) = result.downcast_ref::<FunctionInfo<()>>() {
             extracted_data.functions.push(function_info.clone());
         } else if let Some(type_alias_info) = result.downcast_ref::<TypeAliasInfo>() {
             extracted_data.type_aliases.push(type_alias_info.clone());
