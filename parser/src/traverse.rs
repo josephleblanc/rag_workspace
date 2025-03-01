@@ -7,9 +7,11 @@ use walkdir::WalkDir;
 
 use anyhow::{Context, Result};
 
+use crate::extract::ExtractedData;
+
 // Define a trait for extraction
 pub trait InfoExtractor {
-    fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>>;
+    fn extract(&self, node: Node, code: &str, file_path: String, extracted_ &mut ExtractedData) -> Result<()>;
     fn node_kind(&self) -> &'static str;
 }
 
@@ -18,7 +20,7 @@ pub fn traverse_tree(
     code: &str,
     extractors: &[&dyn InfoExtractor], // Use a slice of trait objects
     file_path: String,
-    results: &mut Vec<Box<dyn Any>>,  // Store the results
+    extracted_ &mut ExtractedData,
     node_kinds: &mut HashSet<String>, // Collect node kinds
 ) {
     // Recursively traverse children, but only if the current node wasn't already extracted
@@ -26,7 +28,7 @@ pub fn traverse_tree(
     let mut extracted = false;
     for extractor in extractors {
         if node.kind() == extractor.node_kind() {
-            extract_results(node, code, extractors, &file_path, results);
+            extract_results(node, code, extractors, &file_path, extracted_data);
             extracted = true;
             break;
         }
@@ -36,13 +38,13 @@ pub fn traverse_tree(
         let mut cursor = node.walk();
         if cursor.goto_first_child() {
             loop {
-                extract_results(node, code, extractors, &file_path, results);
+                extract_results(node, code, extractors, &file_path, extracted_data);
                 traverse_tree(
                     cursor.node(),
                     code,
                     extractors,
                     file_path.clone(),
-                    results,
+                    extracted_data,
                     node_kinds,
                 );
                 if !cursor.goto_next_sibling() {
@@ -57,13 +59,12 @@ fn extract_results(
     code: &str,
     extractors: &[&dyn InfoExtractor],
     file_path: &String,
-    results: &mut Vec<Box<dyn Any>>,
+    extracted_ &mut ExtractedData,
 ) {
     for extractor in extractors {
         if node.kind() == extractor.node_kind() {
-            if let Some(info) = extractor.extract(node, code, file_path.clone()) {
-                // Store the extracted info
-                results.push(info);
+            if let Err(e) = extractor.extract(node, code, file_path.clone(), extracted_data) {
+                eprintln!("Failed to extract info: {}", e);
             }
         }
     }
@@ -104,7 +105,7 @@ pub fn traverse_and_count_node_kinds(
                 &code,
                 &[],
                 "".to_string(),
-                &mut Vec::new(),
+                &mut ExtractedData::default(),
                 &mut node_kinds,
             );
         }
@@ -116,8 +117,8 @@ pub fn traverse_and_parse_directory(
     root_dir: &Path,
     ignored_directories: Option<Vec<String>>,
     extractors: Vec<&dyn InfoExtractor>,
-) -> Result<Vec<Box<dyn Any>>> {
-    let mut all_results: Vec<Box<dyn Any>> = Vec::new();
+) -> Result<ExtractedData> {
+    let mut all_results = ExtractedData::default();
 
     for entry in WalkDir::new(root_dir).into_iter().filter_map(|e| e.ok()) {
         let path = entry.path();
@@ -152,17 +153,15 @@ pub fn traverse_and_parse_directory(
                             format!("Failed to canonicalize path: {}", path.display())
                         })?;
                         let root_node = syntax_tree.root_node();
-                        let mut results: Vec<Box<dyn Any>> = Vec::new();
                         let mut node_kinds: HashSet<String> = HashSet::new();
                         traverse_tree(
                             root_node,
                             &code,
                             extractors.as_slice(),
                             absolute_path.display().to_string(),
-                            &mut results,
+                            &mut all_results,
                             &mut node_kinds,
                         );
-                        all_results.extend(results);
                     }
                     None => {
                         println!("Parsing failed for file: {}", path.display());
