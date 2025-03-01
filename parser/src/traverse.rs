@@ -116,26 +116,6 @@ fn extract_results(
             }
         }
     }
-}
-
-fn extract_results(
-    node: Node<'_>,
-    code: &str,
-    extractors: &[&dyn InfoExtractor],
-    file_path: &String,
-    extracted_data_: &mut ExtractedData,
-) {
-    for extractor in extractors {
-        if node.kind() == extractor.node_kind() {
-            if let Err(e) =
-                extractor.extract(node, code, file_path.clone(), extracted_data_)
-            {
-                eprintln!("Failed to extract info: {}", e);
-            }
-        }
-    }
-}
-
 #[allow(dead_code)]
 pub fn traverse_and_count_node_kinds(
     root_dir: &Path,
