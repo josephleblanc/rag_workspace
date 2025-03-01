@@ -83,9 +83,9 @@ Add node detection and extraction for the following: \
 
 ##### 4. functions
 
-- [ ] parameters
-- [ ] `&self` function
-- [ ] non-`&self` function
+- [x] parameters
+- [x] `&self` function
+- [x] non-`&self` function
   - [ ] Implement extraction
   - [ ] Implement saving
   - [ ] Update printed table
