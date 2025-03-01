@@ -589,6 +589,9 @@ impl InfoExtractor for FunctionInfoExtractor {
                         if let Some(params_node) = node.child_by_field_name("parameters") {
                             let mut param_cursor = params_node.walk();
                             for param in params_node.children(&mut param_cursor) {
+                                if param.kind() == "self_parameter" {
+                                    function_info.is_method = true;
+                                }
                                 if param.kind() == "parameter" {
                                     let mut param_info = ParameterInfo::default();
                                     let mut param_cursor2 = param.walk();
@@ -626,7 +629,6 @@ impl InfoExtractor for FunctionInfoExtractor {
                     _ => {}
                 }
             }
-            // println!("Extracting function: {}", struct_info.name);
             extracted_data_.functions.push(function_info);
         }
         Ok(())
