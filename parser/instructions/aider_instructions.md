@@ -57,16 +57,16 @@ Add node detection and extraction for the following: \
 
 ##### 1. Dependencies
 
-- [ ] `use` dependency
+- [x] `use` dependency
 - [ ] `mod` inclusion (in main)
 - [ ] update `parser/src/traverse.rs` with the new extractor
 
 ##### 2. Enums
 
-- [ ] no fields
-- [ ] regular fields
-- [ ] `i32` and such inside
-- [ ] User-made structs inside
+- [x] no fields
+- [x] regular fields
+- [x] `i32` and such inside
+- [x] User-made structs inside
 Incorporate the new changes
 - [ ] update `parser/src/traverse.rs` with the new extractor
 - [ ] update `` with the new extractor
@@ -109,4 +109,7 @@ of the code.
     1.  Finish refactoring the saving logic by creating a `saver.rs` module and moving the saving functionality to it.
     2.  Test the saving functionality to ensure it works correctly.
     3.  Continue expanding the semantic chunks that can be identified and extracted (Goal 2).
+        *   The `use` dependencies and `type_alias` are extracted.
+        *   Need to implement extraction of `mod` inclusions.
+        *   Need to implement extraction of enums as enum definitions, not just type aliases.
     4.  The current file contents are as of the last "Trust this message" from the user.
