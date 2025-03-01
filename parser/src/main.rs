@@ -4,10 +4,7 @@ mod extract;
 mod traverse;
 mod utils;
 
-use crate::{
-    extract::*,
-    traverse::{traverse_and_parse_directory, InfoExtractor},
-};
+use crate::{extract::*, traverse::{traverse_and_parse_directory, InfoExtractor}};
 
 use anyhow::Result;
 use std::{any::Any, env, path::Path};
