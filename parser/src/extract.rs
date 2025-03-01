@@ -25,7 +25,7 @@ pub struct StructInfo {
     pub file_path: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, Default)]
+#[derive(Clone, Debug, Serialize, Deserialize, Default)]
 pub struct ExtractedData {
     pub structs: Vec<StructInfo>,
     pub functions: Vec<FunctionInfo>,
