@@ -65,7 +65,7 @@ pub struct TypeAliasInfo {
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
-pub struct FunctionInfo {
+pub struct FunctionInfo<ParameterInfo> {
     pub name: String,
     pub parameters: Vec<ParameterInfo>,
     pub return_type: Option<String>,
@@ -159,7 +159,9 @@ fn extract_use_segments(node: Node, code: &str, use_dependency_info: &mut UseDep
                 // Handle the "as" alias
                 let mut alias_cursor = child.walk();
                 for alias_child in child.children(&mut alias_cursor) {
-                    if alias_child.kind() == "identifier" || alias_child.kind() == "scoped_identifier" {
+                    if alias_child.kind() == "identifier"
+                        || alias_child.kind() == "scoped_identifier"
+                    {
                         if let Ok(alias) = alias_child.utf8_text(code.as_bytes()) {
                             use_dependency_info.alias = Some(alias.to_string());
                             break;
@@ -174,7 +176,6 @@ fn extract_use_segments(node: Node, code: &str, use_dependency_info: &mut UseDep
         }
     }
 }
-
 
 fn extract_path_segments(node: Node, code: &str, segments: &mut Vec<String>) {
     match node.kind() {
