@@ -350,5 +350,108 @@
             file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
         ),
     ],
-    enums: [],
+    enums: [
+        (
+            name: "WallLocation",
+            variants: [
+                (
+                    name: "Left",
+                    variant_type: Unit,
+                ),
+                (
+                    name: "Right",
+                    variant_type: Unit,
+                ),
+                (
+                    name: "Bottom",
+                    variant_type: Unit,
+                ),
+                (
+                    name: "Top",
+                    variant_type: Unit,
+                ),
+            ],
+            is_pub: false,
+            start_position: 3587,
+            end_position: 3650,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
+        ),
+        (
+            name: "Collision",
+            variants: [
+                (
+                    name: "Left",
+                    variant_type: Unit,
+                ),
+                (
+                    name: "Right",
+                    variant_type: Unit,
+                ),
+                (
+                    name: "Top",
+                    variant_type: Unit,
+                ),
+                (
+                    name: "Bottom",
+                    variant_type: Unit,
+                ),
+            ],
+            is_pub: false,
+            start_position: 14170,
+            end_position: 14230,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
+        ),
+        (
+            name: "Example",
+            variants: [],
+            is_pub: false,
+            start_position: 14232,
+            end_position: 14247,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
+        ),
+        (
+            name: "NewThing",
+            variants: [
+                (
+                    name: "Some",
+                    variant_type: Tuple([
+                        "i32",
+                    ]),
+                ),
+                (
+                    name: "Another",
+                    variant_type: Tuple([]),
+                ),
+                (
+                    name: "Nothing",
+                    variant_type: Unit,
+                ),
+            ],
+            is_pub: false,
+            start_position: 14249,
+            end_position: 14315,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
+        ),
+        (
+            name: "Matrix",
+            variants: [
+                (
+                    name: "Location",
+                    variant_type: Tuple([]),
+                ),
+                (
+                    name: "Nowhere",
+                    variant_type: Unit,
+                ),
+                (
+                    name: "WithoutReason",
+                    variant_type: Tuple([]),
+                ),
+            ],
+            is_pub: false,
+            start_position: 14357,
+            end_position: 14433,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
+        ),
+    ],
 )
