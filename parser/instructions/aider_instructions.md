@@ -115,11 +115,10 @@ of the code.
     *   The `EnumInfoExtractor` identifies enums, but doesn't extract variants.
     *   Added debug prints to `EnumInfoExtractor::extract` to trace execution.
     *   Refactored `EnumInfoExtractor` to use `extract_enum_variants` helper.
+    *   Successfully extracted enum variants and updated the printed table.
 *   **Next Steps:**
-    1.  Analyze debug output to understand why `enum_variant` nodes aren't extracted.
-    2.  Adjust tree-sitter queries or extraction logic as needed.
-    3.  Implement saving of extracted enum variants.
-    4.  Update printed table to display enum variant information.
+    1.  Consider adding more detailed information about enum variants to the printed table (e.g., the types of tuple or struct variants).
+    2.  Move on to extracting macros.
 
 Hello Future Self,
 
