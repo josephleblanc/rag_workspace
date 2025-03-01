@@ -72,6 +72,7 @@ Add node detection and extraction for the following: \
   - [ ] Implement extraction
   - [ ] Implement saving
   - [ ] Update printed table
+  - [ ] Fix enum variant extraction
 
 ##### 3. Macros
 
