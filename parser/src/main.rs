@@ -46,6 +46,18 @@ fn main() -> Result<()> {
         &use_dependency_extractor,
     ];
 
+    use crate::extract::ModInfoExtractor;
+    let mod_extractor = ModInfoExtractor {};
+
+    let extractors: Vec<&dyn InfoExtractor> = vec![
+        &struct_extractor,
+        &function_extractor,
+        &type_alias_extractor,
+        &impl_extractor,
+        &use_dependency_extractor,
+        &mod_extractor,
+    ];
+
     // Traverse the directory and extract information
     let results =
         traverse_and_parse_directory(root_directory, directories_to_ignore, extractors.clone())?;
@@ -68,7 +80,10 @@ fn main() -> Result<()> {
             extracted_data
                 .use_dependencies
                 .push(use_dependency_info.clone());
-        } else {
+        } else if let Some(mod_info) = result.downcast_ref::<extract::ModInfo>() {
+            extracted_data.mods.push(mod_info.clone());
+        }
+         else {
             println!("  Unknown type of info extracted");
             let uncertain_id = (result).type_id();
             println!("  Unceratin Type: {:?}", uncertain_id);

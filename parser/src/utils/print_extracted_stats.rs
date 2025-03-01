@@ -17,6 +17,8 @@ pub fn print_extracted_stats(extracted: ExtractedData, output_file_path: &Path) 
 
     table.add_row(row!["Use Dependencies", extracted.use_dependencies.len()]);
 
+    table.add_row(row!["Mods", extracted.mods.len()]);
+
     println!("Extracted data saved to {}", output_file_path.display());
     table.printstd();
 }
