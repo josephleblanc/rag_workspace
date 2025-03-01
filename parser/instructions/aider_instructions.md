@@ -76,10 +76,10 @@ Add node detection and extraction for the following: \
 
 ##### 3. Macros
 
-- [ ] Macros
-  - [ ] Implement extraction
-  - [ ] Implement saving
-  - [ ] Update printed table
+- [x] Macros
+  - [x] Implement extraction
+  - [x] Implement saving
+  - [x] Update printed table
 
 ##### 4. functions
 
