@@ -5,6 +5,12 @@ use serde::{Deserialize, Serialize};
 use tree_sitter::Node;
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
+pub struct ParameterInfo {
+    pub name: String,
+    pub type_name: String,
+}
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub enum EnumVariantType {
     Unit,
     Tuple(Vec<String>),            // Store the types of the tuple fields
@@ -101,11 +107,12 @@ pub struct TypeAliasInfo {
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
-pub struct FunctionInfo<ParameterInfo> {
+pub struct FunctionInfo {
     pub name: String,
     pub parameters: Vec<ParameterInfo>,
     pub return_type: Option<String>,
     pub is_pub: bool,
+    pub is_method: bool,
     pub start_position: usize,
     pub end_position: usize,
     pub file_path: String,
@@ -534,22 +541,55 @@ impl InfoExtractor for FunctionInfoExtractor {
         extracted_data_: &mut ExtractedData,
     ) -> Result<(), anyhow::Error> {
         if node.kind() == "function_item" {
-            let mut cursor = node.walk();
-            let mut function_info: FunctionInfo<()> = FunctionInfo {
+            let mut function_info = FunctionInfo {
                 start_position: node.start_byte(),
                 end_position: node.end_byte(),
                 file_path: file_path.to_string(),
                 ..Default::default()
             };
+            let mut cursor = node.walk();
             for child in node.children(&mut cursor) {
                 match child.kind() {
                     "visibility_modifier" => {
                         function_info.is_pub = true;
                     }
-                    "type_identifier" => {
+                    "identifier" => {
                         function_info.name = child.utf8_text(code.as_bytes()).unwrap().to_string();
                     }
-                    // more here
+                    "parameters" => {
+                        if let Some(params_node) = node.child_by_field_name("parameters") {
+                            let mut param_cursor = params_node.walk();
+                            for param in params_node.children(&mut param_cursor) {
+                                if param.kind() == "parameter" {
+                                    let mut param_info = ParameterInfo::default();
+                                    let mut param_cursor2 = param.walk();
+                                    for param_child in param.children(&mut param_cursor2) {
+                                        match param_child.kind() {
+                                            "identifier" => {
+                                                if let Ok(name) = param_child.utf8_text(code.as_bytes()) {
+                                                    param_info.name = name.to_string();
+                                                }
+                                            }
+                                            "type" => {
+                                                if let Ok(type_name) = param_child.utf8_text(code.as_bytes()) {
+                                                    param_info.type_name = type_name.to_string();
+                                                }
+                                            }
+                                            _ => {}
+                                        }
+                                    }
+                                    function_info.parameters.push(param_info);
+                                }
+                            }
+                        }
+                    }
+                    "return_type" => {
+                        if let Some(return_type_node) = node.child_by_field_name("return_type") {
+                            if let Ok(return_type) = return_type_node.utf8_text(code.as_bytes()) {
+                                function_info.return_type = Some(return_type.to_string());
+                            }
+                        }
+                    }
                     _ => {}
                 }
             }
