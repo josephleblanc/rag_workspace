@@ -5,35 +5,17 @@ use std::path::Path;
 pub fn print_extracted_stats(extracted: ExtractedData, output_file_path: &Path) {
     let mut table = Table::new();
 
-    table.add_row(Row::new(vec![
-        Cell::new("Category"),
-        Cell::new("Count"),
-    ]));
+    table.add_row(row!["Category", "Count"]);
 
-    table.add_row(Row::new(vec![
-        Cell::new("Structs"),
-        Cell::new(&extracted.structs.len().to_string()),
-    ]));
+    table.add_row(row!["Structs", extracted.structs.len()]);
 
-    table.add_row(Row::new(vec![
-        Cell::new("Functions"),
-        Cell::new(&extracted.functions.len().to_string()),
-    ]));
+    table.add_row(row!["Functions", extracted.functions.len()]);
 
-    table.add_row(Row::new(vec![
-        Cell::new("Type Aliases"),
-        Cell::new(&extracted.type_aliases.len().to_string()),
-    ]));
+    table.add_row(row!["Type Aliases", extracted.type_aliases.len()]);
 
-    table.add_row(Row::new(vec![
-        Cell::new("Impls"),
-        Cell::new(&extracted.impls.len().to_string()),
-    ]));
+    table.add_row(row!["Impls", extracted.impls.len()]);
 
-    table.add_row(Row::new(vec![
-        Cell::new("Use Dependencies"),
-        Cell::new(&extracted.use_dependencies.len().to_string()),
-    ]));
+    table.add_row(row!["Use Dependencies", extracted.use_dependencies.len()]);
 
     println!("Extracted data saved to {}", output_file_path.display());
     table.printstd();
