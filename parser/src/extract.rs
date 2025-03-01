@@ -67,7 +67,7 @@ pub struct TypeAliasInfo {
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct FunctionInfo {
     pub name: String,
-    pub parameters: Vec<(String, String)>,
+    pub parameters: Vec<ParameterInfo>,
     pub return_type: Option<String>,
     pub is_pub: bool,
     pub start_position: usize,
