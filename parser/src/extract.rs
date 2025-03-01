@@ -5,6 +5,31 @@ use serde::{Deserialize, Serialize};
 use tree_sitter::Node;
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
+pub enum EnumVariantType {
+    Unit,
+    Tuple(Vec<String>), // Store the types of the tuple fields
+    Struct(Vec<(String, String)>), // Store field names and types for struct-like variants
+    #[default]
+    Unspecified,
+}
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+pub struct EnumVariantInfo {
+    pub name: String,
+    pub variant_type: EnumVariantType,
+}
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
+pub struct EnumInfo {
+    pub name: String,
+    pub variants: Vec<EnumVariantInfo>,
+    pub is_pub: bool,
+    pub start_position: usize,
+    pub end_position: usize,
+    pub file_path: String,
+}
+
+#[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct ModInfo {
     pub name: String,
     pub is_pub: bool,
@@ -42,6 +67,7 @@ pub struct ExtractedData {
     pub impls: Vec<ImplInfo>,
     pub use_dependencies: Vec<UseDependencyInfo>,
     pub mods: Vec<ModInfo>,
+    pub enums: Vec<EnumInfo>,
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
@@ -130,6 +156,87 @@ impl InfoExtractor for ImplInfoExtractor {
 
     fn node_kind(&self) -> &'static str {
         "impl_item"
+    }
+}
+
+pub struct EnumInfoExtractor {}
+
+impl InfoExtractor for EnumInfoExtractor {
+    fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
+        if node.kind() == "enum_item" {
+            let mut enum_info = EnumInfo {
+                name: String::new(),
+                variants: Vec::new(),
+                is_pub: false,
+                start_position: node.start_byte(),
+                end_position: node.end_byte(),
+                file_path: file_path.to_string(),
+            };
+
+            let mut cursor = node.walk();
+            for child in node.children(&mut cursor) {
+                match child.kind() {
+                    "visibility_modifier" => {
+                        enum_info.is_pub = true;
+                    }
+                    "type_identifier" => {
+                        if let Ok(name) = child.utf8_text(code.as_bytes()) {
+                            enum_info.name = name.to_string();
+                        }
+                    }
+                    "enum_body" => {
+                        // Extract enum variants here
+                        let mut variant_cursor = child.walk();
+                        for variant in child.children(&mut variant_cursor) {
+                            if variant.kind() == "enum_variant" {
+                                let mut variant_info = EnumVariantInfo {
+                                    name: String::new(),
+                                    variant_type: EnumVariantType::Unit, // Default to Unit
+                                };
+                                let mut name_cursor = variant.walk();
+                                for name_child in variant.children(&mut name_cursor) {
+                                    match name_child.kind() {
+                                        "identifier" => {
+                                            if let Ok(name) = name_child.utf8_text(code.as_bytes())
+                                            {
+                                                variant_info.name = name.to_string();
+                                            }
+                                        }
+                                        "ordered_field_declaration_list" => {
+                                            // Handle tuple-like variants
+                                            let mut tuple_fields: Vec<String> = Vec::new();
+                                            let mut field_cursor = name_child.walk();
+                                            for field in name_child.children(&mut field_cursor) {
+                                                if field.kind() == "type" {
+                                                    if let Ok(field_type) =
+                                                        field.utf8_text(code.as_bytes())
+                                                    {
+                                                        tuple_fields.push(field_type.to_string());
+                                                    }
+                                                }
+                                            }
+                                            variant_info.variant_type =
+                                                EnumVariantType::Tuple(tuple_fields);
+                                        }
+                                        _ => {}
+                                    }
+                                }
+                                enum_info.variants.push(variant_info.clone());
+                            }
+                        }
+                    }
+                    _ => {}
+                }
+            }
+
+            Some(Box::new(enum_info))
+        } else {
+            None
+        }
+    }
+
+    fn node_kind(&self) -> &'static str {
+        "enum_item"
     }
 }
 
