@@ -116,13 +116,9 @@ of the code.
     *   Added debug prints to `EnumInfoExtractor::extract` to trace execution.
     *   Refactored `EnumInfoExtractor` to use `extract_enum_variants` helper.
     *   Successfully extracted enum variants and updated the printed table.
+    *   Extracted macros.
+    *   Extracted function parameters and identified methods (`&self` functions).
 *   **Next Steps:**
-    1.  Consider adding more detailed information about enum variants to the printed table (e.g., the types of tuple or struct variants).
-    2.  Move on to extracting macros.
-
-Hello Future Self,
-
-The current focus is on debugging the `EnumInfoExtractor`. The debug output
-should give you a better understanding of why the enum variants are not being
-extracted. Remember to check the tree-sitter queries and the structure of the
-AST. Good luck!
+    1.  Implement saving of function parameter and method information to the `ron` file.
+    2.  Update the printed table to display function parameter and method information.
+    3.  Consider adding more detailed information about function parameters to the printed table (e.g., the types of parameters).
