@@ -538,13 +538,18 @@ impl InfoExtractor for StructInfoExtractor {
                 ..Default::default()
             };
 
-            // Extract doc comments
-            if let Some(doc_comment) = extract_doc_comment(node, code) {
-                struct_info.doc_comment = Some(doc_comment);
-            }
-
             for child in node.children(&mut cursor) {
                 match child.kind() {
+                    "attribute_item" => {
+                        if let Ok(attribute) = child.utf8_text(code.as_bytes()) {
+                            struct_info.attributes.push(attribute.to_string());
+                        }
+                    }
+                    "line_comment" => {
+                        if let Some(doc_comment) = extract_doc_comment(child, code) {
+                            struct_info.doc_comment = Some(doc_comment);
+                        }
+                    }
                     "visibility_modifier" => {
                         struct_info.is_pub = true;
                     }
@@ -553,16 +558,6 @@ impl InfoExtractor for StructInfoExtractor {
                     }
                     "block" => {
                         // handle block - not relevant for struct definition itself
-                    }
-                    "attribute" => {
-                        if let Ok(attribute) = child.utf8_text(code.as_bytes()) {
-                            struct_info.attributes.push(attribute.to_string());
-                        }
-                    }
-                    "attribute_item" => {
-                        if let Ok(attribute) = child.utf8_text(code.as_bytes()) {
-                            struct_info.attributes.push(attribute.to_string());
-                        }
                     }
                     _ => {}
                 }
@@ -626,7 +621,7 @@ impl InfoExtractor for FunctionInfoExtractor {
                                                     param_info.name = name.to_string();
                                                 }
                                             }
-                                            "type" => {
+                                            "type" | "generic_type" => {
                                                 if let Ok(type_name) =
                                                     param_child.utf8_text(code.as_bytes())
                                                 {
@@ -645,6 +640,13 @@ impl InfoExtractor for FunctionInfoExtractor {
                         if let Some(return_type_node) = node.child_by_field_name("return_type") {
                             if let Ok(return_type) = return_type_node.utf8_text(code.as_bytes()) {
                                 function_info.return_type = Some(return_type.to_string());
+                            }
+                        }
+                    }
+                    "self_parameter" => {
+                        if let Ok(self_param) = child.utf8_text(code.as_bytes()) {
+                            if self_param == "&self" || self_param == "&mut self" || self_param == "self" {
+                                function_info.is_method = true;
                             }
                         }
                     }
