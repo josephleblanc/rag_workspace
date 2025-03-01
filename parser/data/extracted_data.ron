@@ -163,6 +163,41 @@
             file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
         ),
         (
+            name: "position",
+            parameters: [],
+            return_type: None,
+            is_pub: false,
+            is_method: false,
+            start_position: 3756,
+            end_position: 4167,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
+        ),
+        (
+            name: "size",
+            parameters: [],
+            return_type: None,
+            is_pub: false,
+            is_method: false,
+            start_position: 4240,
+            end_position: 4821,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
+        ),
+        (
+            name: "new",
+            parameters: [
+                (
+                    name: "location",
+                    type_name: "",
+                ),
+            ],
+            return_type: None,
+            is_pub: false,
+            is_method: false,
+            start_position: 5136,
+            end_position: 5844,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
+        ),
+        (
             name: "setup",
             parameters: [
                 (
@@ -326,6 +361,55 @@
             start_position: 14568,
             end_position: 15104,
             file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
+        ),
+        (
+            name: "add_schedule",
+            parameters: [
+                (
+                    name: "label",
+                    type_name: "",
+                ),
+            ],
+            return_type: None,
+            is_pub: true,
+            is_method: false,
+            start_position: 723,
+            end_position: 869,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/stepping.rs",
+        ),
+        (
+            name: "at",
+            parameters: [
+                (
+                    name: "left",
+                    type_name: "",
+                ),
+                (
+                    name: "top",
+                    type_name: "",
+                ),
+            ],
+            return_type: None,
+            is_pub: true,
+            is_method: false,
+            start_position: 934,
+            end_position: 1041,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/stepping.rs",
+        ),
+        (
+            name: "build",
+            parameters: [
+                (
+                    name: "app",
+                    type_name: "",
+                ),
+            ],
+            return_type: None,
+            is_pub: false,
+            is_method: false,
+            start_position: 1082,
+            end_position: 2290,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/stepping.rs",
         ),
         (
             name: "initialized",
@@ -621,6 +705,92 @@
             start_position: 14357,
             end_position: 14433,
             file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
+        ),
+    ],
+    macros: [
+        (
+            name: "assert",
+            start_position: 4430,
+            end_position: 4457,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
+        ),
+        (
+            name: "assert",
+            start_position: 4467,
+            end_position: 4493,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
+        ),
+        (
+            name: "assert",
+            start_position: 8307,
+            end_position: 8343,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
+        ),
+        (
+            name: "assert",
+            start_position: 8349,
+            end_position: 8386,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/main.rs",
+        ),
+        (
+            name: "cfg",
+            start_position: 1181,
+            end_position: 1223,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/stepping.rs",
+        ),
+        (
+            name: "format",
+            start_position: 3694,
+            end_position: 3716,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/stepping.rs",
+        ),
+        (
+            name: "format",
+            start_position: 4976,
+            end_position: 5006,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/stepping.rs",
+        ),
+        (
+            name: "cfg",
+            start_position: 5850,
+            end_position: 5887,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/stepping.rs",
+        ),
+        (
+            name: "info",
+            start_position: 6108,
+            end_position: 6130,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/stepping.rs",
+        ),
+        (
+            name: "info",
+            start_position: 6661,
+            end_position: 6685,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/stepping.rs",
+        ),
+        (
+            name: "debug",
+            start_position: 6899,
+            end_position: 6926,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/stepping.rs",
+        ),
+        (
+            name: "debug",
+            start_position: 6988,
+            end_position: 7014,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/stepping.rs",
+        ),
+        (
+            name: "debug",
+            start_position: 7204,
+            end_position: 7222,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/stepping.rs",
+        ),
+        (
+            name: "debug",
+            start_position: 7326,
+            end_position: 7350,
+            file_path: "/home/brasides/code/rag_workspace/example_traverse_target/src/stepping.rs",
         ),
     ],
 )

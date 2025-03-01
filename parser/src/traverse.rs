@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::collections::HashSet;
-use std::{any::Any, fs, path::Path};
+use std::{fs, path::Path};
 
 use tree_sitter::{Node, Parser};
 use walkdir::WalkDir;
@@ -66,9 +66,7 @@ fn extract_results(
     // let mut extracted = false;
     for extractor in extractors {
         if node.kind() == extractor.node_kind() {
-            if let Err(e) =
-                extractor.extract(node, code, file_path.clone(), extracted_data_)
-            {
+            if let Err(e) = extractor.extract(node, code, file_path.clone(), extracted_data_) {
                 eprintln!("Failed to extract info: {}", e);
             }
             // extracted = true;
@@ -96,26 +94,6 @@ fn extract_results(
     //     }
     // }
 }
-
-    if !extracted {
-        let mut cursor = node.walk();
-        if cursor.goto_first_child() {
-            loop {
-                extract_results(node, code, extractors, &file_path, extracted_data_);
-                traverse_tree(
-                    cursor.node(),
-                    code,
-                    extractors,
-                    file_path.clone(),
-                    extracted_data_,
-                    node_kinds,
-                );
-                if !cursor.goto_next_sibling() {
-                    break;
-                }
-            }
-        }
-    }
 #[allow(dead_code)]
 pub fn traverse_and_count_node_kinds(
     root_dir: &Path,

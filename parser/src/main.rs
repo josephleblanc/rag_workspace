@@ -4,7 +4,11 @@ mod extract;
 mod traverse;
 mod utils;
 
-use crate::{extract::*, traverse::{traverse_and_parse_directory, InfoExtractor}};
+use crate::{
+    extract::*,
+    traverse::{traverse_and_parse_directory, InfoExtractor},
+    utils::print_extracted_stats::print_extracted_stats,
+};
 
 use anyhow::Result;
 use std::{any::Any, env, path::Path};
@@ -44,11 +48,8 @@ fn main() -> Result<()> {
     ];
 
     // Traverse the directory and extract information
-    let mut extracted_data = traverse_and_parse_directory(
-        root_directory,
-        directories_to_ignore,
-        extractors.clone(),
-    )?;
+    let mut extracted_data =
+        traverse_and_parse_directory(root_directory, directories_to_ignore, extractors.clone())?;
 
     // Ensure the 'data' directory exists
     let output_dir = env::current_dir()?.join("data");
