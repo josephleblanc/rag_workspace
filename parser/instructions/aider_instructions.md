@@ -110,16 +110,12 @@ of the code.
 
 - **Project:** `parser` (part of `rag_workspace`)
 - **Goal:** Extract semantic chunks from Rust code.
-- **Current Task:** Debug enum variant extraction.
+- **Current Task:** Refactor extract functions.
 - **Progress:**
-  - Extracted `use` dependencies and `mod` inclusions correctly.
-  - The `EnumInfoExtractor` identifies enums, but doesn't extract variants.
-  - Added debug prints to `EnumInfoExtractor::extract` to trace execution.
-  - Refactored `EnumInfoExtractor` to use `extract_enum_variants` helper.
-  - Successfully extracted enum variants and updated the printed table.
-  - Extracted macros.
-  - Extracted function parameters and identified methods (`&self` functions).
+  - Implemented extraction and saving for `use` dependencies, `mod` inclusions, enums, macros, and function parameters.
+  - Improved feedback mechanism with `print_extracted_stats.rs` and table formatting.
+  - Refactored `StructInfoExtractor` and `FunctionInfoExtractor` to be more modular.
 - **Next Steps:**
-    1. Implement saving of function parameter and method information to the `ron` file.
-    2. Update the printed table to display function parameter and method information.
-    3. Consider adding more detailed information about function parameters to the printed table (e.g., the types of parameters).
+    1.  Continue refactoring and simplifying the extract functions.
+    2.  Improve the accuracy of extracted information, particularly struct attributes, doc comments, and function parameter types.
+    3.  Consider adding more detailed information about function parameters to the printed table (e.g., the types of parameters).
