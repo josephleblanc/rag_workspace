@@ -11,7 +11,13 @@ use crate::extract::ExtractedData;
 
 // Define a trait for extraction
 pub trait InfoExtractor {
-    fn extract(&self, node: Node, code: &str, file_path: String, extracted_ &mut ExtractedData) -> Result<()>;
+    fn extract(
+        &self,
+        node: Node,
+        code: &str,
+        file_path: String,
+        extracted_data_: &mut ExtractedData,
+    ) -> Result<()>;
     fn node_kind(&self) -> &'static str;
 }
 
@@ -20,7 +26,7 @@ pub fn traverse_tree(
     code: &str,
     extractors: &[&dyn InfoExtractor], // Use a slice of trait objects
     file_path: String,
-    extracted_data_ &mut ExtractedData,
+    extracted_data_: &mut ExtractedData,
     node_kinds: &mut HashSet<String>, // Collect node kinds
 ) {
     // Recursively traverse children, but only if the current node wasn't already extracted
@@ -54,16 +60,19 @@ pub fn traverse_tree(
         }
     }
 }
+
 fn extract_results(
     node: Node<'_>,
     code: &str,
     extractors: &[&dyn InfoExtractor],
     file_path: &String,
-    extracted_data_ &mut ExtractedData,
+    extracted_data_: &mut ExtractedData,
 ) {
     for extractor in extractors {
         if node.kind() == extractor.node_kind() {
-            if let Err(e) = extractor.extract(node, code, file_path.clone(), extracted_data_) {
+            if let Err(e) =
+                extractor.extract(node, code, file_path.clone(), extracted_data_)
+            {
                 eprintln!("Failed to extract info: {}", e);
             }
         }

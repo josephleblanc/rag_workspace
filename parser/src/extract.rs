@@ -114,7 +114,13 @@ pub struct FunctionInfo<ParameterInfo> {
 pub struct ImplInfoExtractor {}
 
 impl InfoExtractor for ImplInfoExtractor {
-    fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
+    fn extract(
+        &self,
+        node: Node,
+        code: &str,
+        file_path: String,
+        extracted_data_: &mut ExtractedData,
+    ) -> Result<()> {
         if node.kind() == "impl_item" {
             let mut cursor = node.walk();
             let mut impl_info = ImplInfo {
@@ -134,10 +140,9 @@ impl InfoExtractor for ImplInfoExtractor {
                     _ => {}
                 }
             }
-            Some(Box::new(impl_info))
-        } else {
-            None
+            extracted_data_.impls.push(impl_info);
         }
+        Ok(())
         // TODO: Restructure the downcaste in main.rs to try getting this to work again.
         // The current problem is that the downcaste is from the `Any` type and does not
         // correctly downcast into the `ImplInfo` type.
@@ -162,7 +167,13 @@ impl InfoExtractor for ImplInfoExtractor {
 pub struct EnumInfoExtractor {}
 
 impl InfoExtractor for EnumInfoExtractor {
-    fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
+    fn extract(
+        &self,
+        node: Node,
+        code: &str,
+        file_path: String,
+        extracted_data_: &mut ExtractedData,
+    ) -> Result<()> {
         if node.kind() == "enum_item" {
             let mut enum_info = EnumInfo {
                 name: String::new(),
@@ -203,10 +214,9 @@ impl InfoExtractor for EnumInfoExtractor {
                 }
             }
 
-            Some(Box::new(enum_info))
-        } else {
-            None
+            extracted_data_.enums.push(enum_info);
         }
+        Ok(())
     }
 
     fn node_kind(&self) -> &'static str {
@@ -286,12 +296,18 @@ fn extract_enum_variant(node: Node, code: &str, enum_info: &mut EnumInfo) {
     enum_info.variants.push(variant_info.clone());
 }
 
-fn extract_enum_variants(node: Node, code: &str, enum_info: &mut EnumInfo) {}
+fn extract_enum_variants(_node: Node, _code: &str, _enum_info: &mut EnumInfo) {}
 
 pub struct ModInfoExtractor {}
 
 impl InfoExtractor for ModInfoExtractor {
-    fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
+    fn extract(
+        &self,
+        node: Node,
+        code: &str,
+        file_path: String,
+        extracted_data_: &mut ExtractedData,
+    ) -> Result<()> {
         if node.kind() == "mod_item" {
             let mut mod_info = ModInfo {
                 name: String::new(),
@@ -316,10 +332,9 @@ impl InfoExtractor for ModInfoExtractor {
                 }
             }
 
-            Some(Box::new(mod_info))
-        } else {
-            None
+            extracted_data_.mods.push(mod_info);
         }
+        Ok(())
     }
 
     fn node_kind(&self) -> &'static str {
@@ -330,7 +345,13 @@ impl InfoExtractor for ModInfoExtractor {
 pub struct UseDependencyInfoExtractor {}
 
 impl InfoExtractor for UseDependencyInfoExtractor {
-    fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
+    fn extract(
+        &self,
+        node: Node,
+        code: &str,
+        file_path: String,
+        extracted_data_: &mut ExtractedData,
+    ) -> Result<()> {
         if node.kind() == "use_declaration" {
             let mut use_dependency_info = UseDependencyInfo {
                 start_position: node.start_byte(),
@@ -341,10 +362,9 @@ impl InfoExtractor for UseDependencyInfoExtractor {
 
             extract_use_segments(node, code, &mut use_dependency_info);
 
-            Some(Box::new(use_dependency_info))
-        } else {
-            None
+            extracted_data_.use_dependencies.push(use_dependency_info);
         }
+        Ok(())
     }
 
     fn node_kind(&self) -> &'static str {
@@ -407,7 +427,13 @@ fn extract_path_segments(node: Node, code: &str, segments: &mut Vec<String>) {
 pub struct TypeAliasInfoExtractor {}
 
 impl InfoExtractor for TypeAliasInfoExtractor {
-    fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
+    fn extract(
+        &self,
+        node: Node,
+        code: &str,
+        file_path: String,
+        extracted_data_: &mut ExtractedData,
+    ) -> Result<()> {
         if node.kind() == "type_item" {
             let mut type_alias_info = TypeAliasInfo {
                 name: String::new(),
@@ -443,10 +469,9 @@ impl InfoExtractor for TypeAliasInfoExtractor {
                 }
             }
 
-            Some(Box::new(type_alias_info))
-        } else {
-            None
+            extracted_data_.type_aliases.push(type_alias_info);
         }
+        Ok(())
     }
 
     fn node_kind(&self) -> &'static str {
@@ -457,7 +482,13 @@ impl InfoExtractor for TypeAliasInfoExtractor {
 pub struct StructInfoExtractor {}
 
 impl InfoExtractor for StructInfoExtractor {
-    fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
+    fn extract(
+        &self,
+        node: Node,
+        code: &str,
+        file_path: String,
+        extracted_data_: &mut ExtractedData,
+    ) -> Result<()> {
         if node.kind() == "struct_item" {
             let mut cursor = node.walk();
             let mut struct_info = StructInfo {
@@ -491,10 +522,9 @@ impl InfoExtractor for StructInfoExtractor {
                 }
             }
             // println!("Extracting struct: {}", struct_info.name);
-            Some(Box::new(struct_info))
-        } else {
-            None
+            extracted_data_.structs.push(struct_info);
         }
+        Ok(())
     }
 
     fn node_kind(&self) -> &'static str {
@@ -505,7 +535,13 @@ impl InfoExtractor for StructInfoExtractor {
 pub struct FunctionInfoExtractor {}
 
 impl InfoExtractor for FunctionInfoExtractor {
-    fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
+    fn extract(
+        &self,
+        node: Node,
+        code: &str,
+        file_path: String,
+        extracted_data_: &mut ExtractedData,
+    ) -> Result<()> {
         if node.kind() == "function_item" {
             let mut cursor = node.walk();
             let mut function_info: FunctionInfo<()> = FunctionInfo {
@@ -527,10 +563,9 @@ impl InfoExtractor for FunctionInfoExtractor {
                 }
             }
             // println!("Extracting function: {}", struct_info.name);
-            Some(Box::new(function_info))
-        } else {
-            None
+            extracted_data_.functions.push(function_info);
         }
+        Ok(())
     }
 
     fn node_kind(&self) -> &'static str {

@@ -61,38 +61,11 @@ fn main() -> Result<()> {
     ];
 
     // Traverse the directory and extract information
-    let results =
-        traverse_and_parse_directory(root_directory, directories_to_ignore, extractors.clone())?;
-
-    // Process the results
-    let mut extracted_data = ExtractedData::default();
-
-    for result in results {
-        if let Some(struct_info) = result.downcast_ref::<StructInfo>() {
-            extracted_data.structs.push(struct_info.clone());
-        } else if let Some(function_info) = result.downcast_ref::<FunctionInfo<()>>() {
-            extracted_data.functions.push(function_info.clone());
-        } else if let Some(type_alias_info) = result.downcast_ref::<TypeAliasInfo>() {
-            extracted_data.type_aliases.push(type_alias_info.clone());
-        } else if let Some(impl_info) = result.downcast_ref::<ImplInfo>() {
-            extracted_data.impls.push(impl_info.clone());
-        } else if let Some(use_dependency_info) =
-            result.downcast_ref::<extract::UseDependencyInfo>()
-        {
-            extracted_data
-                .use_dependencies
-                .push(use_dependency_info.clone());
-        } else if let Some(mod_info) = result.downcast_ref::<extract::ModInfo>() {
-            extracted_data.mods.push(mod_info.clone());
-        } else if let Some(enum_info) = result.downcast_ref::<extract::EnumInfo>() {
-            extracted_data.enums.push(enum_info.clone());
-        }
-         else {
-            println!("  Unknown type of info extracted");
-            let uncertain_id = (result).type_id();
-            println!("  Unceratin Type: {:?}", uncertain_id);
-        }
-    }
+    let mut extracted_data = traverse_and_parse_directory(
+        root_directory,
+        directories_to_ignore,
+        extractors.clone(),
+    )?;
 
     // Ensure the 'data' directory exists
     let output_dir = env::current_dir()?.join("data");
