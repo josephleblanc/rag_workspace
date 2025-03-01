@@ -269,13 +269,6 @@ impl InfoExtractor for EnumInfoExtractor {
         "enum_item"
     }
 }
-
-pub struct ModInfoExtractor {}
-
-impl InfoExtractor for ModInfoExtractor {
-    fn extract(&self, node: Node, code: &str, file_path: String) -> Option<Box<dyn Any>> {
-        if node.kind() == "mod_item" {
-            let mut mod_info = ModInfo {
                 name: String::new(),
                 is_pub: false,
                 start_position: node.start_byte(),
