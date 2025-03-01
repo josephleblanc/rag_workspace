@@ -59,7 +59,9 @@ Add node detection and extraction for the following: \
 
 - [x] `use` dependency
 - [ ] `mod` inclusion (in main)
-- [ ] update `parser/src/traverse.rs` with the new extractor
+  - [ ] Implement extraction
+  - [ ] Implement saving
+  - [ ] Update printed table
 
 ##### 2. Enums
 
