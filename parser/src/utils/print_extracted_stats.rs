@@ -1,6 +1,6 @@
 use crate::extract::ExtractedData;
 use prettytable::{
-    format::{Alignment, FormatBuilder, TableFormat},
+    format::{FormatBuilder, TableFormat},
     row, Table,
 };
 use std::path::Path;
@@ -9,14 +9,12 @@ pub fn print_extracted_stats(extracted: ExtractedData, output_file_path: &Path) 
     let mut table = Table::new();
 
     // Define a custom table format
-    let table_format: TableFormat = FormatBuilder::new()
-        .column_separator('│')
-        .padding_left(2)
-        .padding_right(2)
-        .build();
+    let table_format: TableFormat = FormatBuilder::new().column_separator('│').padding(2, 2).build();
     table.set_format(table_format);
 
     // Add a descriptive header row
+
+
     table.add_row(row!["Category", "Number of Items"]);
 
     // Add rows with data, right-aligning the numbers
