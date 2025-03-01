@@ -109,16 +109,21 @@ of the code.
 
 *   **Project:** `parser` (part of `rag_workspace`)
 *   **Goal:** Extract semantic chunks from Rust code.
-*   **Current Task:** Refactor saving logic and fix typo.
+*   **Current Task:** Debug enum variant extraction.
 *   **Progress:**
-    *   Extracted `use` dependencies correctly.
-    *   Fixed the typo "Unceratin" -> "Uncertain" in `main.rs`.
-    *   Started refactoring the saving logic in `main.rs` to be more modular.
+    *   Extracted `use` dependencies and `mod` inclusions correctly.
+    *   The `EnumInfoExtractor` identifies enums, but doesn't extract variants.
+    *   Added debug prints to `EnumInfoExtractor::extract` to trace execution.
+    *   Refactored `EnumInfoExtractor` to use `extract_enum_variants` helper.
 *   **Next Steps:**
-    1.  Finish refactoring the saving logic by creating a `saver.rs` module and moving the saving functionality to it.
-    2.  Test the saving functionality to ensure it works correctly.
-    3.  Continue expanding the semantic chunks that can be identified and extracted (Goal 2).
-        *   The `use` dependencies and `type_alias` are extracted.
-        *   Need to implement extraction of `mod` inclusions.
-        *   Need to implement extraction of enums as enum definitions, not just type aliases.
-    4.  The current file contents are as of the last "Trust this message" from the user.
+    1.  Analyze debug output to understand why `enum_variant` nodes aren't extracted.
+    2.  Adjust tree-sitter queries or extraction logic as needed.
+    3.  Implement saving of extracted enum variants.
+    4.  Update printed table to display enum variant information.
+
+Hello Future Self,
+
+The current focus is on debugging the `EnumInfoExtractor`. The debug output
+should give you a better understanding of why the enum variants are not being
+extracted. Remember to check the tree-sitter queries and the structure of the
+AST. Good luck!
