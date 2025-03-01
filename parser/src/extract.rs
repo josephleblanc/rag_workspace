@@ -177,6 +177,7 @@ impl InfoExtractor for ImplInfoExtractor {
 
     fn node_kind(&self) -> &'static str {
         "impl_item"
+    }
 }
 
 fn extract_doc_comment(node: Node, code: &str) -> Option<String> {
