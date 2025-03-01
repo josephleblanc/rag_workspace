@@ -46,8 +46,9 @@ fn main() -> Result<()> {
         &use_dependency_extractor,
     ];
 
-    use crate::extract::ModInfoExtractor;
+    use crate::extract::{ModInfoExtractor, EnumInfoExtractor};
     let mod_extractor = ModInfoExtractor {};
+    let enum_extractor = EnumInfoExtractor {};
 
     let extractors: Vec<&dyn InfoExtractor> = vec![
         &struct_extractor,
@@ -56,6 +57,7 @@ fn main() -> Result<()> {
         &impl_extractor,
         &use_dependency_extractor,
         &mod_extractor,
+        &enum_extractor,
     ];
 
     // Traverse the directory and extract information
@@ -82,6 +84,8 @@ fn main() -> Result<()> {
                 .push(use_dependency_info.clone());
         } else if let Some(mod_info) = result.downcast_ref::<extract::ModInfo>() {
             extracted_data.mods.push(mod_info.clone());
+        } else if let Some(enum_info) = result.downcast_ref::<extract::EnumInfo>() {
+            extracted_data.enums.push(enum_info.clone());
         }
          else {
             println!("  Unknown type of info extracted");
