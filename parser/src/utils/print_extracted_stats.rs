@@ -2,7 +2,7 @@ use crate::extract::ExtractedData;
 use prettytable::{row, Table};
 use std::path::Path;
 
-pub fn print_extracted_stats(extracted: ExtractedData, output_file_path: &Path) {
+pub fn print_extracted_stats(extracted: &ExtractedData, output_file_path: &Path) {
     let mut table = Table::new();
 
     table.add_row(row!["Category", "Count"]);
