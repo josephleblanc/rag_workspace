@@ -16,4 +16,6 @@ anyhow = "1.0.96"
 prettytable = "0.10"
 
 [features]
-print_all = []
+print_blocks = []
+print_children = ["print_children_struct"]
+print_children_struct = []
