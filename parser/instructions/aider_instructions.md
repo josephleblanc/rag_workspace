@@ -110,16 +110,16 @@ Note: This will likely be helpful for later saving the data into the vector data
   - relevant files:
     - `extract.rs` (read only)
     - `print_blocks.rs`: This is where the trait and implementations should go
-  - [ ] function `print_block(&self)` that uses the `start_position` and
+  - [ ] 1. function `print_block(&self)` that uses the `start_position` and
   `end_position` of our extracted info structs (e.g. `FunctionInfo`), along
   with their `file_path` field to print those bytes as a `&str` or `Sring` to
   the terminal.
-- [ ] Implement `PrintBlock` for some of the info structs
+- [ ] 2. Implement `PrintBlock` for some of the info structs
   - relevant files:
     - `extract.rs`
   - Does not make sense at this point add this trait for all info structs. Just
   focus on the higher level ones.
-  - [ ] Implement `PrintBlock` for the following info structs:
+  - [ ] 1. Implement `PrintBlock` for the following info structs:
     - [ ] `EnumInfo`
     - [ ] `ModInfo`
     - [ ] `MacroInfo`
