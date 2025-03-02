@@ -8,6 +8,25 @@ ultimately added to a vector database. This vector database will be used by the
 RAG to augment the prompt sent to the LLM to enhance its ability to generate or
 refactor code that uses semantic structures from the target directory.
 
+<details>
+  <summary>Reminder on using github:</summary>
+
+create a new branch
+`git checkout -b <branch-name>`
+add and commit changes
+
+```bash
+git add .
+git commit -m "Your commit message"
+```
+
+go to the project on github.com and click on your branch. There should be a "compare & pull request" button
+Now that the code is submitted for review, someone (me) will review the pull request, suggest changes or edits, then approve it.
+Merge the changes to the main branch
+Repeat
+
+</details>
+
 Overall workflow:
 
 ## Step 1: Generate the tree-sitter syntax tree for the target project
