@@ -158,7 +158,7 @@ fn main() -> Result<()> {
 
     println!("--- Macros ---");
     for item in &extracted_data.macros {
-        println!("Macro: {}", item.print_block(&code));
+        println!("Macro: {}", item.print_block(&extracted_data));
         println!("---");
     }
 
