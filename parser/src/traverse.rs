@@ -144,6 +144,7 @@ pub fn traverse_and_parse_directory(
 ) -> Result<ExtractedData> {
     let mut all_results = ExtractedData::default();
 
+    all_results.file_contents = std::collections::HashMap::new();
     for entry in WalkDir::new(root_dir).into_iter().filter_map(|e| e.ok()) {
         let path = entry.path();
         let entry_name = entry.file_name().to_string_lossy();

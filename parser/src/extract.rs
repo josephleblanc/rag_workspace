@@ -132,6 +132,7 @@ pub struct ExtractedData {
     pub mods: Vec<ModInfo>,
     pub enums: Vec<EnumInfo>,
     pub macros: Vec<MacroInfo>,
+    pub file_contents: std::collections::HashMap<String, String>,
 }
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]

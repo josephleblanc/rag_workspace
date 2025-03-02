@@ -1,3 +1,4 @@
+use crate::extract::ExtractedData;
 pub(crate) trait PrintBlock {
-    fn print_block(&self, code: &str) -> String;
+    fn print_block(&self, extracted_ &ExtractedData) -> String;
 }

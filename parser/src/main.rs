@@ -62,48 +62,48 @@ fn main() -> Result<()> {
     // Read the code from the file
     let code = std::fs::read_to_string(root_directory.join("main.rs"))?;
 
-    println!("--- Printing one of each type ---");
+   println!("--- Printing one of each type ---");
 
-    if let Some(item) = extracted_data.structs.first() {
-        println!("Struct: {}", item.print_block(&code));
-    } else {
-        println!("No structs found.");
+   if let Some(item) = extracted_data.structs.first() {
+       println!("Struct: {}", item.print_block(&extracted_data));
+   } else {
+       println!("No structs found.");
     }
 
     if let Some(item) = extracted_data.functions.first() {
         println!("Function: {}", item.print_block(&code));
     } else {
         println!("No functions found.");
-    }
+   }
 
-    if let Some(item) = extracted_data.type_aliases.first() {
-        println!("Type Alias: {}", item.print_block(&code));
-    } else {
-        println!("No type aliases found.");
+   if let Some(item) = extracted_data.type_aliases.first() {
+       println!("Type Alias: {}", item.print_block(&extracted_data));
+   } else {
+       println!("No type aliases found.");
     }
 
     if let Some(item) = extracted_data.impls.first() {
         println!("Impl: {}", item.print_block(&code));
     } else {
         println!("No impls found.");
-    }
+   }
 
-    if let Some(item) = extracted_data.use_dependencies.first() {
-        println!("Use Dependency: {}", item.print_block(&code));
-    } else {
-        println!("No use dependencies found.");
+   if let Some(item) = extracted_data.use_dependencies.first() {
+       println!("Use Dependency: {}", item.print_block(&extracted_data));
+   } else {
+       println!("No use dependencies found.");
     }
 
     if let Some(item) = extracted_data.mods.first() {
         println!("Mod: {}", item.print_block(&code));
     } else {
         println!("No mods found.");
-    }
+   }
 
-    if let Some(item) = extracted_data.enums.first() {
-        println!("Enum: {}", item.print_block(&code));
-    } else {
-        println!("No enums found.");
+   if let Some(item) = extracted_data.enums.first() {
+       println!("Enum: {}", item.print_block(&extracted_data));
+   } else {
+       println!("No enums found.");
     }
 
     if let Some(item) = extracted_data.macros.first() {
@@ -114,46 +114,46 @@ fn main() -> Result<()> {
 
     println!("--- Printing all extracted data ---");
 
-    println!("--- Structs ---");
-    for item in &extracted_data.structs {
-        println!("Struct: {}", item.print_block(&code));
-        println!("---");
+   println!("--- Structs ---");
+   for item in &extracted_data.structs {
+       println!("Struct: {}", item.print_block(&extracted_data));
+       println!("---");
     }
 
-    println!("--- Functions ---");
-    for item in &extracted_data.functions {
-        println!("Function: {}", item.print_block(&code));
-        println!("---");
+   println!("--- Functions ---");
+   for item in &extracted_data.functions {
+       println!("Function: {}", item.print_block(&extracted_data));
+       println!("---");
     }
 
-    println!("--- Type Aliases ---");
-    for item in &extracted_data.type_aliases {
-        println!("Type Alias: {}", item.print_block(&code));
-        println!("---");
+   println!("--- Type Aliases ---");
+   for item in &extracted_data.type_aliases {
+       println!("Type Alias: {}", item.print_block(&extracted_data));
+       println!("---");
     }
 
-    println!("--- Impls ---");
-    for item in &extracted_data.impls {
-        println!("Impl: {}", item.print_block(&code));
-        println!("---");
+   println!("--- Impls ---");
+   for item in &extracted_data.impls {
+       println!("Impl: {}", item.print_block(&extracted_data));
+       println!("---");
     }
 
-    println!("--- Use Dependencies ---");
-    for item in &extracted_data.use_dependencies {
-        println!("Use Dependency: {}", item.print_block(&code));
-        println!("---");
+   println!("--- Use Dependencies ---");
+   for item in &extracted_data.use_dependencies {
+       println!("Use Dependency: {}", item.print_block(&extracted_data));
+       println!("---");
     }
 
-    println!("--- Mods ---");
-    for item in &extracted_data.mods {
-        println!("Mod: {}", item.print_block(&code));
-        println!("---");
+   println!("--- Mods ---");
+   for item in &extracted_data.mods {
+       println!("Mod: {}", item.print_block(&extracted_data));
+       println!("---");
     }
 
-    println!("--- Enums ---");
-    for item in &extracted_data.enums {
-        println!("Enum: {}", item.print_block(&code));
-        println!("---");
+   println!("--- Enums ---");
+   for item in &extracted_data.enums {
+       println!("Enum: {}", item.print_block(&extracted_data));
+       println!("---");
     }
 
     println!("--- Macros ---");
