@@ -228,10 +228,10 @@ of the code.
   - Refactored `StructInfoExtractor` and `FunctionInfoExtractor` to be more modular.
   - Implemented extraction of `&self` and non-`&self` functions.
 - **Next Steps:**
-    1. Implement the `PrintBlock` trait in `print_blocks.rs` with a `print_block(&self)` method that uses the `start_position`, `end_position`, and `file_path` fields of the info structs to print the corresponding code block.
-    2. Implement the `PrintBlock` trait for `EnumInfo`, `ModInfo`, `MacroInfo`, `StructInfo`, `ImplInfo`, `UseDependencyInfo`, `TypeAliasInfo`, and `FunctionInfo` in `extract.rs`.
-    3. Verify the accuracy of the extracted data's byte positions by:
+    1. Verify the accuracy of the extracted data's byte positions by:
         - Looping through `extracted_data` in `main.rs`, printing one of each type of info struct using the new `print_block` method.
+          - [ ] `EnumInfo`
+          - [ ] `ModInfo`
         - Fixing any problems identified.
         - Looping through `extracted_data` in `main.rs` again, printing all extracted info from each struct type one at a time, and visually inspecting the output.
 - **Medium-Term Goals:**
