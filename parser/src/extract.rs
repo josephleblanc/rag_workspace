@@ -75,56 +75,56 @@ pub struct StructInfo {
 }
 
 impl PrintBlock for EnumInfo {
-    fn print_block(&self, extracted_ &ExtractedData) -> String {
+    fn print_block(&self, extracted_data: &ExtractedData) -> String {
         let code = extracted_data.file_contents.get(&self.file_path).unwrap();
         code[self.start_position..self.end_position].to_string()
     }
 }
 
 impl PrintBlock for ModInfo {
-    fn print_block(&self, extracted_ &ExtractedData) -> String {
+    fn print_block(&self, extracted_data: &ExtractedData) -> String {
         let code = extracted_data.file_contents.get(&self.file_path).unwrap();
         code[self.start_position..self.end_position].to_string()
     }
 }
 
 impl PrintBlock for MacroInfo {
-    fn print_block(&self, extracted_ &ExtractedData) -> String {
+    fn print_block(&self, extracted_data: &ExtractedData) -> String {
         let code = extracted_data.file_contents.get(&self.file_path).unwrap();
         code[self.start_position..self.end_position].to_string()
     }
 }
 
 impl PrintBlock for StructInfo {
-    fn print_block(&self, extracted_ &ExtractedData) -> String {
+    fn print_block(&self, extracted_data: &ExtractedData) -> String {
         let code = extracted_data.file_contents.get(&self.file_path).unwrap();
         code[self.start_position..self.end_position].to_string()
     }
 }
 
 impl PrintBlock for ImplInfo {
-    fn print_block(&self, extracted_ &ExtractedData) -> String {
+    fn print_block(&self, extracted_data: &ExtractedData) -> String {
         let code = extracted_data.file_contents.get(&self.file_path).unwrap();
         code[self.start_position..self.end_position].to_string()
     }
 }
 
 impl PrintBlock for UseDependencyInfo {
-    fn print_block(&self, extracted_ &ExtractedData) -> String {
+    fn print_block(&self, extracted_data: &ExtractedData) -> String {
         let code = extracted_data.file_contents.get(&self.file_path).unwrap();
         code[self.start_position..self.end_position].to_string()
     }
 }
 
 impl PrintBlock for TypeAliasInfo {
-    fn print_block(&self, extracted_ &ExtractedData) -> String {
+    fn print_block(&self, extracted_data: &ExtractedData) -> String {
         let code = extracted_data.file_contents.get(&self.file_path).unwrap();
         code[self.start_position..self.end_position].to_string()
     }
 }
 
 impl PrintBlock for FunctionInfo {
-    fn print_block(&self, extracted_ &ExtractedData) -> String {
+    fn print_block(&self, extracted_data: &ExtractedData) -> String {
         let code = extracted_data.file_contents.get(&self.file_path).unwrap();
         code[self.start_position..self.end_position].to_string()
     }
