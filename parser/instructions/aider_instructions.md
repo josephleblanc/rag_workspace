@@ -215,21 +215,28 @@ of the code.
 
 ### Message to Future Self (For AI, Needs Update)
 
- • Project: parser (part of rag_workspace)
- • Goal: Extract semantic chunks from Rust code.
- • Current Task: Improve accuracy of extracted function parameter types.
- • Progress:
-    • Implemented extraction and saving for use dependencies, mod inclusions,
-    enums, macros, and function parameters.
-    • Improved feedback mechanism with print_extracted_stats.rs and table
-    formatting.
-    • Refactored StructInfoExtractor and
-    FunctionInfoExtractor to be more modular.
- • Next Steps:
-    1 Improve the accuracy of extracted information, particularly struct
-    attributes, doc comments, and function parameter types.
-    2 Continue refactoring and simplifying the extract functions.
-    3 Consider adding more detailed information about function parameters to the
-    printed table (e.g., the types of parameters).
-    4 Begin researching and experimenting with graph databases for storing and
-    querying extracted code         information.
+*   **Project:** parser (part of rag\_workspace)
+*   **Goal:** Extract semantic chunks from Rust code for a hybrid graph/vector database to enhance LLM code generation and refactoring.
+*   **Current Task:** Implement `PrintBlock` trait and verify data extraction accuracy by byte position.
+*   **Progress:**
+    *   Implemented extraction and saving for use dependencies, mod inclusions, enums, macros, and function parameters.
+    *   Improved feedback mechanism with `print_extracted_stats.rs` and table formatting.
+    *   Refactored `StructInfoExtractor` and `FunctionInfoExtractor` to be more modular.
+    *   Implemented extraction of `&self` and non-`&self` functions.
+*   **Next Steps:**
+    1.  Implement the `PrintBlock` trait in `print_blocks.rs` with a `print_block(&self)` method that uses the `start_position`, `end_position`, and `file_path` fields of the info structs to print the corresponding code block.
+    2.  Implement the `PrintBlock` trait for `EnumInfo`, `ModInfo`, `MacroInfo`, `StructInfo`, `ImplInfo`, `UseDependencyInfo`, `TypeAliasInfo`, and `FunctionInfo` in `extract.rs`.
+    3.  Verify the accuracy of the extracted data's byte positions by:
+        *   Looping through `extracted_data` in `main.rs`, printing one of each type of info struct using the new `print_block` method.
+        *   Fixing any problems identified.
+        *   Looping through `extracted_data` in `main.rs` again, printing all extracted info from each struct type one at a time, and visually inspecting the output.
+*   **Medium-Term Goals:**
+    *   Extract relationships and more fine-grained details from the code.
+    *   Perform basic data validation of extracted data.
+*   **Long-Term Goals:**
+    *   Extract all semantically relevant information from the code for a hybrid vector embedding and heterogeneous graph database.
+    *   Set up infrastructure for rigorous testing and data validation.
+*   **Someday Maybe:**
+    *   Refine the parser for heterogeneous graphs.
+    *   Investigate and potentially use the `syn` crate for more advanced data extraction.
+    *   Add a feature to extract just the function signature.
