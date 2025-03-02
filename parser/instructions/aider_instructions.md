@@ -103,11 +103,12 @@ Add node detection and extraction for the following: \
   - [x] Update printed table
 
 ##### 5. Add print `PrintBlock` trait and impls
-  - [x] Started?
+
+- [x] Started?
 
 Note: This will likely be helpful for later saving the data into the vector database.
 
-- [ ] Add `triat` named `PrintBlock`, which should have the following method:
+- [x] Add `triat` named `PrintBlock`, which should have the following method:
   - relevant files:
     - `extract.rs` (read only)
     - `print_blocks.rs`: This is where the trait and implementations should go
@@ -115,14 +116,14 @@ Note: This will likely be helpful for later saving the data into the vector data
   `end_position` of our extracted info structs (e.g. `FunctionInfo`), along
   with their `file_path` field to print those bytes as a `&str` or `Sring` to
   the terminal.
-- [ ] 2. Implement `PrintBlock` for some of the info structs
+- [x] 2. Implement `PrintBlock` for some of the info structs
   - relevant files:
     - `extract.rs`
     - `print_blocks.rs`: This is where the trait and implementations should go
   - Does not make sense at this point add this trait for all info structs. Just
   focus on the higher level ones.
   - [x] Finished?
-  - [ ] 1. Implement `PrintBlock` for the following info structs:
+  - [x] 1. Implement `PrintBlock` for the following info structs:
     - [x] `EnumInfo`
     - [x] `ModInfo`
     - [x] `MacroInfo`
