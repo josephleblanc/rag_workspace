@@ -113,7 +113,7 @@ fn main() -> Result<()> {
     }
 
     save_extracted_data(&extracted_data, &output_file_path)?;
-    print_extracted_stats(extracted_data, &output_file_path);
+    print_extracted_stats(&extracted_data, &output_file_path);
 
     #[cfg(feature = "print_all")]
     {
