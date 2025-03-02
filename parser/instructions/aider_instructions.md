@@ -41,14 +41,6 @@ extracted data.
 
 ### Goals
 
-#### LOUD WARNING:
-
-**MAKE SURE THE `print_block` TRAIT FUNCTION TAKES `extracted_ &ExtractedData` AS AN ARGUMENT, AND NOT `code: &str`!!!**
-
-**MAKE SURE THE `print_block` IMPLEMENTATIONS TAKE `extracted_ &ExtractedData` AS AN ARGUMENT, AND NOT `code: &str`!!!**
-
-**MAKE SURE THE CALLS TO `print_block` IN `main.rs` PASS `&extracted_data` AS AN ARGUMENT, AND NOT `&code`!!!**
-
 #### Goal 1. Make better feedback mechanism
 
 - [x] Started?
@@ -253,3 +245,11 @@ of the code.
   - Refine the parser for heterogeneous graphs.
   - Investigate and potentially use the `syn` crate for more advanced data extraction.
   - Add a feature to extract just the function signature.
+
+#### LOUD WARNING FOR AI
+
+**MAKE SURE THE `print_block` TRAIT FUNCTION TAKES `extracted_data: &ExtractedData` AS AN ARGUMENT, AND NOT `extracted_ &ExtractedData`!!!**
+
+**NEVER EVER WRITE THIS `extracted_ &ExtractedData` !!!!!**
+
+That warning is just an example of a mistake you (the ai) frequently make in rust syntax.
