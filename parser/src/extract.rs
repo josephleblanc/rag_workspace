@@ -587,33 +587,29 @@ impl InfoExtractor for StructInfoExtractor {
                 end_position: node.end_byte(), // Initial end_position
                 file_path: file_path.to_string(),
                 ..Default::default()
-            };
-
-            // Extract leading doc comments by traversing from the *parent*
-            if let Some(parent) = node.parent() {
-                let mut comment_cursor = parent.walk();
-                let mut found_self = false; // Flag to track when we reach the struct_item itself
-
-                // Iterate through the parent's children
-                for child in parent.children(&mut comment_cursor) {
-                    if child == node {
-                        found_self = true; // We've reached the struct_item, stop looking for leading comments
-                        break;
-                    }
-
-                    // If we haven't reached the struct_item yet, check for comments
-                    if !found_self && child.kind() == "line_comment" {
-                        if let Some(doc_comment) = extract_doc_comment(child, code) {
-                            if struct_info.doc_comment.is_none() {
-                                struct_info.doc_comment = Some(doc_comment);
-                            } else {
-                                // Append to existing doc comment if needed
-                                struct_info.doc_comment = Some(format!("{}\n{}", struct_info.doc_comment.unwrap(), doc_comment));
-                            }
-                        }
-                    }
-                }
-            }
++            };
++
++           // Extract leading doc comments by iterating backwards through preceding siblings
++            let mut current_node = node;
++            while let Some(previous_sibling) = current_node.prev_sibling() {
++                if previous_sibling.kind() == "line_comment" {
++                    let comment_text = previous_sibling.utf8_text(code.as_bytes()).unwrap().trim();
++                    if comment_text.starts_with("///") {
++                        // Prepend the comment to the existing doc_comment (if any)
++                        struct_info.doc_comment = match struct_info.doc_comment {
++                            Some(existing_comment) => Some(format!("{}\n{}", comment_text, existing_comment)),
++                            None => Some(comment_text.to_string()),
++                        };
++                    } else {
++                        // If it's not a doc comment, stop searching
++                        break;
++                    }
++                    current_node = previous_sibling; // Move to the previous sibling
++                } else {
++                    // If it's not a comment, stop searching
++                    break;
++                }
++            }
 
             let mut cursor = node.walk();
             let mut max_end_byte = node.end_byte(); // Initialize with the node's initial end byte
@@ -670,15 +666,16 @@ impl InfoExtractor for StructInfoExtractor {
                     _ => {}
                 }
             }
-            // Update end_position after processing all children
-            struct_info.end_position = max_end_byte;
-            extracted_data_.structs.push(struct_info);
-        }
-        Ok(())
-    }
-
-    fn node_kind(&self) -> &'static str {
-        "struct_item"
++            // Update end_position after processing all children
++            // struct_info.end_position = node.end_byte(); // revert to this if the below does not work
++            struct_info.end_position = max_end_byte;
++            extracted_data_.structs.push(struct_info);
++        }
++        Ok(())
++    }
++
++    fn node_kind(&self) -> &'static str {
++        "struct_item"
     }
 }
 
