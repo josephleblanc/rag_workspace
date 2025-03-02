@@ -582,36 +582,48 @@ impl InfoExtractor for StructInfoExtractor {
             println!("  start_byte: {}", node.start_byte());
             println!("  end_byte: {}", node.end_byte());
 
-            let mut cursor = node.walk();
             let mut struct_info = StructInfo {
                 start_position: node.start_byte(),
-                end_position: node.end_byte(),
+                end_position: node.end_byte(), // Initial end_position
                 file_path: file_path.to_string(),
                 ..Default::default()
             };
 
-            // Extract leading doc comments
-            let mut leading_comments = Vec::new();
-            let mut comment_cursor = node.walk();
-            while comment_cursor.goto_first_child() {
-                if comment_cursor.node().kind() == "line_comment" {
-                    if let Some(doc_comment) = extract_doc_comment(comment_cursor.node(), code) {
-                        leading_comments.push(doc_comment);
+            // Extract leading doc comments by traversing from the *parent*
+            if let Some(parent) = node.parent() {
+                let mut comment_cursor = parent.walk();
+                let mut found_self = false; // Flag to track when we reach the struct_item itself
+
+                // Iterate through the parent's children
+                for child in parent.children(&mut comment_cursor) {
+                    if child == node {
+                        found_self = true; // We've reached the struct_item, stop looking for leading comments
+                        break;
                     }
-                } else {
-                    comment_cursor.goto_parent();
-                    break; // Stop when we encounter a non-comment node
+
+                    // If we haven't reached the struct_item yet, check for comments
+                    if !found_self && child.kind() == "line_comment" {
+                        if let Some(doc_comment) = extract_doc_comment(child, code) {
+                            if struct_info.doc_comment.is_none() {
+                                struct_info.doc_comment = Some(doc_comment);
+                            } else {
+                                // Append to existing doc comment if needed
+                                struct_info.doc_comment = Some(format!("{}\n{}", struct_info.doc_comment.unwrap(), doc_comment));
+                            }
+                        }
+                    }
                 }
             }
-            if !leading_comments.is_empty() {
-                // Combine leading comments into a single string (or store as Vec<String>)
-                struct_info.doc_comment = Some(leading_comments.join("\n"));
-            }
+
+            let mut cursor = node.walk();
+            let mut max_end_byte = node.end_byte(); // Initialize with the node's initial end byte
 
             for child in node.children(&mut cursor) {
                 println!("  Child kind: {}", child.kind());
                 println!("    start_byte: {}", child.start_byte());
                 println!("    end_byte: {}", child.end_byte());
+
+                max_end_byte = std::cmp::max(max_end_byte, child.end_byte()); // Update max_end_byte
 
                 match child.kind() {
                     "attribute_item" => {
@@ -619,11 +631,6 @@ impl InfoExtractor for StructInfoExtractor {
                             struct_info.attributes.push(attribute.to_string());
                         }
                     }
-                    // "line_comment" => { // REMOVE THIS. Handled above
-                    //     if let Some(doc_comment) = extract_doc_comment(child, code) {
-                    //         struct_info.doc_comment = Some(doc_comment);
-                    //     }
-                    // }
                     "visibility_modifier" => {
                         struct_info.is_pub = true;
                     }
@@ -663,6 +670,8 @@ impl InfoExtractor for StructInfoExtractor {
                     _ => {}
                 }
             }
+            // Update end_position after processing all children
+            struct_info.end_position = max_end_byte;
             extracted_data_.structs.push(struct_info);
         }
         Ok(())
