@@ -41,6 +41,14 @@ extracted data.
 
 ### Goals
 
+#### LOUD WARNING:
+
+**MAKE SURE THE `print_block` TRAIT FUNCTION TAKES `extracted_ &ExtractedData` AS AN ARGUMENT, AND NOT `code: &str`!!!**
+
+**MAKE SURE THE `print_block` IMPLEMENTATIONS TAKE `extracted_ &ExtractedData` AS AN ARGUMENT, AND NOT `code: &str`!!!**
+
+**MAKE SURE THE CALLS TO `print_block` IN `main.rs` PASS `&extracted_data` AS AN ARGUMENT, AND NOT `&code`!!!**
+
 #### Goal 1. Make better feedback mechanism
 
 - [x] Started?
