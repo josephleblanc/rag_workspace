@@ -137,8 +137,6 @@ pub fn traverse_and_count_node_kinds(
     Ok(node_kind_counts)
 }
 
-use std::fs;
-
 pub fn traverse_and_parse_directory(
     root_dir: &Path,
     ignored_directories: Option<Vec<String>>,

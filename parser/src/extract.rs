@@ -1,9 +1,9 @@
 // src/extract.rs
 use crate::traverse::InfoExtractor;
-use serde::{Deserialize, Serialize};
-use tree_sitter::Node;
-use std::fs;
 use crate::utils::print_blocks::PrintBlock;
+use serde::{Deserialize, Serialize};
+use std::fs;
+use tree_sitter::Node;
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct ParameterInfo {
@@ -587,29 +587,31 @@ impl InfoExtractor for StructInfoExtractor {
                 end_position: node.end_byte(), // Initial end_position
                 file_path: file_path.to_string(),
                 ..Default::default()
-+            };
-+
-+           // Extract leading doc comments by iterating backwards through preceding siblings
-+            let mut current_node = node;
-+            while let Some(previous_sibling) = current_node.prev_sibling() {
-+                if previous_sibling.kind() == "line_comment" {
-+                    let comment_text = previous_sibling.utf8_text(code.as_bytes()).unwrap().trim();
-+                    if comment_text.starts_with("///") {
-+                        // Prepend the comment to the existing doc_comment (if any)
-+                        struct_info.doc_comment = match struct_info.doc_comment {
-+                            Some(existing_comment) => Some(format!("{}\n{}", comment_text, existing_comment)),
-+                            None => Some(comment_text.to_string()),
-+                        };
-+                    } else {
-+                        // If it's not a doc comment, stop searching
-+                        break;
-+                    }
-+                    current_node = previous_sibling; // Move to the previous sibling
-+                } else {
-+                    // If it's not a comment, stop searching
-+                    break;
-+                }
-+            }
+            };
+
+            // Extract leading doc comments by iterating backwards through preceding siblings
+            let mut current_node = node;
+            while let Some(previous_sibling) = current_node.prev_sibling() {
+                if previous_sibling.kind() == "line_comment" {
+                    let comment_text = previous_sibling.utf8_text(code.as_bytes()).unwrap().trim();
+                    if comment_text.starts_with("///") {
+                        // Prepend the comment to the existing doc_comment (if any)
+                        struct_info.doc_comment = match struct_info.doc_comment {
+                            Some(existing_comment) => {
+                                Some(format!("{}\n{}", comment_text, existing_comment))
+                            }
+                            None => Some(comment_text.to_string()),
+                        };
+                    } else {
+                        // If it's not a doc comment, stop searching
+                        break;
+                    }
+                    current_node = previous_sibling; // Move to the previous sibling
+                } else {
+                    // If it's not a comment, stop searching
+                    break;
+                }
+            }
 
             let mut cursor = node.walk();
             let mut max_end_byte = node.end_byte(); // Initialize with the node's initial end byte
@@ -666,16 +668,16 @@ impl InfoExtractor for StructInfoExtractor {
                     _ => {}
                 }
             }
-+            // Update end_position after processing all children
-+            // struct_info.end_position = node.end_byte(); // revert to this if the below does not work
-+            struct_info.end_position = max_end_byte;
-+            extracted_data_.structs.push(struct_info);
-+        }
-+        Ok(())
-+    }
-+
-+    fn node_kind(&self) -> &'static str {
-+        "struct_item"
+            // Update end_position after processing all children
+            // struct_info.end_position = node.end_byte(); // revert to this if the below does not work
+            struct_info.end_position = max_end_byte;
+            extracted_data_.structs.push(struct_info);
+        }
+        Ok(())
+    }
+
+    fn node_kind(&self) -> &'static str {
+        "struct_item"
     }
 }
 
