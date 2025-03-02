@@ -2,6 +2,8 @@
 use crate::traverse::InfoExtractor;
 use serde::{Deserialize, Serialize};
 use tree_sitter::Node;
+use std::fs;
+use crate::utils::print_blocks::PrintBlock;
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct ParameterInfo {
@@ -70,6 +72,54 @@ pub struct StructInfo {
     pub start_position: usize,
     pub end_position: usize,
     pub file_path: String,
+}
+
+impl PrintBlock for EnumInfo {
+    fn print_block(&self, code: &str) -> String {
+        code[self.start_position..self.end_position].to_string()
+    }
+}
+
+impl PrintBlock for ModInfo {
+    fn print_block(&self, code: &str) -> String {
+        code[self.start_position..self.end_position].to_string()
+    }
+}
+
+impl PrintBlock for MacroInfo {
+    fn print_block(&self, code: &str) -> String {
+        code[self.start_position..self.end_position].to_string()
+    }
+}
+
+impl PrintBlock for StructInfo {
+    fn print_block(&self, code: &str) -> String {
+        code[self.start_position..self.end_position].to_string()
+    }
+}
+
+impl PrintBlock for ImplInfo {
+    fn print_block(&self, code: &str) -> String {
+        code[self.start_position..self.end_position].to_string()
+    }
+}
+
+impl PrintBlock for UseDependencyInfo {
+    fn print_block(&self, code: &str) -> String {
+        code[self.start_position..self.end_position].to_string()
+    }
+}
+
+impl PrintBlock for TypeAliasInfo {
+    fn print_block(&self, code: &str) -> String {
+        code[self.start_position..self.end_position].to_string()
+    }
+}
+
+impl PrintBlock for FunctionInfo {
+    fn print_block(&self, code: &str) -> String {
+        code[self.start_position..self.end_position].to_string()
+    }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Default)]
