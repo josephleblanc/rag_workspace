@@ -135,7 +135,7 @@ Note: This will likely be helpful for later saving the data into the vector data
   - relevant files:
     - `extract.rs` (read only)
     - `main.rs`
-  - [ ] Loop through `extracted_data` in `main.rs`, printing one of each using the new method:
+  - [ ] 1. Loop through `extracted_data` in `main.rs`, printing one of each using the new method:
     - [ ] `EnumInfo`
     - [ ] `ModInfo`
     - [ ] `MacroInfo`
@@ -144,8 +144,8 @@ Note: This will likely be helpful for later saving the data into the vector data
     - [ ] `UseDependencyInfo`
     - [ ] `TypeAliasInfo`
     - [ ] `FunctionInfo`
-  - [ ] Fix problems (if applicable)
-  - [ ] Loop through `extracted_data` in `main.rs`, and print all extracted info from the relevant structs:
+  - [ ] 2. Fix problems (if applicable)
+  - [ ] 3. Loop through `extracted_data` in `main.rs`, and print all extracted info from the relevant structs:
     - This time we will not print them all together, but one at a time, then
     perform a brief visual inspection that it seems to be working.
     - [ ] `EnumInfo`
@@ -156,6 +156,7 @@ Note: This will likely be helpful for later saving the data into the vector data
     - [ ] `UseDependencyInfo`
     - [ ] `TypeAliasInfo`
     - [ ] `FunctionInfo`
+  - [ ] 4. Fix problems (if applicable)
 
 ### Someday maybe
 
