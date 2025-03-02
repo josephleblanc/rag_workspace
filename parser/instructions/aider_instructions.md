@@ -103,6 +103,7 @@ Add node detection and extraction for the following: \
   - [x] Update printed table
 
 ##### 5. Add print `PrintBlock` trait and impls
+  - [x] Started?
 
 Note: This will likely be helpful for later saving the data into the vector database.
 
@@ -110,7 +111,7 @@ Note: This will likely be helpful for later saving the data into the vector data
   - relevant files:
     - `extract.rs` (read only)
     - `print_blocks.rs`: This is where the trait and implementations should go
-  - [ ] 1. function `print_block(&self)` that uses the `start_position` and
+  - [x] 1. function `print_block(&self)` that uses the `start_position` and
   `end_position` of our extracted info structs (e.g. `FunctionInfo`), along
   with their `file_path` field to print those bytes as a `&str` or `Sring` to
   the terminal.
@@ -120,15 +121,16 @@ Note: This will likely be helpful for later saving the data into the vector data
     - `print_blocks.rs`: This is where the trait and implementations should go
   - Does not make sense at this point add this trait for all info structs. Just
   focus on the higher level ones.
+  - [x] Finished?
   - [ ] 1. Implement `PrintBlock` for the following info structs:
-    - [ ] `EnumInfo`
-    - [ ] `ModInfo`
-    - [ ] `MacroInfo`
-    - [ ] `StructInfo`
-    - [ ] `ImpleInfo`
-    - [ ] `UseDependencyInfo`
-    - [ ] `TypeAliasInfo`
-    - [ ] `FunctionInfo`
+    - [x] `EnumInfo`
+    - [x] `ModInfo`
+    - [x] `MacroInfo`
+    - [x] `StructInfo`
+    - [x] `ImplInfo`
+    - [x] `UseDependencyInfo`
+    - [x] `TypeAliasInfo`
+    - [x] `FunctionInfo`
 
 ##### 6. Verify `extract` Functionality for position (in bytes)
 
