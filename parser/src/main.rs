@@ -115,6 +115,59 @@ fn main() -> Result<()> {
     save_extracted_data(&extracted_data, &output_file_path)?;
     print_extracted_stats(extracted_data, &output_file_path);
 
+    #[cfg(feature = "print_all")]
+    {
+        println!("--- Printing all extracted data ---");
+
+        println!("--- Structs ---");
+        for item in &extracted_data.structs {
+            println!("Struct: {}", item.print_block(&code));
+            println!("---");
+        }
+
+        println!("--- Functions ---");
+        for item in &extracted_data.functions {
+            println!("Function: {}", item.print_block(&code));
+            println!("---");
+        }
+
+        println!("--- Type Aliases ---");
+        for item in &extracted_data.type_aliases {
+            println!("Type Alias: {}", item.print_block(&code));
+            println!("---");
+        }
+
+        println!("--- Impls ---");
+        for item in &extracted_data.impls {
+            println!("Impl: {}", item.print_block(&code));
+            println!("---");
+        }
+
+        println!("--- Use Dependencies ---");
+        for item in &extracted_data.use_dependencies {
+            println!("Use Dependency: {}", item.print_block(&code));
+            println!("---");
+        }
+
+        println!("--- Mods ---");
+        for item in &extracted_data.mods {
+            println!("Mod: {}", item.print_block(&code));
+            println!("---");
+        }
+
+        println!("--- Enums ---");
+        for item in &extracted_data.enums {
+            println!("Enum: {}", item.print_block(&code));
+            println!("---");
+        }
+
+        println!("--- Macros ---");
+        for item in &extracted_data.macros {
+            println!("Macro: {}", item.print_block(&code));
+            println!("---");
+        }
+    }
+
     println!("Directory parsing complete.");
 
     Ok(())

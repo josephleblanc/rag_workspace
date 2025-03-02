@@ -14,3 +14,6 @@ ron = "0.8"
 serde = { version = "1", features = ["derive"] }
 anyhow = "1.0.96"
 prettytable = "0.10"
+
+[features]
+print_all = []
