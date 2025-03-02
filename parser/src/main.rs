@@ -1,4 +1,3 @@
-// src/main.rs
 mod debug;
 mod extract;
 mod traverse;
@@ -7,7 +6,7 @@ mod utils;
 use crate::{
     extract::*,
     traverse::{traverse_and_parse_directory, InfoExtractor},
-    utils::print_extracted_stats::print_extracted_stats,
+    utils::{print_blocks::PrintBlock, print_extracted_stats::print_extracted_stats},
 };
 
 use anyhow::Result;
