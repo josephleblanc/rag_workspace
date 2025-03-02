@@ -60,6 +60,59 @@ fn main() -> Result<()> {
     let output_file_path = output_dir.join("extracted_data.ron");
     println!("Output file path: {}", output_file_path.display());
 
+    // Read the code from the file
+    let code = std::fs::read_to_string(root_directory.join("main.rs"))?;
+
+    println!("--- Printing one of each type ---");
+
+    if let Some(item) = extracted_data.structs.first() {
+        println!("Struct: {}", item.print_block(&code));
+    } else {
+        println!("No structs found.");
+    }
+
+    if let Some(item) = extracted_data.functions.first() {
+        println!("Function: {}", item.print_block(&code));
+    } else {
+        println!("No functions found.");
+    }
+
+    if let Some(item) = extracted_data.type_aliases.first() {
+        println!("Type Alias: {}", item.print_block(&code));
+    } else {
+        println!("No type aliases found.");
+    }
+
+    if let Some(item) = extracted_data.impls.first() {
+        println!("Impl: {}", item.print_block(&code));
+    } else {
+        println!("No impls found.");
+    }
+
+    if let Some(item) = extracted_data.use_dependencies.first() {
+        println!("Use Dependency: {}", item.print_block(&code));
+    } else {
+        println!("No use dependencies found.");
+    }
+
+    if let Some(item) = extracted_data.mods.first() {
+        println!("Mod: {}", item.print_block(&code));
+    } else {
+        println!("No mods found.");
+    }
+
+    if let Some(item) = extracted_data.enums.first() {
+        println!("Enum: {}", item.print_block(&code));
+    } else {
+        println!("No enums found.");
+    }
+
+    if let Some(item) = extracted_data.macros.first() {
+        println!("Macro: {}", item.print_block(&code));
+    } else {
+        println!("No macros found.");
+    }
+
     save_extracted_data(&extracted_data, &output_file_path)?;
     print_extracted_stats(extracted_data, &output_file_path);
 
