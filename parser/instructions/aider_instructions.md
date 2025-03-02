@@ -135,20 +135,20 @@ Note: This will likely be helpful for later saving the data into the vector data
 
 ##### 6. Verify `extract` Functionality for position (in bytes)
 
-- [ ] Test that calling `print_block` on the info structs works as intended.
+- [x] Test that calling `print_block` on the info structs works as intended.
   - relevant files:
     - `extract.rs` (read only)
     - `main.rs`
-  - [ ] 1. Loop through `extracted_data` in `main.rs`, printing one of each using the new method:
-    - [ ] `EnumInfo`
-    - [ ] `ModInfo`
-    - [ ] `MacroInfo`
-    - [ ] `StructInfo`
-    - [ ] `ImpleInfo`
-    - [ ] `UseDependencyInfo`
-    - [ ] `TypeAliasInfo`
-    - [ ] `FunctionInfo`
-  - [ ] 2. Fix problems (if applicable)
+  - [x] 1. Loop through `extracted_data` in `main.rs`, printing one of each using the new method:
+    - [x] `EnumInfo`
+    - [x] `ModInfo`
+    - [x] `MacroInfo`
+    - [x] `StructInfo`
+    - [x] `ImplInfo`
+    - [x] `UseDependencyInfo`
+    - [x] `TypeAliasInfo`
+    - [x] `FunctionInfo`
+  - [x] 2. Fix problems (if applicable)
   - [ ] 3. Loop through `extracted_data` in `main.rs`, and print all extracted info from the relevant structs:
     - This time we will not print them all together, but one at a time, then
     perform a brief visual inspection that it seems to be working.
@@ -156,7 +156,7 @@ Note: This will likely be helpful for later saving the data into the vector data
     - [ ] `ModInfo`
     - [ ] `MacroInfo`
     - [ ] `StructInfo`
-    - [ ] `ImpleInfo`
+    - [ ] `ImplInfo`
     - [ ] `UseDependencyInfo`
     - [ ] `TypeAliasInfo`
     - [ ] `FunctionInfo`
