@@ -590,6 +590,24 @@ impl InfoExtractor for StructInfoExtractor {
                 ..Default::default()
             };
 
+            // Extract leading doc comments
+            let mut leading_comments = Vec::new();
+            let mut comment_cursor = node.walk();
+            while comment_cursor.goto_first_child() {
+                if comment_cursor.node().kind() == "line_comment" {
+                    if let Some(doc_comment) = extract_doc_comment(comment_cursor.node(), code) {
+                        leading_comments.push(doc_comment);
+                    }
+                } else {
+                    comment_cursor.goto_parent();
+                    break; // Stop when we encounter a non-comment node
+                }
+            }
+            if !leading_comments.is_empty() {
+                // Combine leading comments into a single string (or store as Vec<String>)
+                struct_info.doc_comment = Some(leading_comments.join("\n"));
+            }
+
             for child in node.children(&mut cursor) {
                 println!("  Child kind: {}", child.kind());
                 println!("    start_byte: {}", child.start_byte());
@@ -601,11 +619,11 @@ impl InfoExtractor for StructInfoExtractor {
                             struct_info.attributes.push(attribute.to_string());
                         }
                     }
-                    "line_comment" => {
-                        if let Some(doc_comment) = extract_doc_comment(child, code) {
-                            struct_info.doc_comment = Some(doc_comment);
-                        }
-                    }
+                    // "line_comment" => { // REMOVE THIS. Handled above
+                    //     if let Some(doc_comment) = extract_doc_comment(child, code) {
+                    //         struct_info.doc_comment = Some(doc_comment);
+                    //     }
+                    // }
                     "visibility_modifier" => {
                         struct_info.is_pub = true;
                     }
