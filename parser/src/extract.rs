@@ -578,6 +578,10 @@ impl InfoExtractor for StructInfoExtractor {
         extracted_data_: &mut ExtractedData,
     ) -> Result<(), anyhow::Error> {
         if node.kind() == "struct_item" {
+            println!("Found a struct_item");
+            println!("  start_byte: {}", node.start_byte());
+            println!("  end_byte: {}", node.end_byte());
+
             let mut cursor = node.walk();
             let mut struct_info = StructInfo {
                 start_position: node.start_byte(),
@@ -587,6 +591,10 @@ impl InfoExtractor for StructInfoExtractor {
             };
 
             for child in node.children(&mut cursor) {
+                println!("  Child kind: {}", child.kind());
+                println!("    start_byte: {}", child.start_byte());
+                println!("    end_byte: {}", child.end_byte());
+
                 match child.kind() {
                     "attribute_item" => {
                         if let Ok(attribute) = child.utf8_text(code.as_bytes()) {
