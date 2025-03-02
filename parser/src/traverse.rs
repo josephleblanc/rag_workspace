@@ -164,6 +164,9 @@ pub fn traverse_and_parse_directory(
                 println!("Parsing file: {}", path.display());
                 let code = fs::read_to_string(path)
                     .with_context(|| format!("Failed to read file '{}'", path.display()))?;
+                all_results
+                    .file_contents
+                    .insert(absolute_path.display().to_string(), code.clone());
 
                 let mut parser = Parser::new();
                 parser
