@@ -1,3 +1,3 @@
 pub(crate) trait PrintBlock {
-    // Implement this
+    fn print_block(&self, code: &str) -> String;
 }
