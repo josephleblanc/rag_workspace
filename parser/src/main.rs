@@ -71,7 +71,7 @@ fn main() -> Result<()> {
     }
 
     if let Some(item) = extracted_data.functions.first() {
-        println!("Function: {}", item.print_block(&code));
+        println!("Function: {}", item.print_block(&extracted_data));
     } else {
         println!("No functions found.");
    }
@@ -83,7 +83,7 @@ fn main() -> Result<()> {
     }
 
     if let Some(item) = extracted_data.impls.first() {
-        println!("Impl: {}", item.print_block(&code));
+        println!("Impl: {}", item.print_block(&extracted_data));
     } else {
         println!("No impls found.");
    }
@@ -95,7 +95,7 @@ fn main() -> Result<()> {
     }
 
     if let Some(item) = extracted_data.mods.first() {
-        println!("Mod: {}", item.print_block(&code));
+        println!("Mod: {}", item.print_block(&extracted_data));
     } else {
         println!("No mods found.");
    }
@@ -107,7 +107,7 @@ fn main() -> Result<()> {
     }
 
     if let Some(item) = extracted_data.macros.first() {
-        println!("Macro: {}", item.print_block(&code));
+        println!("Macro: {}", item.print_block(&extracted_data));
     } else {
         println!("No macros found.");
     }
