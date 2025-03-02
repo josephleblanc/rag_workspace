@@ -166,6 +166,7 @@ pub fn traverse_and_parse_directory(
                     .with_context(|| format!("Failed to read file '{}'", path.display()))?;
                 all_results
                     .file_contents
+                    .insert(path.display().to_string(), code.clone());
                 let mut parser = Parser::new();
                 parser
                     .set_language(&tree_sitter_rust::LANGUAGE.into())
