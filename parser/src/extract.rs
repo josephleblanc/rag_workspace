@@ -1,6 +1,5 @@
-use std::any::Any;
-
 // src/extract.rs
+use crate::traverse::InfoExtractor;
 use serde::{Deserialize, Serialize};
 use tree_sitter::Node;
 
@@ -10,177 +9,10 @@ pub struct ParameterInfo {
     pub type_name: String,
 }
 
-fn extract_struct_attributes(node: Node, code: &str) -> Vec<String> {
-    let mut attributes = Vec::new();
-    let mut cursor = node.walk();
-    for child in node.children(&mut cursor) {
-        if child.kind() == "attribute_item" {
-            if let Ok(attribute) = child.utf8_text(code.as_bytes()) {
-                attributes.push(attribute.to_string());
-            }
-        }
-    }
-    attributes
-}
-
-fn extract_struct_doc_comment(node: Node, code: &str) -> Option<String> {
-    let mut cursor = node.walk();
-    for child in node.children(&mut cursor) {
-        if child.kind() == "line_comment" {
-            return extract_doc_comment(child, code);
-        }
-    }
-    None
-}
-
-fn extract_struct_fields(node: Node, code: &str) -> Vec<FieldInfo> {
-    let mut fields = Vec::new();
-    let mut cursor = node.walk();
-
-    for child in node.children(&mut cursor) {
-        if child.kind() == "field_declaration_list" {
-            let mut field_cursor = child.walk();
-            for field in child.children(&mut field_cursor) {
-                if field.kind() == "field_declaration" {
-                    let mut field_info = FieldInfo::default();
-                    let mut field_cursor2 = field.walk();
-                    for field_child in field.children(&mut field_cursor2) {
-                        match field_child.kind() {
-                            "field_identifier" => {
-                                if let Ok(name) = field_child.utf8_text(code.as_bytes()) {
-                                    field_info.name = name.to_string();
-                                }
-                            }
-                            "type" => {
-                                if let Ok(typ) = field_child.utf8_text(code.as_bytes()) {
-                                    field_info.type_name = typ.to_string();
-                                }
-                            }
-                            _ => {}
-                        }
-                    }
-                    fields.push(field_info);
-                }
-            }
-        }
-    }
-    fields
-}
-
-fn extract_function_parameters(node: Node, code: &str) -> Vec<ParameterInfo> {
-    let mut parameters = Vec::new();
-    let mut cursor = node.walk();
-    for child in node.children(&mut cursor) {
-        if child.kind() == "parameters" {
-            if let Some(params_node) = node.child_by_field_name("parameters") {
-                let mut param_cursor = params_node.walk();
-                for param in params_node.children(&mut param_cursor) {
-                    if param.kind() == "parameter" {
-                        let mut param_info = ParameterInfo::default();
-                        let mut param_cursor2 = param.walk();
-                        for param_child in param.children(&mut param_cursor2) {
-                            match param_child.kind() {
-                                "identifier" => {
-                                    if let Ok(name) =
-                                        param_child.utf8_text(code.as_bytes())
-                                    {
-                                        param_info.name = name.to_string();
-                                    }
-                                }
-                                "type"  => {
-                                    if let Ok(type_name) =
-                                        param_child.utf8_text(code.as_bytes())
-                                    {
-                                        param_info.type_name = type_name.to_string();
-                                    }
-                                }
-                                "generic_type" => {
-                                     if let Ok(type_name) =
-                                        param_child.utf8_text(code.as_bytes())
-                                    {
-                                        param_info.type_name = type_name.to_string();
-                                    }
-                                }
-                                _ => {}
-                            }
-                        }
-                        parameters.push(param_info);
-                    }
-                }
-            }
-        }
-    }
-    parameters
-}
-
-fn extract_function_return_type(node: Node, code: &str) -> Option<String> {
-    if let Some(return_type_node) = node.child_by_field_name("return_type") {
-        if let Ok(return_type) = return_type_node.utf8_text(code.as_bytes()) {
-            return Some(return_type.to_string());
-        }
-    }
-    None
-}
-
-fn extract_struct_info(node: Node, code: &str, file_path: String) -> Result<StructInfo, anyhow::Error> {
-    let mut struct_info = StructInfo {
-        start_position: node.start_byte(),
-        end_position: node.end_byte(),
-        file_path: file_path.to_string(),
-        attributes: extract_struct_attributes(node, code),
-        doc_comment: extract_struct_doc_comment(node, code),
-        fields: extract_struct_fields(node, code),
-        ..Default::default()
-    };
-
-    let mut cursor = node.walk();
-    for child in node.children(&mut cursor) {
-        match child.kind() {
-            "visibility_modifier" => {
-                struct_info.is_pub = true;
-            }
-            "type_identifier" => {
-                struct_info.name = child.utf8_text(code.as_bytes()).unwrap().to_string();
-            }
-            _ => {}
-        }
-    }
-    Ok(struct_info)
-}
-
-fn extract_function_info(node: Node, code: &str, file_path: String) -> Result<FunctionInfo, anyhow::Error> {
-    let mut function_info = FunctionInfo {
-        start_position: node.start_byte(),
-        end_position: node.end_byte(),
-        file_path: file_path.to_string(),
-        parameters: extract_function_parameters(node, code),
-        return_type: extract_function_return_type(node, code),
-        ..Default::default()
-    };
-    let mut cursor = node.walk();
-    for child in node.children(&mut cursor) {
-        match child.kind() {
-            "visibility_modifier" => {
-                function_info.is_pub = true;
-            }
-            "identifier" => {
-                function_info.name = child.utf8_text(code.as_bytes()).unwrap().to_string();
-            }
-             "self_parameter" => {
-                if let Ok(self_param) = child.utf8_text(code.as_bytes()) {
-                    if self_param == "&self" || self_param == "&mut self" || self_param == "self" {
-                        function_info.is_method = true;
-                    }
-                }
-            }
-            _ => {}
-        }
-    }
-    Ok(function_info)
-}
-
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub enum EnumVariantType {
+    // This is pretty much placeholder for now.
+    // It will likely get replaced when we add the `syn` crate.
     Unit,
     Tuple(Vec<String>),            // Store the types of the tuple fields
     Struct(Vec<(String, String)>), // Store field names and types for struct-like variants
@@ -212,8 +44,6 @@ pub struct ModInfo {
     pub end_position: usize,
     pub file_path: String,
 }
-
-use crate::traverse::InfoExtractor;
 
 #[derive(Clone, Debug, Default, Serialize, Deserialize)]
 pub struct MacroInfo {
@@ -505,8 +335,6 @@ fn extract_enum_variant(node: Node, code: &str, enum_info: &mut EnumInfo) {
     enum_info.variants.push(variant_info.clone());
 }
 
-fn extract_enum_variants(_node: Node, _code: &str, _enum_info: &mut EnumInfo) {}
-
 pub struct ModInfoExtractor {}
 
 impl InfoExtractor for ModInfoExtractor {
@@ -551,6 +379,7 @@ impl InfoExtractor for ModInfoExtractor {
     }
 }
 
+// TODO: Figure out a better name for this struct.
 pub struct UseDependencyInfoExtractor {}
 
 impl InfoExtractor for UseDependencyInfoExtractor {
@@ -707,7 +536,6 @@ impl InfoExtractor for StructInfoExtractor {
                 ..Default::default()
             };
 
-            let mut has_fields = false;
             for child in node.children(&mut cursor) {
                 match child.kind() {
                     "attribute_item" => {
@@ -726,8 +554,7 @@ impl InfoExtractor for StructInfoExtractor {
                     "type_identifier" => {
                         struct_info.name = child.utf8_text(code.as_bytes()).unwrap().to_string();
                     }
-                     "field_declaration_list" => {
-                        has_fields = true;
+                    "field_declaration_list" => {
                         let mut field_cursor = child.walk();
                         for field in child.children(&mut field_cursor) {
                             if field.kind() == "field_declaration" {
@@ -736,12 +563,14 @@ impl InfoExtractor for StructInfoExtractor {
                                 for field_child in field.children(&mut field_cursor2) {
                                     match field_child.kind() {
                                         "field_identifier" => {
-                                            if let Ok(name) = field_child.utf8_text(code.as_bytes()) {
+                                            if let Ok(name) = field_child.utf8_text(code.as_bytes())
+                                            {
                                                 field_info.name = name.to_string();
                                             }
                                         }
                                         "type" => {
-                                            if let Ok(typ) = field_child.utf8_text(code.as_bytes()) {
+                                            if let Ok(typ) = field_child.utf8_text(code.as_bytes())
+                                            {
                                                 field_info.type_name = typ.to_string();
                                             }
                                         }
@@ -800,7 +629,10 @@ impl InfoExtractor for FunctionInfoExtractor {
                             for param in params_node.children(&mut param_cursor) {
                                 if param.kind() == "self_parameter" {
                                     if let Ok(self_param) = param.utf8_text(code.as_bytes()) {
-                                        if self_param == "&self" || self_param == "&mut self" || self_param == "self" {
+                                        if self_param == "&self"
+                                            || self_param == "&mut self"
+                                            || self_param == "self"
+                                        {
                                             function_info.is_method = true;
                                         }
                                     }
@@ -817,7 +649,7 @@ impl InfoExtractor for FunctionInfoExtractor {
                                                     param_info.name = name.to_string();
                                                 }
                                             }
-                                            "type"  => {
+                                            "type" => {
                                                 if let Ok(type_name) =
                                                     param_child.utf8_text(code.as_bytes())
                                                 {
@@ -825,7 +657,7 @@ impl InfoExtractor for FunctionInfoExtractor {
                                                 }
                                             }
                                             "generic_type" => {
-                                                 if let Ok(type_name) =
+                                                if let Ok(type_name) =
                                                     param_child.utf8_text(code.as_bytes())
                                                 {
                                                     param_info.type_name = type_name.to_string();

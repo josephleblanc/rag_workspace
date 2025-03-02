@@ -48,7 +48,7 @@ fn main() -> Result<()> {
     ];
 
     // Traverse the directory and extract information
-    let mut extracted_data =
+    let extracted_data =
         traverse_and_parse_directory(root_directory, directories_to_ignore, extractors.clone())?;
 
     // Ensure the 'data' directory exists

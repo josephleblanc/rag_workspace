@@ -14,13 +14,30 @@ semantically meaningful data that will later be passed into a database for an
 RAG pipeline. The RAG is intended to assist in an LLM's code generation and
 refactoring.
 
-The intended database will be a heterogeneous graph database. This means it will
-be important to identify relationships between data structures. Those
-relashionships will later allow us to create edges in the graph to represent
-meaningful connections, and improve the capability of the RAG and thereby the
-LLM doing code generation and refactoring.
+The intended database will eventually be a hybrid heterogeneous graph and
+vector embedding database. This means it will be important to identify
+relationships between data structures. Those relationships will later allow us
+to create edges in the graph to represent meaningful connections, and improve
+the capability of the RAG and thereby the LLM doing code generation and
+refactoring.
 
 The project aims to accept a directory as input, and then parse the `.rs` files in that library for relevant chunks of data. Those chunks are then stored in a `ron` file. This means being able to identify text chunks by their byte indicies in the target directory.
+
+#### Short - Medium - Long term goals
+
+1. Short Term: Create a working parser that identifies and extracts
+   semantically relevent chunks of code like functions, structs, etc. Test with
+print statements. and other basic approachs to validating program works as
+intended. Will be used to make a vector embedding database by another project,
+which is beyond the scope of this `parser` project.
+2. Medium Term: Extract relationships and more fine-grained details. Does not
+   need to be comprehensive, but should provide the data required for basic
+prototyping of a heterogenous graph structure. Start performing basic data
+validation of extracted data.
+3. Long Term: Extract all semantically relevant information from the code that
+   could be used to create a hybrid vector embedding and heterogenenous graph
+database. Set up infrastructure for rigorous testing and data validation on
+extracted data.
 
 ### Goals
 
@@ -38,10 +55,6 @@ extracted items into a separate function.
 - [x] Test output and fix if needed.
 - [x] Refactor for improvements
 - [x] Test output again and fix if needed.
-- [ ] Add improvements to printed formatting:
-  - [ ] print stats in table
-
-**1.1**
 
 #### Goal 2. Expand the semantic chunks that can be identified and extracted
 
@@ -83,20 +96,114 @@ Add node detection and extraction for the following: \
 
 ##### 4. functions
 
-- [ ] parameters
-- [ ] parameter types
 - [x] `&self` function
 - [x] non-`&self` function
   - [x] Implement extraction
   - [x] Implement saving
   - [x] Update printed table
 
-##### <maybe more here later>
+##### 5. Add print `PrintBlock` trait and impls
 
-- [ ] task
-- [ ] task
+Note: This will likely be helpful for later saving the data into the vector database.
+
+- [ ] Add `triat` named `PrintBlock`, which should have the following method:
+  - relevant files:
+    - `extract.rs` (read only)
+    - `print_blocks.rs`: This is where the trait and implementations should go
+  - [ ] function `print_block(&self)` that uses the `start_position` and
+  `end_position` of our extracted info structs (e.g. `FunctionInfo`), along
+  with their `file_path` field to print those bytes as a `&str` or `Sring` to
+  the terminal.
+- [ ] Implement `PrintBlock` for some of the info structs
+  - relevant files:
+    - `extract.rs`
+  - Does not make sense at this point add this trait for all info structs. Just
+  focus on the higher level ones.
+  - [ ] Implement `PrintBlock` for the following info structs:
+    - [ ] `EnumInfo`
+    - [ ] `ModInfo`
+    - [ ] `MacroInfo`
+    - [ ] `StructInfo`
+    - [ ] `ImpleInfo`
+    - [ ] `UseDependencyInfo`
+    - [ ] `TypeAliasInfo`
+    - [ ] `FunctionInfo`
+
+##### 6. Verify `extract` Functionality for position (in bytes)
+
+- [ ] Test that calling `print_block` on the info structs works as intended.
+  - relevant files:
+    - `extract.rs` (read only)
+    - `main.rs`
+  - [ ] Loop through `extracted_data` in `main.rs`, printing one of each using the new method:
+    - [ ] `EnumInfo`
+    - [ ] `ModInfo`
+    - [ ] `MacroInfo`
+    - [ ] `StructInfo`
+    - [ ] `ImpleInfo`
+    - [ ] `UseDependencyInfo`
+    - [ ] `TypeAliasInfo`
+    - [ ] `FunctionInfo`
+  - [ ] Fix problems (if applicable)
+  - [ ] Loop through `extracted_data` in `main.rs`, and print all extracted info from the relevant structs:
+    - This time we will not print them all together, but one at a time, then
+    perform a brief visual inspection that it seems to be working.
+    - [ ] `EnumInfo`
+    - [ ] `ModInfo`
+    - [ ] `MacroInfo`
+    - [ ] `StructInfo`
+    - [ ] `ImpleInfo`
+    - [ ] `UseDependencyInfo`
+    - [ ] `TypeAliasInfo`
+    - [ ] `FunctionInfo`
 
 ### Someday maybe
+
+#### Refine Parser for Heterogeneous Graphs
+
+#### On using the `syn` crate for data extraction
+
+##### Learn about Static Analysis
+
+Crate a `bookmd` (location TBD) to learn more about extracting and representing
+rust code in a meaningful way.
+
+Learn about internal representation of rust tools and find information related
+to my use case. Some promising avenues for learning more are:
+
+- Following acronyms
+  - HIR: High-Level Intermediate Representation
+    - [ ] Rust Compiler Development Guide on [HIR]( https://rustc-dev-guide.rust-lang.org/hir.html?highlight=HIR#the-hir )
+  - MIR: Mid-level Intermediate Representation
+    - [ ] Rust Compiler Development Guide on [MIR]( https://rustc-dev-guide.rust-lang.org/mir/index.html#the-mir-mid-level-ir )
+- MIRAI: Project for static analysis of Rust
+  - [ ] [MIRAI project github](https://github.com/endorlabs/MIRAI?tab=readme-ov-file)
+  - [ ] [MIRAI further reading](https://github.com/endorlabs/MIRAI/blob/main/documentation/FurtherReading.md)
+- Evaluate list of projects from this awesome-list with a section on rust static analysis
+  - [ ] Static analysis [awesome-list](https://github.com/analysis-tools-dev/static-analysis?tab=readme-ov-file#rust)
+
+##### Identify and Decide on tooling for extracting info and relations
+
+Add to book created in "Learn about Static Analysis" with following info.
+
+Summarize, compare and contrast crates I could use to more expand the current
+data structures I am using for extracted information. I would like very
+fine-grained access to this information, and want it to be semantically
+relevant. This is towards the long term goal of using a heterogeneous graph
+database with the RAG.
+
+Explore the following crates and learn what I need for extracting semantic relationships. Write notes in the `bookmd` just mentioned.
+
+- [ ] `syn`
+  - general summary
+  - capabilities
+  - relevant setup
+- note: more tools here
+
+#### Misc
+
+- [ ] Add a way to just get the function signature of a function.
+  - Should be added as a new field on the `FunctionInfo` struct.
 
 It might be good to implement a feature flag to collect node kinds during
 traversal. This would allow us to print out the unique node kinds found in a
@@ -106,7 +213,7 @@ of the code.
 - Regarding this feature, there is a function in `traverse.rs` that I have used
 `#ignore(dead_code)` on, which we can revisit later.
 
-### Message to Future Self
+### Message to Future Self (For AI, Needs Update)
 
  • Project: parser (part of rag_workspace)
  • Goal: Extract semantic chunks from Rust code.
