@@ -149,18 +149,28 @@ Note: This will likely be helpful for later saving the data into the vector data
     - [x] `TypeAliasInfo`
     - [x] `FunctionInfo`
   - [x] 2. Fix problems (if applicable)
-  - [ ] 3. Loop through `extracted_data` in `main.rs`, and print all extracted info from the relevant structs:
+  - [x] 3. Loop through `extracted_data` in `main.rs`, and print all extracted info from the relevant structs:
     - This time we will not print them all together, but one at a time, then
     perform a brief visual inspection that it seems to be working.
-    - [ ] `EnumInfo`
-    - [ ] `ModInfo`
-    - [ ] `MacroInfo`
-    - [ ] `StructInfo`
-    - [ ] `ImplInfo`
-    - [ ] `UseDependencyInfo`
-    - [ ] `TypeAliasInfo`
-    - [ ] `FunctionInfo`
-  - [ ] 4. Fix problems (if applicable)
+    - [x] `EnumInfo`
+    - [x] `ModInfo`
+    - [x] `MacroInfo`
+    - [x] `StructInfo`
+    - [x] `ImplInfo`
+    - [x] `UseDependencyInfo`
+    - [x] `TypeAliasInfo`
+    - [x] `FunctionInfo`
+  - [x] 4. Fix problems (if applicable)
+
+#### Goal 4. Save the extracted chunks
+
+Expand saving functionality.
+
+#### Goal 5. Save the extracted chunks
+
+Save the extracted info chunks of text extracted in Goal 2.
+
+The extracted data should be able to be saved in different ways:
 
 ### Someday maybe
 
